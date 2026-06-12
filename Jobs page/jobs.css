@@ -1,0 +1,388 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Poppins',sans-serif;
+background:#ffffff;
+color:#222;
+}
+
+header{
+background-color:#132766;
+color:white;
+}
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:18px 5%;
+position:relative;
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.logo img{
+width:35px;
+height:35px;
+border-radius:50%;
+}
+
+.logo span{
+font-size:16px;
+font-weight:500;
+}
+
+.nav-links{
+display:flex;
+list-style:none;
+gap:35px;
+}
+
+.nav-links li a{
+color:white;
+text-decoration:none;
+font-size:14px;
+transition:0.3s;
+}
+
+.nav-links li a:hover{
+color:#28a745;
+}
+
+.nav-buttons{
+display:flex;
+gap:15px;
+align-items:center;
+}
+
+
+.login-btn{
+background:transparent;
+color:white;
+border:1px solid white;
+padding:10px 22px;
+border-radius:6px;
+cursor:pointer;
+font-size:14px;
+}
+
+
+.login-btn:hover{
+background:white;
+color:#132766;
+}
+
+
+.signup-btn{
+background:#28a745;
+color:white;
+border:none;
+padding:10px 22px;
+border-radius:6px;
+cursor:pointer;
+font-size:14px;
+}
+
+
+.signup-btn:hover{
+background:#218838;
+}
+
+.menu-toggle{
+display:none;
+font-size:24px;
+cursor:pointer;
+}
+
+
+.hero{
+text-align:center;
+padding:40px 20px;
+}
+
+.hero h1{
+font-size:52px;
+font-weight:700;
+}
+
+
+.jobs-section{
+display:flex;
+gap:50px;
+padding:60px 5%;
+background:#f8f8f8;
+}
+
+
+.filter-box{
+width:280px;
+background:#edf5f2;
+padding:30px;
+border-radius:15px;
+}
+
+
+.filter-box h3{
+font-size:18px;
+margin:20px 0 10px;
+}
+
+
+.filter-box input[type="text"],
+.filter-box select{
+width:100%;
+padding:12px;
+border:1px solid #ddd;
+border-radius:6px;
+}
+
+
+.filter-box label{
+display:block;
+margin:10px 0;
+font-size:14px;
+}
+
+
+.show-btn,
+.apply-btn{
+width:100%;
+padding:12px;
+background:#28a745;
+color:white;
+border:none;
+border-radius:6px;
+margin-top:15px;
+cursor:pointer;
+}
+
+
+.tags{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+}
+
+
+.tags span{
+background:#d9efe5;
+padding:6px 12px;
+border-radius:15px;
+font-size:12px;
+}
+
+
+
+.job-container{
+flex:1;
+}
+
+
+.job-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+}
+
+
+.job-top button{
+padding:10px 20px;
+border:none;
+background:#132766;
+color:white;
+border-radius:6px;
+}
+
+
+
+.job-card{
+background:white;
+padding:30px;
+border-radius:15px;
+margin-bottom:25px;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+
+.job-card small{
+color:#28a745;
+}
+
+
+.job-card h2{
+margin:15px 0;
+font-size:25px;
+color:#132766;
+}
+
+
+.job-card p{
+margin-bottom:20px;
+}
+
+
+
+.job-info{
+display:flex;
+gap:20px;
+align-items:center;
+flex-wrap:wrap;
+}
+
+
+.job-info span{
+background:#edf5f2;
+padding:8px 12px;
+border-radius:8px;
+font-size:14px;
+}
+
+
+.job-info button{
+background:#28a745;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:6px;
+cursor:pointer;
+}
+
+
+
+footer{
+background:#132766;
+color:white;
+}
+
+
+.footer-container{
+display:grid;
+grid-template-columns:2fr 1fr 1fr 1.5fr;
+gap:40px;
+padding:60px 5%;
+}
+
+
+.footer-column h3{
+margin-bottom:20px;
+font-size:20px;
+}
+
+
+.footer-column p,
+.footer-column li{
+font-size:15px;
+line-height:1.8;
+}
+
+
+.footer-column ul{
+list-style:none;
+}
+
+
+.footer-column input{
+width:100%;
+padding:12px;
+border-radius:6px;
+border:1px solid white;
+background:transparent;
+color:white;
+margin:15px 0;
+}
+
+
+.footer-column button{
+width:100%;
+padding:12px;
+background:#28a745;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+
+.footer-bottom{
+border-top:1px solid rgba(255,255,255,0.2);
+padding:20px 5%;
+display:flex;
+justify-content:space-between;
+}
+
+
+.footer-bottom a{
+color:white;
+text-decoration:none;
+margin-left:20px;
+}
+
+
+
+@media(max-width:992px){
+
+.jobs-section{
+flex-direction:column;
+}
+
+.filter-box{
+width:100%;
+}
+
+.footer-container{
+grid-template-columns:repeat(2,1fr);
+}
+
+}
+
+
+
+@media(max-width:768px){
+
+.menu-toggle{
+display:block;
+}
+
+.nav-links{
+position:absolute;
+top:75px;
+left:-100%;
+width:100%;
+background:#132766;
+flex-direction:column;
+text-align:center;
+padding:20px 0;
+}
+
+.nav-links.active{
+left:0;
+}
+
+.signup-btn{
+display:none;
+}
+
+
+.footer-container{
+grid-template-columns:1fr;
+}
+
+
+.footer-bottom{
+flex-direction:column;
+text-align:center;
+gap:15px;
+}
+
+}
