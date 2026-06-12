@@ -1,0 +1,346 @@
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #222;
+}
+
+/* Header */
+header {
+    background-color: #132766;
+    color: white;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5%;
+    position: relative;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
+
+.logo span {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 35px;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.nav-links li a:hover {
+    color: #2ea44f;
+}
+
+.login-btn {
+    background-color: #2ea44f;
+    color: white;
+    text-decoration: none;
+    padding: 10px 22px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.login-btn:hover {
+    background-color: #24863f;
+}
+
+.menu-toggle {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.hero h1 {
+    font-size: 48px;
+    font-weight: 700;
+}
+
+/* Main Container */
+.main-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+    padding: 60px 5%;
+    background-color: white;
+}
+
+/* Join Us */
+.join-us {
+    flex: 1;
+}
+
+.join-us h2 {
+    font-size: 42px;
+    margin-bottom: 15px;
+}
+
+.join-us>p {
+    margin-bottom: 40px;
+    color: #444;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+}
+
+.info-box {
+    display: flex;
+    gap: 15px;
+}
+
+.info-box i {
+    color: #2ea44f;
+    font-size: 22px;
+    margin-top: 5px;
+}
+
+.info-box h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.info-box p {
+    color: #444;
+    font-size: 15px;
+}
+
+/* Signup Box */
+.signup-box {
+    flex: 0.8;
+    background-color: #eef5f2;
+    padding: 40px;
+    border-radius: 12px;
+}
+
+.signup-box h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.signup-box form {
+    display: flex;
+    flex-direction: column;
+}
+
+.signup-box label {
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.signup-box input {
+    padding: 12px;
+    margin-bottom: 18px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    outline: none;
+}
+
+.signup-box input:focus {
+    border-color: #2ea44f;
+}
+
+.signup-box button {
+    background-color: #2ea44f;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+.signup-box button:hover {
+    background-color: #24863f;
+}
+
+/* Footer */
+footer {
+    background-color: #132766;
+    color: white;
+}
+
+.footer-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.5fr;
+    gap: 40px;
+    padding: 50px 5%;
+}
+
+.footer-column h3 {
+    margin-bottom: 20px;
+}
+
+.footer-column p,
+.footer-column li {
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.footer-column ul {
+    list-style: none;
+}
+
+.footer-column input {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    border: 1px solid white;
+    border-radius: 5px;
+    background: transparent;
+    color: white;
+}
+
+.footer-column input::placeholder {
+    color: #ddd;
+}
+
+.footer-column button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background-color: #2ea44f;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 20px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-bottom p {
+    font-size: 13px;
+}
+
+.footer-bottom a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 13px;
+}
+
+.footer-bottom a:hover {
+    color: #2ea44f;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+
+    .main-container {
+        flex-direction: column;
+    }
+
+    .footer-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero h1 {
+        font-size: 36px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        position: absolute;
+        top: 70px;
+        left: -100%;
+        width: 100%;
+        background-color: #132766;
+        flex-direction: column;
+        text-align: center;
+        padding: 20px 0;
+        transition: 0.3s;
+    }
+
+    .nav-links.active {
+        left: 0;
+    }
+
+    .login-btn {
+        display: none;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-container {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .footer-bottom a {
+        margin: 0 10px;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .hero h1 {
+        font-size: 28px;
+    }
+
+    .join-us h2 {
+        font-size: 32px;
+    }
+
+    .signup-box {
+        padding: 25px;
+    }
+}
