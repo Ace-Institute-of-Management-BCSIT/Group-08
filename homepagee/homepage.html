@@ -1,0 +1,486 @@
+<?php
+require_once 'includes/config.php';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ghar Sathi</title>
+<link rel="stylesheet" href="homepage.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="homepage.js" defer></script>
+</head>
+<body>
+'<!-- '================= NAVBAR ================= -->
+<header>
+
+<nav class="navbar">
+<div class="logo">
+<div class="logo-icon">
+<img src="images/logo.png" alt="Ghar Sathi logo">
+</div>
+<span>Ghar Sathi</span>
+</div>
+<ul class="nav-links">
+<li><a href="#">Home</a></li>
+<li><a href="#">Jobs</a></li>
+<li><a href="#">About Us</a></li>
+<li><a href="#">Contact Us</a></li>
+</ul>
+<div class="auth-buttons">
+<a href="#" class="login-btn">Login</a>
+<a href="#" class="signup-btn">Sign Up</a>
+</div>
+</nav>
+</header>
+
+
+<section class="hero" id="hero">
+
+<div class="overlay"></div>
+
+<div class="hero-content">
+
+<h1>Find Your Services Now!</h1>
+
+<p>
+Connecting Talent with Opportunity:
+Your Gateway to Faster Services
+</p>
+
+<form class="search-box" id="heroSearchForm">
+
+<input
+type="text"
+placeholder="Job Title or Company"
+name="job"
+id="jobSearchInput">
+<select name="location" id="locationSelect">
+<option value="">Select Location</option>
+
+<option>Kathmandu</option>
+
+<option>Lalitpur</option>
+
+<option>Bhaktapur</option>
+
+</select>
+
+<select name="category" id="categorySelect">
+
+<option value="">Select Category</option>
+
+<option>House Work</option>
+
+<option>Culinary Aid</option>
+
+<option>Self Care</option>
+
+<option>Plumbing</option>
+
+<option>House Cleaning</option>
+
+<option>Home Tuition</option>
+
+<option>Tech Repair</option>
+
+<option>Pet Care</option>
+
+</select>
+
+<button type="submit" id="heroSearchBtn">
+<i class="fa-solid fa-magnifying-glass"></i>
+Search Job
+</button>
+
+</form>
+
+<div class="search-results" id="searchResults" hidden>
+<div class="search-results-header">
+<h3 id="searchResultsTitle">Search Results</h3>
+<button type="button" class="search-results-close" id="closeSearchResults" aria-label="Close results">&times;</button>
+</div>
+<ul class="search-results-list" id="searchResultsList"></ul>
+</div>
+
+<div class="hero-stats">
+
+<div class="stat">
+
+<div class="stat-circle">
+
+<i class="fa-solid fa-briefcase"></i>
+
+<h3>200+</h3>
+
+</div>
+
+<p>Services</p>
+
+</div>
+
+<div class="stat">
+
+<div class="stat-circle">
+
+<i class="fa-solid fa-users"></i>
+
+<h3>700+</h3>
+
+</div>
+
+<p>Families</p>
+
+</div>
+
+<div class="stat">
+
+<div class="stat-circle">
+
+<i class="fa-solid fa-list-check"></i>
+
+<h3>100+</h3>
+
+</div>
+
+<p>Tasks</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= SOCIAL ================= -->
+
+<section class="social-bar">
+
+<a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+<i class="fa-brands fa-instagram"></i>
+</a>
+
+<a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+<i class="fa-brands fa-facebook-f"></i>
+</a>
+
+<a href="tel:+9779800000000" aria-label="Call us">
+<i class="fa-solid fa-phone"></i>
+</a>
+
+<a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+<i class="fa-brands fa-linkedin-in"></i>
+</a>
+
+</section>
+
+<!-- ================= CATEGORY ================= -->
+
+<section class="categories" id="categories">
+
+<h2>Browse by Category</h2>
+
+<p>Select your preferred category and explore!</p>
+
+<div class="category-grid">
+
+<div class="card" data-category="House Work" tabindex="0" role="button">
+<i class="fa-solid fa-seedling"></i>
+<h3>House Work</h3>
+<span>1254 Jobs</span>
+</div>
+
+<div class="card" data-category="Culinary Aid" tabindex="0" role="button">
+<i class="fa-solid fa-circle-check"></i>
+<h3>Culinary Aid</h3>
+<span>816 Jobs</span>
+</div>
+
+<div class="card" data-category="Self Care" tabindex="0" role="button">
+<i class="fa-solid fa-bag-shopping"></i>
+<h3>Self Care</h3>
+<span>2082 Jobs</span>
+</div>
+
+<div class="card" data-category="Plumbing" tabindex="0" role="button">
+<i class="fa-solid fa-faucet-drip"></i>
+<h3>Plumbing</h3>
+<span>1520 Jobs</span>
+</div>
+
+<div class="card" data-category="House Cleaning" tabindex="0" role="button">
+<i class="fa-solid fa-broom"></i>
+<h3>House Cleaning</h3>
+<span>1022 Jobs</span>
+</div>
+
+<div class="card" data-category="Home Tuition" tabindex="0" role="button">
+<i class="fa-solid fa-graduation-cap"></i>
+<h3>Home Tuition</h3>
+<span>1498 Jobs</span>
+</div>
+
+<div class="card" data-category="Tech Repair" tabindex="0" role="button">
+<i class="fa-solid fa-screwdriver-wrench"></i>
+<h3>Tech Repair</h3>
+<span>1529 Jobs</span>
+</div>
+
+<div class="card" data-category="Pet Care" tabindex="0" role="button">
+<i class="fa-solid fa-dog"></i>
+<h3>Pet Care</h3>
+<span>1244 Jobs</span>
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= SERVICE SECTION ================= -->
+
+<section class="service-section">
+
+<div class="service-image">
+
+<img src="images/nurse.jpg" alt="Home care services">
+
+</div>
+
+<div class="service-text">
+
+<h2>
+Reliable Home Services,
+Right at Your Doorstep!
+</h2>
+
+<p>
+
+Ghar Sathi brings trusted household
+services directly to your home.
+
+Whether you need cleaning,
+maintenance or caregiving support,
+our platform helps you choose the
+right service provider.
+
+</p>
+
+<button type="button" class="search-job-btn">Search Job</button>
+
+</div>
+
+</section>
+
+<!-- ================= COUNTERS ================= -->
+
+<section class="counter-section">
+
+<div>
+
+<h2>700+</h2>
+
+<h4>Households Connected</h4>
+
+<p>
+Helping families quickly find
+trusted professionals.
+</p>
+
+</div>
+
+<div>
+
+<h2>200+</h2>
+
+<h4>Active Service Providers</h4>
+
+<p>
+Growing network of skilled individuals.
+</p>
+
+</div>
+
+<div>
+
+<h2>100+</h2>
+
+<h4>Tasks Completed</h4>
+
+<p>
+Providing reliable solutions.
+</p>
+
+</div>
+
+</section>
+
+<!-- ================= PROMO ================= -->
+
+<section class="promo">
+
+<div class="promo-content">
+
+<h2>
+Curated Care
+For Everyone
+</h2>
+
+<p>
+Stay updated with trusted home services
+and latest opportunities from Ghar Sathi.
+</p>
+
+<button type="button" class="search-job-btn">Search Job</button>
+
+</div>
+
+</section>
+
+<!-- ================= TESTIMONIAL ================= -->
+
+<section class="testimonial">
+
+<h2>Feedbacks from Our Customers</h2>
+
+<p>
+Hear from our happy customers and
+see how Ghar Sathi is making
+household services easier.
+</p>
+
+<div class="testimonial-grid">
+
+<div class="review">
+
+★★★★★
+
+<h3>Amazing Services</h3>
+
+<p>
+Affordable services and
+good variety of options.
+</p>
+
+<h4>Ram Shrestha</h4>
+
+</div>
+
+<div class="review">
+
+★★★★★
+
+<h3>Everything Simple</h3>
+
+<p>
+The helper arrived on time
+and did the work perfectly.
+</p>
+
+<h4>Sita Adhikari</h4>
+
+</div>
+
+<div class="review">
+
+★★★★★
+
+<h3>Awesome, Thank You!</h3>
+
+<p>
+Booking process was smooth
+and great experience overall.
+</p>
+
+<h4>Nirmala Pradhan</h4>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+<div class="footer-container">
+
+<div>
+
+<h3>Job</h3>
+
+<p>
+
+Ghar Sathi connects skilled people
+with trusted opportunities.
+
+</p>
+
+</div>
+
+<div>
+
+<h3>About Us</h3>
+
+<ul>
+
+<li>Our Team</li>
+
+<li>For Service Providers</li>
+
+<li>For Employers</li>
+
+</ul>
+
+</div>
+
+<div>
+
+<h3>Job Categories</h3>
+
+<ul>
+
+<li>House Work</li>
+
+<li>Culinary Aid</li>
+
+<li>Home Tuition</li>
+
+<li>Pet Care</li>
+
+<li>Self Care</li>
+
+</ul>
+
+</div>
+
+<div>
+
+<h3>Be Up To Date!</h3>
+
+<input
+type="email"
+placeholder="Email Address">
+
+<button>Subscribe Now</button>
+
+</div>
+</div>
+<div class="footer-bottom">
+
+<div class="copyright">
+© Copyright Ghar Sathi  2026.
+</div>
+
+<div class="footer-links">
+<a href="#">Privacy Policy</a>
+<a href="#">Terms &amp; Conditions</a>
+</div>
+
+</div>
+</footer>
+</body>
+</html>
