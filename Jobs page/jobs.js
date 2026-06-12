@@ -1,31 +1,112 @@
-const menuToggle=document.querySelector(".menu-toggle");
-const navLinks=document.querySelector(".nav-links");
+const menuToggle = document.querySelector(".menu-toggle");
+const navLinks = document.querySelector(".nav-links");
+const form = document.querySelector("#jobFilterForm");
+const jobSearch = document.querySelector("#jobSearch");
+const locationFilter = document.querySelector("#locationFilter");
+const salaryRange = document.querySelector("#salaryRange");
+const salaryValue = document.querySelector("#salaryValue");
+const resultCount = document.querySelector("#resultCount");
+const sortLatest = document.querySelector("#sortLatest");
+const jobList = document.querySelector("#jobList");
+const jobCards = Array.from(document.querySelectorAll(".job-card"));
+const tagButtons = Array.from(document.querySelectorAll(".tags button"));
+const pageLinks = Array.from(document.querySelectorAll("[data-page-link]"));
+let currentPage = "1";
 
-menuToggle.addEventListener("click",()=>{
+function formatCurrency(value) {
+return Number(value).toLocaleString("en-IN");
+}
 
-navLinks.classList.toggle("active");
+function checkedValues(name) {
+return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(input => input.value);
+}
 
+function updateResultCount(visible) {
+const totalResults = resultCount.dataset.totalResults || "10";
+resultCount.textContent = `Showing ${visible}-${visible} of ${totalResults} results`;
+}
+
+function updatePagination() {
+pageLinks.forEach(link => {
+link.classList.toggle("active", link.dataset.pageLink === currentPage);
+});
+}
+
+function applyFilters() {
+const search = jobSearch.value.trim().toLowerCase();
+const location = locationFilter.value;
+const categories = checkedValues("category");
+const types = checkedValues("type");
+const maxSalary = Number(salaryRange.value);
+let visible = 0;
+
+jobCards.forEach(card => {
+const matchesPage = card.dataset.page === currentPage;
+const matchesSearch = !search || card.dataset.title.toLowerCase().includes(search);
+const matchesLocation = !location || card.dataset.location === location;
+const matchesCategory = categories.length === 0 || categories.includes(card.dataset.category);
+const matchesType = types.length === 0 || types.includes(card.dataset.type);
+const matchesSalary = Number(card.dataset.salary) <= maxSalary;
+const show = matchesPage && matchesSearch && matchesLocation && matchesCategory && matchesType && matchesSalary;
+
+card.hidden = !show;
+if (show) visible += 1;
 });
 
+updateResultCount(visible);
+updatePagination();
+}
 
-document.querySelectorAll(".nav-links a").forEach(link=>{
+menuToggle?.addEventListener("click", () => {
+const isOpen = navLinks.classList.toggle("active");
+menuToggle.setAttribute("aria-expanded", String(isOpen));
+});
 
-link.addEventListener("click",()=>{
-
+document.querySelectorAll(".nav-links a").forEach(link => {
+link.addEventListener("click", () => {
 navLinks.classList.remove("active");
-
+menuToggle?.setAttribute("aria-expanded", "false");
+});
 });
 
+form?.addEventListener("submit", event => {
+event.preventDefault();
+applyFilters();
 });
 
+form?.addEventListener("input", applyFilters);
+locationFilter?.addEventListener("change", applyFilters);
 
-
-document.querySelectorAll(".job-info button").forEach(button=>{
-
-button.addEventListener("click",()=>{
-
-alert("Opening job details...");
-
+salaryRange?.addEventListener("input", () => {
+salaryValue.textContent = formatCurrency(salaryRange.value);
 });
 
+tagButtons.forEach(button => {
+button.addEventListener("click", () => {
+const value = button.dataset.tag;
+const checkbox = document.querySelector(`input[name="category"][value="${value}"]`);
+
+button.classList.toggle("active");
+if (checkbox) {
+checkbox.checked = button.classList.contains("active");
+}
+applyFilters();
 });
+});
+
+sortLatest?.addEventListener("click", () => {
+const sortedCards = [...jobCards].sort((a, b) => Number(a.dataset.minutes) - Number(b.dataset.minutes));
+sortedCards.forEach(card => jobList.appendChild(card));
+});
+
+pageLinks.forEach(link => {
+link.addEventListener("click", event => {
+event.preventDefault();
+currentPage = link.dataset.pageLink === "next"
+? currentPage === "1" ? "2" : "1"
+: link.dataset.pageLink;
+applyFilters();
+});
+});
+
+applyFilters();

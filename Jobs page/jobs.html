@@ -7,294 +7,270 @@
 <link rel="stylesheet" href="jobs.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
 </head>
-
 <body>
 
-<header>
+<header class="site-header">
 <nav class="navbar">
-
-<div class="logo">
-<img src="logo.png" alt="Logo">
+<a class="logo" href="../Homepage/homepage.html" aria-label="Ghar Sathi home">
+<img src="../logo.png" alt="Ghar Sathi logo">
 <span>Ghar Sathi</span>
-</div>
+</a>
 
-<ul class="nav-links">
-<li><a href="#">Home</a></li>
-<li><a href="#">Jobs</a></li>
-<li><a href="#">About Us</a></li>
-<li><a href="#">Contact Us</a></li>
+<ul class="nav-links" id="navLinks">
+<li><a href="../Homepage/homepage.html">Home</a></li>
+<li><a class="active" href="jobs.html">Jobs</a></li>
+<li><a href="../About Us Page/aboutus.html">About Us</a></li>
+<li><a href="../Contact Us Page/contactus.html">Contact Us</a></li>
 </ul>
 
 <div class="nav-buttons">
-
-<a href="login.html">
-<button class="login-btn">
-Login
-</button>
-</a>
-
-<button class="signup-btn">
-Sign Up
-</button>
-
+<a class="login-btn" href="../Login Page/login.html">Login</a>
+<a class="signup-btn" href="../Signup page/signup.html">Sign up</a>
 </div>
 
-<div class="menu-toggle">
+<button class="menu-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
 <i class="fa-solid fa-bars"></i>
-</div>
-
+</button>
 </nav>
 
-<div class="hero">
+<section class="hero">
 <h1>Jobs</h1>
-</div>
-
+</section>
 </header>
 
-
-<section class="jobs-section">
-
-<div class="filter-box">
-
+<main class="jobs-section">
+<aside class="filter-box" aria-label="Job filters">
+<form id="jobFilterForm">
+<div class="filter-group">
 <h3>Search by Job Title</h3>
+<input id="jobSearch" type="search" placeholder="Job title or company">
+</div>
 
-<input type="text" placeholder="Job title or company">
-
-
+<div class="filter-group">
 <h3>Location</h3>
-
-<select>
-<option>Choose Place</option>
+<select id="locationFilter">
+<option value="">Choose Place</option>
 <option>Kathmandu</option>
-<option>Texas USA</option>
+<option>Texas, USA</option>
+<option>Bouddha-06, Kathmandu</option>
 </select>
+</div>
 
-
+<div class="filter-group">
 <h3>Category</h3>
+<label><input type="checkbox" name="category" value="House Work"> House Work</label>
+<label><input type="checkbox" name="category" value="Repair"> House Repairs</label>
+<label><input type="checkbox" name="category" value="Personal"> Self Care</label>
+<label><input type="checkbox" name="category" value="Education"> Home Tuition</label>
+<label><input type="checkbox" name="category" value="Culinary Service"> Culinary Aid</label>
+<button class="show-btn" type="button">Show more</button>
+</div>
 
-<label><input type="checkbox"> House Work</label>
-<label><input type="checkbox"> House Repairs</label>
-<label><input type="checkbox"> Self Care</label>
-<label><input type="checkbox"> Home Tuition</label>
-<label><input type="checkbox"> Culinary Aid</label>
-
-
-<button class="show-btn">
-Show More
-</button>
-
-
+<div class="filter-group">
 <h3>Job Type</h3>
+<label><input type="checkbox" name="type" value="Full/Part Time"> Full Time</label>
+<label><input type="checkbox" name="type" value="Part time"> Part Time</label>
+<label><input type="checkbox" name="type" value="Freelance"> Freelance</label>
+<label><input type="checkbox" name="type" value="Seasonal"> Seasonal</label>
+<label><input type="checkbox" name="type" value="Fixed-Price"> Fixed-Price</label>
+</div>
 
-<label><input type="checkbox"> Full Time</label>
-<label><input type="checkbox"> Part Time</label>
-<label><input type="checkbox"> Freelance</label>
-<label><input type="checkbox"> Seasonal</label>
-<label><input type="checkbox"> Fixed-Price</label>
-
-
+<div class="filter-group">
 <h3>Experience Level</h3>
-
 <label><input type="checkbox"> No-experience</label>
 <label><input type="checkbox"> Fresher</label>
 <label><input type="checkbox"> Intermediate</label>
 <label><input type="checkbox"> Expert</label>
+</div>
 
-
+<div class="filter-group">
 <h3>Date Posted</h3>
-
 <label><input type="checkbox"> All</label>
 <label><input type="checkbox"> Last Hour</label>
 <label><input type="checkbox"> Last 24 Hours</label>
 <label><input type="checkbox"> Last 7 Days</label>
 <label><input type="checkbox"> Last 30 Days</label>
+</div>
 
-
+<div class="filter-group">
 <h3>Salary</h3>
+<input id="salaryRange" type="range" min="0" max="40000" value="40000">
+<p class="salary-text">Salary: Rs 0 - Rs <span id="salaryValue">40,000</span></p>
+<button class="apply-btn" type="submit">Apply</button>
+</div>
+</form>
 
-<input type="range">
-
-<button class="apply-btn">
-Apply
-</button>
-
-
+<div class="filter-group tags-group">
 <h3>Tags</h3>
-
 <div class="tags">
-<span>Repair</span>
-<span>Personal</span>
-<span>Culinary Service</span>
-<span>Self Care</span>
-<span>Education</span>
-<span>House Work</span>
+<button type="button" data-tag="Repair">Repair</button>
+<button type="button" data-tag="Personal">Personal</button>
+<button type="button" data-tag="Culinary Service">Cullinary Service</button>
+<button type="button" data-tag="Self Care">Self Care</button>
+<button type="button" data-tag="Education">Education</button>
+<button type="button" data-tag="House Work">House Work</button>
+</div>
 </div>
 
+<div class="priority-panel" aria-label="Ghar Sathi promise">
+<p>Your<br>Satisfaction,<br>Our Priority.</p>
 </div>
+</aside>
 
-
-
-<div class="job-container">
-
-
+<section class="job-container" aria-label="Available jobs">
 <div class="job-top">
-
-<p>
-Showing 6-6 of 10 results
-</p>
-
-<button>
-Sort by latest
-</button>
-
+<p id="resultCount" data-total-results="10">Showing 6-6 of 10 results</p>
+<button id="sortLatest" type="button">Sort by latest</button>
 </div>
 
-
-
-<div class="job-card">
-
-<small>10 min ago</small>
-
+<div class="job-list" id="jobList">
+<article class="job-card" data-page="1" data-title="House Cleaner" data-category="House Work" data-type="Full/Part Time" data-location="Kathmandu" data-salary="20000" data-minutes="10">
 <h2>House Cleaner</h2>
-
 <p>Daily household task assistance</p>
-
 <div class="job-info">
-
 <span>House Work</span>
 <span>Full/Part Time</span>
-<span>Rs 1000-Rs20000</span>
+<span>Rs 1000-Rs20,000</span>
 <span>Kathmandu</span>
-
-<button>
-Details
-</button>
-
+<a href="../Details Page/details.html">details</a>
 </div>
+</article>
 
-</div>
-
-
-
-<div class="job-card">
-
-<small>12 min ago</small>
-
+<article class="job-card" data-page="1" data-title="Catering Service" data-category="Culinary Service" data-type="Seasonal" data-location="Bouddha-06, Kathmandu" data-salary="1250" data-minutes="12">
 <h2>Catering Service</h2>
-
 <p>Professional cooking assistance</p>
-
 <div class="job-info">
-
 <span>Culinary Service</span>
 <span>Seasonal</span>
-<span>Rs 1250 Per plate</span>
-<span>Kathmandu</span>
-
-<button>
-Details
-</button>
-
+<span>Per plate- Rs 1250</span>
+<span>Bouddha-06, Kathmandu</span>
+<a href="../Details Page/details.html">details</a>
 </div>
+</article>
 
-</div>
-
-
-
-<div class="job-card">
-
-<small>15 min ago</small>
-
-<h2>Self Care</h2>
-
+<article class="job-card" data-page="1" data-title="Self-Care" data-category="Personal" data-type="Part time" data-location="Texas, USA" data-salary="20000" data-minutes="15">
+<h2>Self-Care</h2>
 <p>Wellness and beauty support</p>
-
 <div class="job-info">
-
 <span>Personal</span>
-<span>Part Time</span>
-<span>Rs1000-Rs20000</span>
-<span>Texas USA</span>
-
-<button>
-Details
-</button>
-
-</div>
-
-</div>
-
-
-
-<div class="job-card">
-
-<small>24 min ago</small>
-
-<h2>Home Tuition</h2>
-
-<p>Personalized learning at home</p>
-
-<div class="job-info">
-
-<span>Education</span>
-<span>Part Time</span>
-<span>Rs5000-Rs10000</span>
+<span>Part time</span>
+<span>Rs 5,000-Rs20,000</span>
 <span>Kathmandu</span>
+<a href="../Details Page/details.html">details</a>
+</div>
+</article>
 
-<button>
-Details
-</button>
+<article class="job-card" data-page="1" data-title="Home Tuition" data-category="Education" data-type="Part time" data-location="Kathmandu" data-salary="10000" data-minutes="24">
+<h2>Home Tuition</h2>
+<p>Personalized learning at home</p>
+<div class="job-info">
+<span>Personal</span>
+<span>Part time</span>
+<span>Rs 5000-Rs 10,000</span>
+<span>Kathmandu</span>
+<a href="../Details Page/details.html">details</a>
+</div>
+</article>
 
+<article class="job-card" data-page="1" data-title="Tech Repair" data-category="Repair" data-type="Freelance" data-location="Kathmandu" data-salary="15000" data-minutes="26">
+<h2>Tech Repair</h2>
+<p>Fast solutions for devices</p>
+<div class="job-info">
+<span>Repair</span>
+<span>Freelance</span>
+<span>Rs 500- Rs 15,000</span>
+<span>Kathmandu</span>
+<a href="../Details Page/details.html">details</a>
+</div>
+</article>
+
+<article class="job-card" data-page="1" data-title="Pet Care" data-category="Pet Care" data-type="Freelance" data-location="Kathmandu" data-salary="30000" data-minutes="30">
+<h2>Pet Care</h2>
+<p>Loving care for pets</p>
+<div class="job-info">
+<span>Pet Care</span>
+<span>Freelance</span>
+<span>Rs 5000-Rs 30,000</span>
+<span>Kathmandu</span>
+<a href="../Details Page/details.html">details</a>
+</div>
+</article>
+
+<article class="job-card" data-page="2" data-title="Electrician" data-category="Repair" data-type="Freelance" data-location="Kathmandu" data-salary="18000" data-minutes="35" hidden>
+<h2>Electrician</h2>
+<p>Safe wiring, lighting, and electrical repair support</p>
+<div class="job-info">
+<span>Repair</span>
+<span>Freelance</span>
+<span>Rs 800-Rs 18,000</span>
+<span>Kathmandu</span>
+<a href="../Details Page/details.html">details</a>
+</div>
+</article>
+
+<article class="job-card" data-page="2" data-title="Appliance Mechanic" data-category="Repair" data-type="Part time" data-location="Kathmandu" data-salary="22000" data-minutes="38" hidden>
+<h2>Appliance Mechanic</h2>
+<p>Home appliance diagnosis and maintenance service</p>
+<div class="job-info">
+<span>Repair</span>
+<span>Part time</span>
+<span>Rs 1000-Rs 22,000</span>
+<span>Kathmandu</span>
+<a href="../Details Page/details.html">details</a>
+</div>
+</article>
+
+<article class="job-card" data-page="2" data-title="Baker" data-category="Culinary Service" data-type="Seasonal" data-location="Bouddha-06, Kathmandu" data-salary="16000" data-minutes="42" hidden>
+<h2>Baker</h2>
+<p>Fresh baked goods for homes and special orders</p>
+<div class="job-info">
+<span>Culinary Service</span>
+<span>Seasonal</span>
+<span>Rs 1500-Rs 16,000</span>
+<span>Bouddha-06, Kathmandu</span>
+<a href="../Details Page/details.html">details</a>
+</div>
+</article>
+
+<article class="job-card" data-page="2" data-title="Party Planner" data-category="Personal" data-type="Fixed-Price" data-location="Kathmandu" data-salary="40000" data-minutes="45" hidden>
+<h2>Party Planner</h2>
+<p>Event setup, decoration, and celebration planning</p>
+<div class="job-info">
+<span>Personal</span>
+<span>Fixed-Price</span>
+<span>Rs 10,000-Rs 40,000</span>
+<span>Kathmandu</span>
+<a href="../Details Page/details.html">details</a>
+</div>
+</article>
 </div>
 
-</div>
-
-
-</div>
-
+<nav class="pagination" aria-label="Job pages">
+<a class="active" href="#" data-page-link="1">1</a>
+<a href="#" data-page-link="2">2</a>
+<a href="#" data-page-link="next">Next</a>
+</nav>
 </section>
-
-
+</main>
 
 <footer>
-
 <div class="footer-container">
-
 <div class="footer-column">
-
-<h3>
-<i class="fa-solid fa-briefcase"></i>
-Job
-</h3>
-
-<p>
-Ghar Sathi connects skilled people with trusted opportunities, making everyday services easier, faster and more reliable for every home.
-</p>
-
+<h3><i class="fa-solid fa-briefcase"></i> Job</h3>
+<p>Ghar Sathi connects skilled people with trusted opportunities, making everyday services easier, faster, and more reliable for every home.</p>
 </div>
 
-
 <div class="footer-column">
-
-<h3>
-About Us
-</h3>
-
+<h3>About Us</h3>
 <ul>
 <li>Our Team</li>
 <li>For Service Providers</li>
 <li>For Employers</li>
 </ul>
-
 </div>
 
-
 <div class="footer-column">
-
-<h3>
-Job Categories
-</h3>
-
+<h3>Job Categories</h3>
 <ul>
 <li>House Work</li>
 <li>Culinary Aid</li>
@@ -302,52 +278,27 @@ Job Categories
 <li>Pet Care</li>
 <li>Self Care</li>
 </ul>
-
 </div>
-
 
 <div class="footer-column">
-
-<h3>
-Be Up to Date!
-</h3>
-
-<p>
-Stay updated with trusted home services and latest job opportunities from Ghar Sathi.
-</p>
-
-<input type="email" placeholder="Email Address">
-
-<button>
-Subscribe now
-</button>
-
+<h3>Be Up to Date!</h3>
+<p>Stay updated with trusted home services and latest job opportunities from Ghar Sathi.</p>
+<form class="subscribe-form">
+<input type="email" placeholder="Email Address" aria-label="Email Address">
+<button type="submit">Subscribe now</button>
+</form>
 </div>
-
-
 </div>
-
 
 <div class="footer-bottom">
-
-<p>
-© Copyright Ghar Sathi 2026.
-</p>
-
+<p>&copy; Copyright Ghar Sathi 2026.</p>
 <div>
-
 <a href="#">Privacy Policy</a>
-
-<a href="#">Terms & Conditions</a>
-
+<a href="#">Terms &amp; Conditions</a>
 </div>
-
 </div>
-
 </footer>
 
-
 <script src="jobs.js"></script>
-
 </body>
 </html>
