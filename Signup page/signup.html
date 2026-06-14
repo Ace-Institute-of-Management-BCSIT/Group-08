@@ -27,9 +27,9 @@
 
             <ul class="nav-links">
 
-                <li><a href="../Homepage/homepage.html">Home</a></li>
+                <li><a href="../Homepage/homepage.php">Home</a></li>
 
-                <li><a href="../Jobs page/jobs.html">Jobs</a></li>
+                <li><a href="../Jobs page/jobs.php">Jobs</a></li>
 
                 <li><a href="../About Us Page/aboutus.html">About Us</a></li>
 
@@ -150,10 +150,36 @@
             <form action="signup.php" method="POST" id="signupForm">
 
 
+                <label>Full Name:</label>
+
+                <input type="text" name="full_name" id="fullName" placeholder="Your full name" required>
+
+
+
                 <label>Username:</label>
 
-                <input type="text" name="username" id="username" placeholder="Your E-mail address Or Phone Number:"
-                    required>
+                <input type="text" name="username" id="username" placeholder="Choose a username" required>
+
+
+
+                <label>Email:</label>
+
+                <input type="email" name="email" id="email" placeholder="Your email address" required>
+
+
+
+                <label>Phone Number:</label>
+
+                <input type="tel" name="phone" id="phone" placeholder="Your phone number">
+
+
+
+                <label>Role:</label>
+
+                <select name="role" id="role" required>
+                    <option value="Worker">Worker</option>
+                    <option value="Employer">Employer</option>
+                </select>
 
 
 
@@ -257,14 +283,17 @@
                 </p>
 
 
-                <input type="email" placeholder="Email Address">
+                <form action="../subscribe.php" method="POST">
+                <input type="email" name="email" placeholder="Email Address" required>
+                <input type="hidden" name="redirect" value="Signup page/signup.html">
 
 
-                <button>
+                <button type="submit">
 
                     Subscribe now
 
                 </button>
+                </form>
 
             </div>
 

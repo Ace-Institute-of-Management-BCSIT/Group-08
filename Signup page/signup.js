@@ -19,13 +19,21 @@ const signupForm = document.getElementById("signupForm");
 signupForm.addEventListener("submit", function (event) {
 
     const username = document.getElementById("username").value.trim();
+    const fullName = document.getElementById("fullName").value.trim();
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
     const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
     // Check if all fields are filled
-    if (username === "" || password === "" || confirmPassword === "") {
+    if (fullName === "" || username === "" || email === "" || password === "" || confirmPassword === "") {
         event.preventDefault();
         alert("Please fill in all fields.");
+        return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        event.preventDefault();
+        alert("Please enter a valid email address.");
         return;
     }
 

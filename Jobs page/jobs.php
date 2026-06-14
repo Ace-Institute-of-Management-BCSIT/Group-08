@@ -13,26 +13,33 @@ $fallbackJobs = [
 ];
 
 $jobs = $fallbackJobs;
-$dbFile = __DIR__ . '/db.php';
+$dbFile = __DIR__ . '/../db_connect/db.php';
 
 if (file_exists($dbFile)) {
     include $dbFile;
 
     if (isset($conn) && $conn instanceof mysqli) {
-        $result = mysqli_query($conn, 'SELECT * FROM jobs');
+        $result = mysqli_query(
+            $conn,
+            'SELECT jobs.job_id, jobs.title, jobs.description, jobs.job_type, jobs.salary, jobs.location,
+                    categories.category_name
+             FROM jobs
+             INNER JOIN categories ON categories.category_id = jobs.category_id
+             ORDER BY jobs.job_id DESC'
+        );
         if ($result && mysqli_num_rows($result) > 0) {
             $jobs = [];
             $minutes = 10;
             while ($row = mysqli_fetch_assoc($result)) {
                 $jobs[] = [
-                    'time' => $row['date'] ?? 'Recently',
+                    'time' => 'Recently',
                     'title' => $row['title'] ?? '',
                     'description' => $row['description'] ?? '',
-                    'category' => $row['category'] ?? '',
-                    'type' => $row['type'] ?? '',
-                    'salary' => $row['salary'] ?? '',
+                    'category' => $row['category_name'] ?? '',
+                    'type' => $row['job_type'] ?? '',
+                    'salary' => 'Rs ' . number_format((float) ($row['salary'] ?? 0), 0),
                     'location' => $row['location'] ?? '',
-                    'salary_max' => max_salary_value($row['salary'] ?? '40000'),
+                    'salary_max' => (float) ($row['salary'] ?? 0),
                     'minutes' => $minutes,
                 ];
                 $minutes += 2;
@@ -68,12 +75,12 @@ function max_salary_value($value) {
 
 <header class="site-header">
 <nav class="navbar">
-<a class="logo" href="../Homepage/homepage.html" aria-label="Ghar Sathi home">
+<a class="logo" href="../Homepage/homepage.php" aria-label="Ghar Sathi home">
 <img src="../logo.png" alt="Ghar Sathi logo">
 <span>Ghar Sathi</span>
 </a>
 <ul class="nav-links" id="navLinks">
-<li><a href="../Homepage/homepage.html">Home</a></li>
+<li><a href="../Homepage/homepage.php">Home</a></li>
 <li><a class="active" href="jobs.php">Jobs</a></li>
 <li><a href="../About Us Page/aboutus.html">About Us</a></li>
 <li><a href="../Contact Us Page/contactus.html">Contact Us</a></li>
@@ -196,7 +203,7 @@ function max_salary_value($value) {
 <div class="footer-column">
 <h3>Be Up to Date!</h3>
 <p>Stay updated with trusted home services and latest job opportunities from Ghar Sathi.</p>
-<form class="subscribe-form"><input type="email" placeholder="Email Address" aria-label="Email Address"><button type="submit">Subscribe now</button></form>
+<form class="subscribe-form" action="../subscribe.php" method="POST"><input type="email" name="email" placeholder="Email Address" aria-label="Email Address" required><input type="hidden" name="redirect" value="Jobs page/jobs.php"><button type="submit">Subscribe now</button></form>
 </div>
 </div>
 <div class="footer-bottom">

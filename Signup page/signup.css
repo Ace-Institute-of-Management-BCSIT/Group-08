@@ -168,15 +168,18 @@ header {
     font-weight: 500;
 }
 
-.signup-box input {
+.signup-box input,
+.signup-box select {
     padding: 12px;
     margin-bottom: 18px;
     border: 1px solid #ddd;
     border-radius: 4px;
     outline: none;
+    background: white;
 }
 
-.signup-box input:focus {
+.signup-box input:focus,
+.signup-box select:focus {
     border-color: #2ea44f;
 }
 

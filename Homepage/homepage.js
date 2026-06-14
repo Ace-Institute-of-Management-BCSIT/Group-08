@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    const jobs = [
+    const defaultJobs = [
         { title: "House Helper", company: "Ghar Sathi Care", location: "Kathmandu", category: "House Work" },
         { title: "Garden Assistant", company: "Green Home Services", location: "Lalitpur", category: "House Work" },
         { title: "Private Chef", company: "Kitchen Pro Nepal", location: "Kathmandu", category: "Culinary Aid" },
@@ -18,6 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
         { title: "Dog Walker", company: "Pet Pals", location: "Kathmandu", category: "Pet Care" },
         { title: "Pet Sitter", company: "Happy Tails", location: "Bhaktapur", category: "Pet Care" }
     ];
+    const jobs = Array.isArray(window.homepageJobs) && window.homepageJobs.length
+        ? window.homepageJobs
+        : defaultJobs;
 
     const searchForm = document.getElementById("heroSearchForm");
     const jobInput = document.getElementById("jobSearchInput");
