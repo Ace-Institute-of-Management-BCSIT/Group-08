@@ -1,8 +1,6 @@
 <?php
-
-include "db.php";
-
-
+require_once __DIR__ . '/../includes/app.php';
+$uploadStatus = $_GET['resume'] ?? '';
 ?>
 
 <!DOCTYPE html>
@@ -16,13 +14,20 @@ include "db.php";
 
 <title>Ghar Sathi About Us</title>
 
-<link rel="stylesheet" href="about.css">
+<link rel="stylesheet" href="aboutus.css">
+<link rel="stylesheet" href="../Jobs page/jobs.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
 
 </head>
 
 
 <body>
 
+<header class="site-header">
+<?php render_navbar($conn, '..', 'about'); ?>
+<button class="menu-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks"><i class="fa-solid fa-bars"></i></button>
+<section class="hero"><h1>About Us</h1></section>
+</header>
 
 <section class="about-section">
 
@@ -81,11 +86,19 @@ Join our platform and start your journey toward better opportunities. Create you
 
 </p>
 
+<p>
+Choose a job from the jobs page and use Apply Job to submit your resume for admin verification.
+</p>
+
+<p>
+<a href="../Jobs page/jobs.php" style="display:inline-block;background:#28a745;color:#fff;padding:12px 18px;border-radius:6px;text-decoration:none;font-weight:600;">Find Jobs to Apply</a>
+</p>
+
 
 <div class="cards">
 
 
-<div class="card">
+<a class="card" href="../Signup page/signup.html">
 
 <h3>
 Create Account
@@ -95,11 +108,11 @@ Create Account
 Sign up quickly and build your professional profile.
 </p>
 
-</div>
+</a>
 
 
 
-<div class="card">
+<a class="card js-open-resume" href="../upload_resume.php">
 
 <h3>
 Upload Resume
@@ -109,11 +122,11 @@ Upload Resume
 Showcase your skills and experience to employers.
 </p>
 
-</div>
+</a>
 
 
 
-<div class="card">
+<a class="card" href="../Jobs page/jobs.php">
 
 <h3>
 Find Jobs
@@ -123,21 +136,21 @@ Find Jobs
 Browse relevant job listings.
 </p>
 
-</div>
+</a>
 
 
 
-<div class="card">
+<a class="card" href="../Contact Us Page/contactus.php">
 
 <h3>
-Apply Job
+Contact Us
 </h3>
 
 <p>
-Apply instantly and track applications easily.
+Reach out for service, worker, or platform support.
 </p>
 
-</div>
+</a>
 
 
 </div>
@@ -148,9 +161,26 @@ Apply instantly and track applications easily.
 
 </section>
 
+<div class="resume-modal <?php echo $uploadStatus ? 'is-open' : ''; ?>" id="resumeModal" aria-hidden="<?php echo $uploadStatus ? 'false' : 'true'; ?>">
+<div class="resume-modal-panel" role="dialog" aria-modal="true" aria-labelledby="resumeTitle">
+<button class="modal-close" type="button" aria-label="Close upload resume modal">&times;</button>
+<h2 id="resumeTitle">Upload Resume</h2>
+<?php if ($uploadStatus === 'success'): ?><p class="success">Resume uploaded successfully.</p><?php endif; ?>
+<?php if ($uploadStatus === 'invalid'): ?><p class="error">Invalid file type.</p><?php endif; ?>
+<form method="POST" action="../upload_resume.php" enctype="multipart/form-data">
+<input type="hidden" name="redirect" value="About Us Page/aboutus.php">
+<label>Resume File
+<input type="file" name="resume" accept=".pdf,.doc,.docx" required>
+</label>
+<button type="submit">Upload Resume</button>
+</form>
+</div>
+</div>
 
+<?php render_footer('..'); ?>
 
-<script src="about.js"></script>
+<script src="../Jobs page/jobs.js"></script>
+<script src="aboutus.js"></script>
 
 
 </body>

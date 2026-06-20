@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../includes/app.php';
+
 $fallbackJobs = [
     ['time' => '10 min ago', 'title' => 'House Cleaner', 'description' => 'Daily household task assistance', 'category' => 'House Work', 'type' => 'Full/Part Time', 'salary' => 'Rs 1000-Rs20,000', 'location' => 'Kathmandu', 'salary_max' => 20000, 'minutes' => 10],
     ['time' => '12 min ago', 'title' => 'Catering Service', 'description' => 'Professional cooking assistance', 'category' => 'Culinary Service', 'type' => 'Seasonal', 'salary' => 'Per plate- Rs 1250 (Negotiable)', 'location' => 'Bouddha-06, Kathmandu', 'salary_max' => 1250, 'minutes' => 12],
@@ -13,44 +15,42 @@ $fallbackJobs = [
 ];
 
 $jobs = $fallbackJobs;
-$dbFile = __DIR__ . '/../db_connect/db.php';
-
-if (file_exists($dbFile)) {
-    include $dbFile;
-
-    if (isset($conn) && $conn instanceof mysqli) {
-        $result = mysqli_query(
-            $conn,
-            'SELECT jobs.job_id, jobs.title, jobs.description, jobs.job_type, jobs.salary, jobs.location,
-                    categories.category_name
-             FROM jobs
-             INNER JOIN categories ON categories.category_id = jobs.category_id
-             ORDER BY jobs.job_id DESC'
-        );
-        if ($result && mysqli_num_rows($result) > 0) {
-            $jobs = [];
-            $minutes = 10;
-            while ($row = mysqli_fetch_assoc($result)) {
-                $jobs[] = [
-                    'time' => 'Recently',
-                    'title' => $row['title'] ?? '',
-                    'description' => $row['description'] ?? '',
-                    'category' => $row['category_name'] ?? '',
-                    'type' => $row['job_type'] ?? '',
-                    'salary' => 'Rs ' . number_format((float) ($row['salary'] ?? 0), 0),
-                    'location' => $row['location'] ?? '',
-                    'salary_max' => (float) ($row['salary'] ?? 0),
-                    'minutes' => $minutes,
-                ];
-                $minutes += 2;
-            }
-        }
+$result = mysqli_query(
+    $conn,
+    'SELECT jobs.job_id, jobs.category_id, jobs.title, jobs.description, jobs.job_type, jobs.salary, jobs.location,
+            categories.category_name, users.full_name AS employer_name
+     FROM jobs
+     INNER JOIN categories ON categories.category_id = jobs.category_id
+     INNER JOIN users ON users.user_id = jobs.employer_id
+     ORDER BY jobs.job_id DESC'
+);
+if ($result && mysqli_num_rows($result) > 0) {
+    $jobs = [];
+    $minutes = 10;
+    while ($row = mysqli_fetch_assoc($result)) {
+        $jobs[] = [
+            'job_id' => (int) $row['job_id'],
+            'category_id' => (int) $row['category_id'],
+            'time' => 'Recently',
+            'title' => $row['title'] ?? '',
+            'description' => $row['description'] ?? '',
+            'category' => $row['category_name'] ?? '',
+            'type' => $row['job_type'] ?? '',
+            'salary' => 'Rs ' . number_format((float) ($row['salary'] ?? 0), 0),
+            'location' => $row['location'] ?? '',
+            'employer' => $row['employer_name'] ?? '',
+            'salary_max' => (float) ($row['salary'] ?? 0),
+            'minutes' => $minutes,
+        ];
+        $minutes += 2;
     }
 }
 
-function e($value) {
-    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
-}
+$initialSearch = trim($_GET['search'] ?? '');
+$initialLocation = trim($_GET['location'] ?? '');
+$initialCategory = trim($_GET['category'] ?? '');
+$locations = array_values(array_unique(array_filter(array_map(fn($job) => $job['location'] ?? '', $jobs))));
+$categoriesForFilter = array_values(array_unique(array_filter(array_map(fn($job) => $job['category'] ?? '', $jobs))));
 
 function max_salary_value($value) {
     preg_match_all('/\d[\d,]*/', (string) $value, $matches);
@@ -60,6 +60,10 @@ function max_salary_value($value) {
     );
 
     return $numbers ? max($numbers) : 40000;
+}
+
+function job_image($category) {
+    return service_image($category);
 }
 ?>
 <!DOCTYPE html>
@@ -74,48 +78,31 @@ function max_salary_value($value) {
 <body>
 
 <header class="site-header">
-<nav class="navbar">
-<a class="logo" href="../Homepage/homepage.php" aria-label="Ghar Sathi home">
-<img src="../logo.png" alt="Ghar Sathi logo">
-<span>Ghar Sathi</span>
-</a>
-<ul class="nav-links" id="navLinks">
-<li><a href="../Homepage/homepage.php">Home</a></li>
-<li><a class="active" href="jobs.php">Jobs</a></li>
-<li><a href="../About Us Page/aboutus.html">About Us</a></li>
-<li><a href="../Contact Us Page/contactus.html">Contact Us</a></li>
-</ul>
-<div class="nav-buttons">
-<a class="login-btn" href="../Login Page/login.html">Login</a>
-<a class="signup-btn" href="../Signup page/signup.html">Sign up</a>
-</div>
+<?php render_navbar($conn, '..', 'jobs'); ?>
 <button class="menu-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
 <i class="fa-solid fa-bars"></i>
 </button>
-</nav>
 <section class="hero"><h1>Jobs</h1></section>
 </header>
 
 <main class="jobs-section">
 <aside class="filter-box" aria-label="Job filters">
 <form id="jobFilterForm">
-<div class="filter-group"><h3>Search by Job Title</h3><input id="jobSearch" type="search" placeholder="Job title or company"></div>
+<div class="filter-group"><h3>Search by Job Title</h3><input id="jobSearch" type="search" placeholder="Job title or company" value="<?php echo e($initialSearch); ?>"></div>
 <div class="filter-group">
 <h3>Location</h3>
 <select id="locationFilter">
 <option value="">Choose Place</option>
-<option>Kathmandu</option>
-<option>Texas, USA</option>
-<option>Bouddha-06, Kathmandu</option>
+<?php foreach ($locations as $location): ?>
+<option <?php echo $initialLocation === $location ? 'selected' : ''; ?>><?php echo e($location); ?></option>
+<?php endforeach; ?>
 </select>
 </div>
 <div class="filter-group">
 <h3>Category</h3>
-<label><input type="checkbox" name="category" value="House Work"> House Work</label>
-<label><input type="checkbox" name="category" value="Repair"> House Repairs</label>
-<label><input type="checkbox" name="category" value="Personal"> Self Care</label>
-<label><input type="checkbox" name="category" value="Education"> Home Tuition</label>
-<label><input type="checkbox" name="category" value="Culinary Service"> Culinary Aid</label>
+<?php foreach ($categoriesForFilter as $categoryName): ?>
+<label><input type="checkbox" name="category" value="<?php echo e($categoryName); ?>" <?php echo $initialCategory === $categoryName ? 'checked' : ''; ?>> <?php echo e($categoryName); ?></label>
+<?php endforeach; ?>
 <button class="show-btn" type="button">Show more</button>
 </div>
 <div class="filter-group">
@@ -127,21 +114,6 @@ function max_salary_value($value) {
 <label><input type="checkbox" name="type" value="Fixed-Price"> Fixed-Price</label>
 </div>
 <div class="filter-group">
-<h3>Experience Level</h3>
-<label><input type="checkbox"> No-experience</label>
-<label><input type="checkbox"> Fresher</label>
-<label><input type="checkbox"> Intermediate</label>
-<label><input type="checkbox"> Expert</label>
-</div>
-<div class="filter-group">
-<h3>Date Posted</h3>
-<label><input type="checkbox"> All</label>
-<label><input type="checkbox"> Last Hour</label>
-<label><input type="checkbox"> Last 24 Hours</label>
-<label><input type="checkbox"> Last 7 Days</label>
-<label><input type="checkbox"> Last 30 Days</label>
-</div>
-<div class="filter-group">
 <h3>Salary</h3>
 <input id="salaryRange" type="range" min="0" max="40000" value="40000">
 <p class="salary-text">Salary: Rs 0 - Rs <span id="salaryValue">40,000</span></p>
@@ -151,11 +123,11 @@ function max_salary_value($value) {
 <div class="filter-group tags-group">
 <h3>Tags</h3>
 <div class="tags">
-<button type="button" data-tag="Repair">Repair</button>
-<button type="button" data-tag="Personal">Personal</button>
-<button type="button" data-tag="Culinary Service">Cullinary Service</button>
+<button type="button" data-tag="Plumbing">Plumbing</button>
+<button type="button" data-tag="Electrical Work">Electrical Work</button>
+<button type="button" data-tag="Culinary Aid">Culinary Aid</button>
 <button type="button" data-tag="Self Care">Self Care</button>
-<button type="button" data-tag="Education">Education</button>
+<button type="button" data-tag="Home Tuition">Home Tuition</button>
 <button type="button" data-tag="House Work">House Work</button>
 </div>
 </div>
@@ -170,15 +142,53 @@ function max_salary_value($value) {
 
 <div class="job-list" id="jobList">
 <?php foreach ($jobs as $index => $job): ?>
+<?php
+$jobId = (int) ($job['job_id'] ?? 0);
+$verifiedWorkers = fetch_workers_for_category($conn, (int) ($job['category_id'] ?? 0), 3);
+
+?>
 <article class="job-card" data-page="<?php echo $index < 6 ? '1' : '2'; ?>" data-title="<?php echo e($job['title']); ?>" data-category="<?php echo e($job['category']); ?>" data-type="<?php echo e($job['type']); ?>" data-location="<?php echo e($job['location']); ?>" data-salary="<?php echo e($job['salary_max']); ?>" data-minutes="<?php echo e($job['minutes']); ?>" <?php echo $index < 6 ? '' : 'hidden'; ?>>
+<div class="job-card-head"><span class="category-badge"><?php echo e($job['category']); ?></span><span class="salary-badge"><?php echo e($job['salary']); ?></span></div>
 <h2><?php echo e($job['title']); ?></h2>
 <p><?php echo e($job['description']); ?></p>
+<p class="job-employer">Employer: <?php echo e($job['employer'] ?? 'Ghar Sathi'); ?></p>
 <div class="job-info">
-<span><?php echo e($job['category']); ?></span>
 <span><?php echo e($job['type']); ?></span>
-<span><?php echo e($job['salary']); ?></span>
 <span><?php echo e($job['location']); ?></span>
-<a href="../Details Page/details.html">details</a>
+<a href="../detail.php?id=<?php echo $jobId; ?>">details</a>
+</div>
+<?php if ($verifiedWorkers): ?>
+<div class="worker-strip" aria-label="Available workers">
+<?php foreach ($verifiedWorkers as $worker): ?>
+<div class="mini-worker">
+<div><strong><?php echo e($worker['full_name']); ?></strong><span><?php echo e($worker['experience_years']); ?> yrs | <?php echo e(number_format((float) $worker['avg_rating'], 1)); ?> ★</span></div>
+</div>
+<?php endforeach; ?>
+</div>
+<?php endif; ?>
+<div class="job-actions">
+<a class="secondary-action" href="../About Us Page/apply_resume.php?job_id=<?php echo $jobId; ?>">Apply Job</a>
+<?php if ($jobId > 0 && $verifiedWorkers): ?>
+<form class="hire-form" action="../booking_request.php" method="POST">
+<input type="hidden" name="job_id" value="<?php echo $jobId; ?>">
+<input type="hidden" name="category_id" value="<?php echo e($job['category_id'] ?? 0); ?>">
+<label>Worker
+<select name="worker_id" required>
+<?php foreach ($verifiedWorkers as $worker): ?>
+<option value="<?php echo e($worker['user_id']); ?>" data-salary="<?php echo e($job['salary_max']); ?>"><?php echo e($worker['full_name']); ?> - <?php echo e(number_format((float) $worker['avg_rating'], 1)); ?> ★</option>
+<?php endforeach; ?>
+</select>
+</label>
+<label>Date <input type="date" name="requested_date" required></label>
+<label>Time <input type="time" name="requested_time" required></label>
+<label>Offer salary <input type="number" name="offered_salary" min="0" step="1" value="<?php echo e(max(0, (float) $job['salary_max'] - 20)); ?>" required></label>
+<label>Notes <input type="text" name="notes" placeholder="Service notes"></label>
+<small>You can request around Rs 20 discount; the worker may accept, decline, or negotiate.</small>
+<button type="submit">Hire Now</button>
+</form>
+<?php else: ?>
+<p class="worker-note">No verified workers are available for this category yet.</p>
+<?php endif; ?>
 </div>
 </article>
 <?php endforeach; ?>
@@ -192,25 +202,7 @@ function max_salary_value($value) {
 </section>
 </main>
 
-<footer>
-<div class="footer-container">
-<div class="footer-column">
-<h3><i class="fa-solid fa-briefcase"></i> Job</h3>
-<p>Ghar Sathi connects skilled people with trusted opportunities, making everyday services easier, faster, and more reliable for every home.</p>
-</div>
-<div class="footer-column"><h3>About Us</h3><ul><li>Our Team</li><li>For Service Providers</li><li>For Employers</li></ul></div>
-<div class="footer-column"><h3>Job Categories</h3><ul><li>House Work</li><li>Culinary Aid</li><li>Home Tuition</li><li>Pet Care</li><li>Self Care</li></ul></div>
-<div class="footer-column">
-<h3>Be Up to Date!</h3>
-<p>Stay updated with trusted home services and latest job opportunities from Ghar Sathi.</p>
-<form class="subscribe-form" action="../subscribe.php" method="POST"><input type="email" name="email" placeholder="Email Address" aria-label="Email Address" required><input type="hidden" name="redirect" value="Jobs page/jobs.php"><button type="submit">Subscribe now</button></form>
-</div>
-</div>
-<div class="footer-bottom">
-<p>&copy; Copyright Ghar Sathi 2026.</p>
-<div><a href="#">Privacy Policy</a><a href="#">Terms &amp; Conditions</a></div>
-</div>
-</footer>
+<?php render_footer('..'); ?>
 
 <script src="jobs.js"></script>
 </body>

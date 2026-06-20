@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../db_connect/db.php';
+require_once __DIR__ . '/../includes/app.php';
 
 $message = '';
 $messageClass = 'error';
@@ -39,14 +39,26 @@ if ($fullName === '' || $username === '' || $email === '' || $password === '' ||
     if (mysqli_stmt_num_rows($check) > 0) {
         $message = 'An account with this username or email already exists.';
     } else {
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         $stmt = mysqli_prepare(
             $conn,
             'INSERT INTO users (full_name, username, email, phone, password, role)
              VALUES (?, ?, ?, ?, ?, ?)'
         );
-        mysqli_stmt_bind_param($stmt, 'ssssss', $fullName, $username, $email, $phone, $password, $role);
+        mysqli_stmt_bind_param($stmt, 'ssssss', $fullName, $username, $email, $phone, $passwordHash, $role);
 
         if (mysqli_stmt_execute($stmt)) {
+            $newUserId = mysqli_insert_id($conn);
+            if ($role === 'Worker') {
+                $profile = mysqli_prepare($conn, "INSERT INTO worker_profiles (worker_id, skills, experience_years, verification_status, current_status) VALUES (?, '', 0, 'Pending', 'Available')");
+                mysqli_stmt_bind_param($profile, 'i', $newUserId);
+                mysqli_stmt_execute($profile);
+                mysqli_stmt_close($profile);
+                record_employment_status($conn, $newUserId, null, null, 'Available');
+            }
+            $_SESSION['user_id'] = $newUserId;
+            $_SESSION['full_name'] = $fullName;
+            $_SESSION['role'] = $role;
             header('Location: ../Homepage/homepage.php');
             exit();
         } else {

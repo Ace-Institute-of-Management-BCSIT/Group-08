@@ -1,7 +1,7 @@
 // ===== Contact Form Handling =====
 const contactForm = document.getElementById('contactForm');
 
-contactForm.addEventListener('submit', function (e) {
+contactForm?.addEventListener('submit', function (e) {
   const firstName = document.getElementById('firstName').value.trim();
   const lastName = document.getElementById('lastName').value.trim();
   const email = document.getElementById('email').value.trim();
@@ -22,7 +22,7 @@ contactForm.addEventListener('submit', function (e) {
 // ===== Newsletter Subscribe Form =====
 const subscribeForm = document.getElementById('subscribeForm');
 
-subscribeForm.addEventListener('submit', function (e) {
+subscribeForm?.addEventListener('submit', function (e) {
   const emailInput = subscribeForm.querySelector('input[type="email"]');
   const email = emailInput.value.trim();
 

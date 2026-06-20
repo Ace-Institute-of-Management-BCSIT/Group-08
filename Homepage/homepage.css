@@ -30,6 +30,16 @@ header{
     gap:10px;
     color:white;
     font-weight:bold;
+    text-decoration:none;
+}
+
+.logo img{
+    width:48px;
+    height:48px;
+    object-fit:contain;
+    background:#fff;
+    border-radius:50%;
+    box-shadow:0 2px 8px rgba(0,0,0,0.2);
 }
 
 .logo-icon{
@@ -111,7 +121,7 @@ header{
 
 .hero{
     height:650px;
-    background:url('images/hero-bg.jpg');
+    background:url('images/homepagebg.jpg');
     background-size:cover;
     background-position:center;
     position:relative;
@@ -240,6 +250,7 @@ header{
     justify-content:space-between;
     align-items:center;
     gap:16px;
+    cursor:pointer;
 }
 
 .search-results-list li:last-child{
@@ -389,6 +400,9 @@ header{
     cursor:pointer;
     transition:transform 0.25s ease, box-shadow 0.25s ease, border 0.25s ease;
     border:2px solid transparent;
+    color:inherit;
+    text-decoration:none;
+    display:block;
 }
 
 .card:hover,
@@ -497,7 +511,7 @@ header{
     color:white;
     border-radius:20px;
     min-height:300px;
-    background-image:url('../images/banner.jpg');
+    background-image:url('../images/cleannn.jpeg');
     background-size:cover;
     background-position:center;
     position:relative;

@@ -12,6 +12,7 @@ const jobCards = Array.from(document.querySelectorAll(".job-card"));
 const tagButtons = Array.from(document.querySelectorAll(".tags button"));
 const pageLinks = Array.from(document.querySelectorAll("[data-page-link]"));
 let currentPage = "1";
+let shouldScrollToResults = false;
 
 function formatCurrency(value) {
 return Number(value).toLocaleString("en-IN");
@@ -22,6 +23,7 @@ return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).ma
 }
 
 function updateResultCount(visible) {
+if (!resultCount) return;
 const totalResults = resultCount.dataset.totalResults || "10";
 resultCount.textContent = `Showing ${visible}-${visible} of ${totalResults} results`;
 }
@@ -38,11 +40,13 @@ const location = locationFilter.value;
 const categories = checkedValues("category");
 const types = checkedValues("type");
 const maxSalary = Number(salaryRange.value);
+const hasFilters = Boolean(search || location || categories.length || types.length || maxSalary < Number(salaryRange?.max || maxSalary));
 let visible = 0;
 
 jobCards.forEach(card => {
-const matchesPage = card.dataset.page === currentPage;
-const matchesSearch = !search || card.dataset.title.toLowerCase().includes(search);
+const matchesPage = hasFilters || card.dataset.page === currentPage;
+const searchableText = `${card.dataset.title} ${card.dataset.category} ${card.dataset.location} ${card.dataset.type}`.toLowerCase();
+const matchesSearch = !search || searchableText.includes(search);
 const matchesLocation = !location || card.dataset.location === location;
 const matchesCategory = categories.length === 0 || categories.includes(card.dataset.category);
 const matchesType = types.length === 0 || types.includes(card.dataset.type);
@@ -55,6 +59,10 @@ if (show) visible += 1;
 
 updateResultCount(visible);
 updatePagination();
+if (shouldScrollToResults) {
+document.querySelector(".job-container")?.scrollIntoView({ behavior: "smooth", block: "start" });
+shouldScrollToResults = false;
+}
 }
 
 menuToggle?.addEventListener("click", () => {
@@ -71,11 +79,20 @@ menuToggle?.setAttribute("aria-expanded", "false");
 
 form?.addEventListener("submit", event => {
 event.preventDefault();
+shouldScrollToResults = true;
+if (jobCards.length) {
 applyFilters();
+}
 });
 
-form?.addEventListener("input", applyFilters);
-locationFilter?.addEventListener("change", applyFilters);
+form?.addEventListener("input", () => {
+shouldScrollToResults = true;
+applyFilters();
+});
+locationFilter?.addEventListener("change", () => {
+shouldScrollToResults = true;
+applyFilters();
+});
 
 salaryRange?.addEventListener("input", () => {
 salaryValue.textContent = formatCurrency(salaryRange.value);
@@ -90,6 +107,7 @@ button.classList.toggle("active");
 if (checkbox) {
 checkbox.checked = button.classList.contains("active");
 }
+shouldScrollToResults = true;
 applyFilters();
 });
 });
@@ -105,6 +123,7 @@ event.preventDefault();
 currentPage = link.dataset.pageLink === "next"
 ? currentPage === "1" ? "2" : "1"
 : link.dataset.pageLink;
+shouldScrollToResults = true;
 applyFilters();
 });
 });

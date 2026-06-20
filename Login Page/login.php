@@ -1,6 +1,5 @@
 <?php
-session_start();
-require_once __DIR__ . '/../db_connect/db.php';
+require_once __DIR__ . '/../includes/app.php';
 
 $message = '';
 $messageClass = 'error';
@@ -35,7 +34,8 @@ if ($login === '' || $password === '') {
     $user = mysqli_fetch_assoc($result);
     mysqli_stmt_close($stmt);
 
-    if ($user && $password === $user['password']) {
+    $passwordMatches = $user && (password_verify($password, $user['password']) || $password === $user['password']);
+    if ($passwordMatches) {
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['full_name'] = $user['full_name'];
         $_SESSION['role'] = $user['role'];

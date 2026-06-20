@@ -1,9 +1,5 @@
 <?php
-require_once __DIR__ . '/../db_connect/db.php';
-
-function e($value) {
-    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
-}
+require_once __DIR__ . '/../includes/app.php';
 
 $stats = [
     'services' => 0,
@@ -59,12 +55,15 @@ if ($result) {
 
 $categoryIcons = [
     'House Work' => 'fa-seedling',
-    'Culinary Service' => 'fa-circle-check',
     'Culinary Aid' => 'fa-circle-check',
+    'Culinary Service' => 'fa-circle-check',
     'Personal' => 'fa-bag-shopping',
+    'Self Care' => 'fa-bag-shopping',
     'Education' => 'fa-graduation-cap',
+    'Home Tuition' => 'fa-graduation-cap',
     'Repair' => 'fa-screwdriver-wrench',
     'Pet Care' => 'fa-dog',
+    'Other Services' => 'fa-screwdriver-wrench',
 ];
 ?>
 <!DOCTYPE html>
@@ -82,22 +81,7 @@ window.homepageJobs = <?php echo json_encode($jobs, JSON_HEX_TAG | JSON_HEX_APOS
 </head>
 <body>
 <header>
-<nav class="navbar">
-<div class="logo">
-<div class="logo-icon"><img src="images/logo.png" alt="Ghar Sathi logo"></div>
-<span>Ghar Sathi</span>
-</div>
-<ul class="nav-links">
-<li><a href="homepage.php">Home</a></li>
-<li><a href="../Jobs page/jobs.php">Jobs</a></li>
-<li><a href="../About Us Page/aboutus.html">About Us</a></li>
-<li><a href="../Contact Us Page/contactus.html">Contact Us</a></li>
-</ul>
-<div class="auth-buttons">
-<a href="../Login Page/login.html" class="login-btn">Login</a>
-<a href="../Signup page/signup.html" class="signup-btn">Sign Up</a>
-</div>
-</nav>
+<?php render_navbar($conn, '..', 'home'); ?>
 </header>
 
 <section class="hero" id="hero">
@@ -107,20 +91,8 @@ window.homepageJobs = <?php echo json_encode($jobs, JSON_HEX_TAG | JSON_HEX_APOS
 <p>Connecting Talent with Opportunity: Your Gateway to Faster Services</p>
 
 <form class="search-box" id="heroSearchForm">
-<input type="text" placeholder="Job Title or Company" name="job" id="jobSearchInput">
-<select name="location" id="locationSelect">
-<option value="">Select Location</option>
-<?php foreach (array_unique(array_filter(array_column($jobs, 'location'))) as $location): ?>
-<option><?php echo e($location); ?></option>
-<?php endforeach; ?>
-</select>
-<select name="category" id="categorySelect">
-<option value="">Select Category</option>
-<?php foreach ($categories as $category): ?>
-<option><?php echo e($category['category_name']); ?></option>
-<?php endforeach; ?>
-</select>
-<button type="submit" id="heroSearchBtn"><i class="fa-solid fa-magnifying-glass"></i> Search Job</button>
+<input type="text" placeholder="Search House Work, Culinary Aid, Home Tuition..." name="job" id="jobSearchInput">
+<button type="submit" id="heroSearchBtn"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
 </form>
 
 <div class="search-results" id="searchResults" hidden>
@@ -150,13 +122,13 @@ window.homepageJobs = <?php echo json_encode($jobs, JSON_HEX_TAG | JSON_HEX_APOS
 <h2>Browse by Category</h2>
 <p>Select your preferred category and explore!</p>
 <div class="category-grid">
-<?php foreach ($categories as $category): ?>
+<?php foreach (array_slice($categories, 0, 8) as $category): ?>
 <?php $name = $category['category_name']; ?>
-<div class="card" data-category="<?php echo e($name); ?>" tabindex="0" role="button">
+<a class="card" href="../Jobs page/jobs.php?category=<?php echo urlencode($name); ?>" data-category="<?php echo e($name); ?>">
 <i class="fa-solid <?php echo e($categoryIcons[$name] ?? 'fa-briefcase'); ?>"></i>
 <h3><?php echo e($name); ?></h3>
 <span><?php echo e($category['total_jobs']); ?> Jobs</span>
-</div>
+</a>
 <?php endforeach; ?>
 </div>
 </section>

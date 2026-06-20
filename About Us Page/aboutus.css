@@ -9,80 +9,11 @@ box-sizing:border-box;
 body{
 font-family:'Poppins',sans-serif;
 color:#222;
+background:#f7f8fa;
 }
 
-header{
-background:#132766;
-color:white;
-}
-
-.navbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:18px 5%;
-}
-
-.logo{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.logo img{
-width:35px;
-height:35px;
-border-radius:50%;
-}
-
-.logo span{
-font-size:16px;
-font-weight:500;
-}
-
-.nav-links{
-display:flex;
-gap:35px;
-list-style:none;
-}
-
-.nav-links a{
-color:white;
+a{
 text-decoration:none;
-font-size:14px;
-}
-
-.nav-buttons{
-display:flex;
-gap:15px;
-}
-
-.login-btn{
-background:transparent;
-color:white;
-border:1px solid white;
-padding:10px 22px;
-border-radius:6px;
-cursor:pointer;
-}
-
-.signup-btn{
-background:#28a745;
-color:white;
-border:none;
-padding:10px 22px;
-border-radius:6px;
-cursor:pointer;
-}
-
-
-.hero{
-text-align:center;
-padding:40px 20px;
-}
-
-.hero h1{
-font-size:52px;
 }
 
 
@@ -148,8 +79,13 @@ margin-top:30px;
 .card{
 background:white;
 padding:25px;
-border-radius:12px;
+border-radius:8px;
 box-shadow:0 5px 15px rgba(0,0,0,.1);
+transition:transform .2s ease,box-shadow .2s ease;
+}
+
+.card:hover{
+box-shadow:0 12px 26px rgba(16,35,74,.12);
 }
 
 
@@ -224,10 +160,82 @@ justify-content:space-between;
 }
 
 
-.footer-bottom a{
-color:white;
-margin-left:20px;
+.resume-modal{
+position:fixed;
+inset:0;
+z-index:20;
+display:none;
+align-items:center;
+justify-content:center;
+padding:22px;
+background:rgba(15,29,74,.55);
+animation:fadeIn .2s ease;
 }
+
+.resume-modal.is-open{
+display:flex;
+}
+
+.resume-modal-panel{
+width:min(520px,100%);
+background:#fff;
+border-radius:8px;
+box-shadow:0 24px 50px rgba(16,35,74,.25);
+padding:28px;
+position:relative;
+animation:modalUp .22s ease;
+}
+
+.resume-modal-panel h2{
+color:#132766;
+margin-bottom:12px;
+}
+
+.resume-modal-panel label{
+display:block;
+font-weight:600;
+color:#132766;
+margin:16px 0;
+}
+
+.resume-modal-panel input{
+width:100%;
+border:1px solid #dfe7e3;
+border-radius:6px;
+padding:12px;
+margin-top:8px;
+}
+
+.resume-modal-panel button[type="submit"]{
+border:0;
+border-radius:6px;
+background:#28a745;
+color:#fff;
+padding:12px 18px;
+font-weight:600;
+cursor:pointer;
+}
+
+.modal-close{
+position:absolute;
+right:16px;
+top:14px;
+width:34px;
+height:34px;
+border:0;
+border-radius:50%;
+background:#edf5f2;
+color:#132766;
+font-size:24px;
+line-height:1;
+cursor:pointer;
+}
+
+.success{color:#28a745;font-weight:600}
+.error{color:#b42318;font-weight:600}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes modalUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
 
 

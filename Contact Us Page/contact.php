@@ -1,27 +1,28 @@
 <?php
-require_once __DIR__ . '/../db_connect/db.php';
+require_once __DIR__ . '/../includes/app.php';
 
 $messageText = '';
 $messageClass = 'error';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: contactus.html');
+    header('Location: contactus.php');
     exit();
 }
 
 $firstName = trim($_POST['firstName'] ?? '');
 $lastName = trim($_POST['lastName'] ?? '');
 $email = trim($_POST['email'] ?? '');
+$subject = trim($_POST['subject'] ?? '');
 $message = trim($_POST['message'] ?? '');
 $displayName = trim($firstName . ' ' . $lastName);
 
-if ($firstName === '' || $email === '' || $message === '') {
+if ($firstName === '' || $email === '' || $subject === '' || $message === '') {
     $messageText = 'Please fill in all required fields.';
 } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $messageText = 'Please enter a valid email address.';
 } else {
-    $stmt = mysqli_prepare($conn, 'INSERT INTO contact_messages (first_name, email, message) VALUES (?, ?, ?)');
-    mysqli_stmt_bind_param($stmt, 'sss', $displayName, $email, $message);
+    $stmt = mysqli_prepare($conn, 'INSERT INTO contact_messages (name, first_name, email, subject, message) VALUES (?, ?, ?, ?, ?)');
+    mysqli_stmt_bind_param($stmt, 'sssss', $displayName, $displayName, $email, $subject, $message);
 
     if (mysqli_stmt_execute($stmt)) {
         $messageText = 'Thank you, ' . htmlspecialchars($firstName, ENT_QUOTES, 'UTF-8') . '! Your message has been sent successfully.';
@@ -54,7 +55,7 @@ if ($firstName === '' || $email === '' || $message === '') {
     <div class="message-box">
         <h2>Ghar Sathi</h2>
         <p class="<?php echo $messageClass; ?>"><?php echo $messageText; ?></p>
-        <a href="contactus.html">Back to Contact</a>
+        <a href="contactus.php">Back to Contact</a>
     </div>
 </body>
 </html>

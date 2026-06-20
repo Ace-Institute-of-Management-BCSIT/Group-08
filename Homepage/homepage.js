@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
     const defaultJobs = [
         { title: "House Helper", company: "Ghar Sathi Care", location: "Kathmandu", category: "House Work" },
         { title: "Garden Assistant", company: "Green Home Services", location: "Lalitpur", category: "House Work" },
@@ -24,9 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const searchForm = document.getElementById("heroSearchForm");
     const jobInput = document.getElementById("jobSearchInput");
-    const locationSelect = document.getElementById("locationSelect");
-    const categorySelect = document.getElementById("categorySelect");
-    const searchBtn = document.getElementById("heroSearchBtn");
     const searchResults = document.getElementById("searchResults");
     const searchResultsList = document.getElementById("searchResultsList");
     const searchResultsTitle = document.getElementById("searchResultsTitle");
@@ -35,23 +31,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const scrollSearchButtons = document.querySelectorAll(".search-job-btn");
 
     function normalize(value) {
-        return value.trim().toLowerCase();
+        return String(value || "").trim().toLowerCase();
     }
 
-    function filterJobs(jobQuery, location, category) {
+    function filterJobs(jobQuery) {
         const query = normalize(jobQuery);
 
-        return jobs.filter((job) => {
-            const matchesQuery = !query ||
-                normalize(job.title).includes(query) ||
-                normalize(job.company).includes(query) ||
-                normalize(job.category).includes(query);
-
-            const matchesLocation = !location || job.location === location;
-            const matchesCategory = !category || job.category === category;
-
-            return matchesQuery && matchesLocation && matchesCategory;
-        });
+        return jobs.filter((job) => !query ||
+            normalize(job.title).includes(query) ||
+            normalize(job.company).includes(query) ||
+            normalize(job.category).includes(query)
+        );
     }
 
     function highlightCategoryCards(category) {
@@ -60,31 +50,50 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function renderResults(results, jobQuery, location, category) {
+    function jobUrl(job) {
+        const params = new URLSearchParams();
+        params.set("search", job.title);
+        if (job.category) params.set("category", job.category);
+        return `../Jobs page/jobs.php?${params.toString()}`;
+    }
+
+    function renderResults(results, jobQuery) {
         searchResultsList.innerHTML = "";
 
         if (results.length === 0) {
             searchResultsTitle.textContent = "No jobs found";
-            searchResultsList.innerHTML =
-                '<li class="search-empty">Try a different keyword, location, or category.</li>';
+            searchResultsList.innerHTML = '<li class="search-empty">Try a different keyword.</li>';
             searchResults.hidden = false;
             return;
         }
 
-        const filters = [jobQuery, location, category].filter(Boolean);
-        searchResultsTitle.textContent = filters.length
-            ? `${results.length} job${results.length > 1 ? "s" : ""} found`
+        searchResultsTitle.textContent = jobQuery.trim()
+            ? `${results.length} suggestion${results.length > 1 ? "s" : ""} found`
             : `Showing ${results.length} available jobs`;
 
-        results.forEach((job) => {
+        results.slice(0, 8).forEach((job) => {
             const item = document.createElement("li");
+            item.tabIndex = 0;
+            item.setAttribute("role", "button");
             item.innerHTML = `
                 <div class="job-info">
                     <h4>${job.title}</h4>
-                    <p>${job.company} · ${job.location}</p>
+                    <p>${job.company} - ${job.location}</p>
                 </div>
                 <span class="job-tag">${job.category}</span>
             `;
+
+            const openJob = () => {
+                window.location.href = jobUrl(job);
+            };
+
+            item.addEventListener("click", openJob);
+            item.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openJob();
+                }
+            });
             searchResultsList.appendChild(item);
         });
 
@@ -92,25 +101,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function runSearch() {
-        const jobQuery = jobInput.value;
-        const location = locationSelect.value;
-        const category = categorySelect.value;
-
-        searchBtn.disabled = true;
-        searchBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Searching...';
-
-        setTimeout(() => {
-            const results = filterJobs(jobQuery, location, category);
-            renderResults(results, jobQuery, location, category);
-            highlightCategoryCards(category);
-
-            if (category) {
-                document.getElementById("categories").scrollIntoView({ behavior: "smooth", block: "start" });
-            }
-
-            searchBtn.disabled = false;
-            searchBtn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Search Job';
-        }, 450);
+        const params = new URLSearchParams();
+        const query = jobInput.value.trim();
+        if (query) params.set("search", query);
+        window.location.href = `../Jobs page/jobs.php${params.toString() ? `?${params.toString()}` : ""}`;
     }
 
     function scrollToSearch() {
@@ -132,43 +126,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     categoryCards.forEach((card) => {
-        const selectCategory = () => {
-            categorySelect.value = card.dataset.category;
-            highlightCategoryCards(card.dataset.category);
-            scrollToSearch();
-            runSearch();
-        };
-
-        card.addEventListener("click", selectCategory);
-        card.addEventListener("keydown", (event) => {
-            if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                selectCategory();
-            }
-        });
+        card.addEventListener("click", () => highlightCategoryCards(card.dataset.category));
     });
 
     jobInput.addEventListener("input", () => {
         if (normalize(jobInput.value).length >= 2) {
-            const results = filterJobs(jobInput.value, locationSelect.value, categorySelect.value);
-            renderResults(results, jobInput.value, locationSelect.value, categorySelect.value);
-        } else if (!jobInput.value && !locationSelect.value && !categorySelect.value) {
+            renderResults(filterJobs(jobInput.value), jobInput.value);
+        } else if (!jobInput.value) {
             searchResults.hidden = true;
             highlightCategoryCards("");
         }
     });
-
-    locationSelect.addEventListener("change", () => {
-        if (jobInput.value || locationSelect.value || categorySelect.value) {
-            runSearch();
-        }
-    });
-
-    categorySelect.addEventListener("change", () => {
-        highlightCategoryCards(categorySelect.value);
-        if (jobInput.value || locationSelect.value || categorySelect.value) {
-            runSearch();
-        }
-    });
-
 });
