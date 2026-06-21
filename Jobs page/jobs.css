@@ -234,7 +234,6 @@ height:15px;
 
 .show-btn,
 .apply-btn,
-.job-top button,
 .subscribe-form button{
 border:none;
 border-radius:6px;
@@ -292,30 +291,6 @@ color:#fff;
 
 .job-container{
 min-width:0;
-}
-
-.job-top{
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:18px;
-margin-bottom:28px;
-}
-
-.job-top p{
-font-size:15px;
-color:#4b5563;
-}
-
-.job-top button{
-background:var(--blue);
-height:42px;
-padding:0 22px;
-white-space:nowrap;
-}
-
-.job-top button:hover{
-background:var(--blue-dark);
 }
 
 .job-list{
@@ -530,42 +505,43 @@ margin-bottom:0;
 }
 
 .priority-panel{
-min-height:168px;
+min-height:240px;
 border-radius:16px;
 padding:28px;
 display:flex;
 align-items:center;
 background:
-linear-gradient(120deg,rgba(19,39,102,.9),rgba(19,39,102,.66)),
-linear-gradient(135deg,#dff1ea,#f7fbf9);
+linear-gradient(105deg,rgba(19,39,102,.92) 0%,rgba(19,39,102,.72) 46%,rgba(19,39,102,.26) 100%),
+url('../images/plumber.jpg') center right/cover no-repeat;
 box-shadow:var(--shadow);
 overflow:hidden;
 position:relative;
 }
 
 .filter-box .priority-panel{
-min-height:190px;
+min-height:280px;
 margin-top:24px;
 }
 
 .priority-panel:after{
 content:"";
 position:absolute;
-right:-44px;
-bottom:-58px;
-width:220px;
-height:220px;
-border-radius:50%;
-background:rgba(40,167,69,.4);
+inset:0;
+background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.22));
+pointer-events:none;
 }
 
 .priority-panel p{
 position:relative;
 z-index:1;
 color:#fff;
-font-size:34px;
-line-height:1.2;
+width:min-content;
+max-width:100%;
+font-size:clamp(24px,2.15vw,30px);
+line-height:1.16;
 font-weight:700;
+overflow-wrap:normal;
+text-shadow:0 2px 12px rgba(0,0,0,.32);
 }
 
 .pagination{
@@ -746,11 +722,6 @@ border-radius:12px;
 padding:22px;
 }
 
-.job-top{
-align-items:flex-start;
-flex-direction:column;
-}
-
 .job-info{
 align-items:flex-start;
 }
@@ -771,7 +742,7 @@ grid-template-columns:1fr;
 }
 
 .priority-panel p{
-font-size:27px;
+font-size:clamp(23px,6vw,27px);
 }
 
 .footer-container{

@@ -137,11 +137,6 @@ function job_image($category) {
 </aside>
 
 <section class="job-container" aria-label="Available jobs">
-<div class="job-top">
-<p id="resultCount" data-total-results="<?php echo count($jobs); ?>">Showing 6-6 of <?php echo count($jobs); ?> results</p>
-<button id="sortLatest" type="button">Sort by latest</button>
-</div>
-
 <div class="job-list" id="jobList">
 <?php foreach ($jobs as $index => $job): ?>
 <?php
@@ -188,8 +183,7 @@ $verifiedWorkers = fetch_workers_for_category($conn, (int) ($job['category_id'] 
 <label>Date <input type="date" name="requested_date" required></label>
 <label>Time <input type="time" name="requested_time" required></label>
 <label>Offer salary <input type="number" name="offered_salary" min="0" step="1" value="<?php echo e(max(0, (float) $job['salary_max'] - 20)); ?>" required></label>
-<label>Notes <input type="text" name="notes" placeholder="Service notes"></label>
-<small>You can request around Rs 20 discount; the worker may accept, decline, or negotiate.</small>
+<label>Notes <input type="text" name="notes" placeholder="Service notes"></label><br>
 <button type="submit">Hire Now</button>
 </form>
 <?php else: ?>

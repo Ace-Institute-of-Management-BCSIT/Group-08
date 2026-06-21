@@ -5,9 +5,6 @@ const jobSearch = document.querySelector("#jobSearch");
 const locationFilter = document.querySelector("#locationFilter");
 const salaryRange = document.querySelector("#salaryRange");
 const salaryValue = document.querySelector("#salaryValue");
-const resultCount = document.querySelector("#resultCount");
-const sortLatest = document.querySelector("#sortLatest");
-const jobList = document.querySelector("#jobList");
 const jobCards = Array.from(document.querySelectorAll(".job-card"));
 const tagButtons = Array.from(document.querySelectorAll(".tags button"));
 const pageLinks = Array.from(document.querySelectorAll("[data-page-link]"));
@@ -20,12 +17,6 @@ return Number(value).toLocaleString("en-IN");
 
 function checkedValues(name) {
 return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(input => input.value);
-}
-
-function updateResultCount(visible) {
-if (!resultCount) return;
-const totalResults = resultCount.dataset.totalResults || "10";
-resultCount.textContent = `Showing ${visible}-${visible} of ${totalResults} results`;
 }
 
 function updatePagination() {
@@ -57,7 +48,6 @@ card.hidden = !show;
 if (show) visible += 1;
 });
 
-updateResultCount(visible);
 updatePagination();
 if (shouldScrollToResults) {
 document.querySelector(".job-container")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -110,11 +100,6 @@ checkbox.checked = button.classList.contains("active");
 shouldScrollToResults = true;
 applyFilters();
 });
-});
-
-sortLatest?.addEventListener("click", () => {
-const sortedCards = [...jobCards].sort((a, b) => Number(a.dataset.minutes) - Number(b.dataset.minutes));
-sortedCards.forEach(card => jobList.appendChild(card));
 });
 
 pageLinks.forEach(link => {
