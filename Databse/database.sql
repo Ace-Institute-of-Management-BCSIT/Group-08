@@ -268,16 +268,16 @@ INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, 
 (59, 'Nabin K.C.', 'nabin_kc', 'nabin.kc@gharsathi.local', '9800000059', 'worker123', 'Worker');
 
 INSERT IGNORE INTO worker_profiles (worker_id, skills, experience_years, profile_image, verification_status, current_status) VALUES
-(50, 'Cleaning, laundry, kitchen organization, and deep cleaning.', 5, 'profile.jpg', 'Approved', 'Available weekdays - Kathmandu'),
-(51, 'Nepali meals, tiffin planning, event kitchen support.', 7, 'profile.jpg', 'Approved', 'Available mornings and events - Patan'),
-(52, 'Math, science, English, homework routines, SEE preparation.', 4, 'profile.jpg', 'Approved', 'Available evenings - Baneshwor'),
-(53, 'Dog walking, feeding, pet sitting, bathing, and grooming support.', 3, 'profile.jpg', 'Approved', 'Flexible - Boudha'),
-(54, 'Home beauty, wellness, grooming, massage, and personal care.', 6, 'profile.jpg', 'Approved', 'Weekends and afternoons - Lalitpur'),
-(55, 'Elderly companionship, medicine reminders, and mobility support.', 8, 'profile.jpg', 'Approved', 'Day and night shifts - Kathmandu'),
-(56, 'Toddler care, after-school supervision, meals, and play routines.', 5, 'profile.jpg', 'Approved', 'After school - Bhaktapur'),
-(57, 'Balcony gardens, pruning, soil care, and kitchen garden setup.', 4, 'profile.jpg', 'Approved', 'Flexible - Lalitpur'),
-(58, 'Leak repair, fixtures, drainage, water line maintenance.', 6, 'profile.jpg', 'Approved', 'On call - Kathmandu'),
-(59, 'Switches, wiring, lighting, inverter points, and appliance faults.', 7, 'profile.jpg', 'Approved', 'On call - Bhaktapur');
+(50, 'Cleaning, laundry, kitchen organization, and deep cleaning.', 5, 'images/profile.jpg', 'Approved', 'Available weekdays - Kathmandu'),
+(51, 'Nepali meals, tiffin planning, event kitchen support.', 7, 'images/profile.jpg', 'Approved', 'Available mornings and events - Patan'),
+(52, 'Math, science, English, homework routines, SEE preparation.', 4, 'images/profile.jpg', 'Approved', 'Available evenings - Baneshwor'),
+(53, 'Dog walking, feeding, pet sitting, bathing, and grooming support.', 3, 'images/profile.jpg', 'Approved', 'Flexible - Boudha'),
+(54, 'Home beauty, wellness, grooming, massage, and personal care.', 6, 'images/profile.jpg', 'Approved', 'Weekends and afternoons - Lalitpur'),
+(55, 'Elderly companionship, medicine reminders, and mobility support.', 8, 'images/profile.jpg', 'Approved', 'Day and night shifts - Kathmandu'),
+(56, 'Toddler care, after-school supervision, meals, and play routines.', 5, 'images/profile.jpg', 'Approved', 'After school - Bhaktapur'),
+(57, 'Balcony gardens, pruning, soil care, and kitchen garden setup.', 4, 'images/profile.jpg', 'Approved', 'Flexible - Lalitpur'),
+(58, 'Leak repair, fixtures, drainage, water line maintenance.', 6, 'images/profile.jpg', 'Approved', 'On call - Kathmandu'),
+(59, 'Switches, wiring, lighting, inverter points, and appliance faults.', 7, 'images/profile.jpg', 'Approved', 'On call - Bhaktapur');
 
 INSERT IGNORE INTO worker_categories (worker_id, category_id)
 SELECT 50, category_id FROM categories WHERE category_name = 'House Work';

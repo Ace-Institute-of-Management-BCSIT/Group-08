@@ -51,6 +51,8 @@ $initialLocation = trim($_GET['location'] ?? '');
 $initialCategory = trim($_GET['category'] ?? '');
 $locations = array_values(array_unique(array_filter(array_map(fn($job) => $job['location'] ?? '', $jobs))));
 $categoriesForFilter = array_values(array_unique(array_filter(array_map(fn($job) => $job['category'] ?? '', $jobs))));
+$user = current_user($conn);
+$userRole = $user['role'] ?? '';
 
 function max_salary_value($value) {
     preg_match_all('/\d[\d,]*/', (string) $value, $matches);
@@ -155,7 +157,7 @@ $verifiedWorkers = fetch_workers_for_category($conn, (int) ($job['category_id'] 
 <div class="job-info">
 <span><?php echo e($job['type']); ?></span>
 <span><?php echo e($job['location']); ?></span>
-<a href="../detail.php?id=<?php echo $jobId; ?>">details</a>
+<a href="../Details Page/details.php?id=<?php echo $jobId; ?>">details</a>
 </div>
 <?php if ($verifiedWorkers): ?>
 <div class="worker-strip" aria-label="Available workers">
@@ -167,9 +169,13 @@ $verifiedWorkers = fetch_workers_for_category($conn, (int) ($job['category_id'] 
 </div>
 <?php endif; ?>
 <div class="job-actions">
+<?php if (!$user): ?>
+<a class="secondary-action" href="../Login Page/login.html">Login to Apply or Hire</a>
+<?php elseif ($userRole === 'Worker'): ?>
 <a class="secondary-action" href="../About Us Page/apply_resume.php?job_id=<?php echo $jobId; ?>">Apply Job</a>
+<?php elseif ($userRole === 'Employer'): ?>
 <?php if ($jobId > 0 && $verifiedWorkers): ?>
-<form class="hire-form" action="../booking_request.php" method="POST">
+<form class="hire-form" action="../status bar/booking_request.php" method="POST">
 <input type="hidden" name="job_id" value="<?php echo $jobId; ?>">
 <input type="hidden" name="category_id" value="<?php echo e($job['category_id'] ?? 0); ?>">
 <label>Worker
@@ -188,6 +194,9 @@ $verifiedWorkers = fetch_workers_for_category($conn, (int) ($job['category_id'] 
 </form>
 <?php else: ?>
 <p class="worker-note">No verified workers are available for this category yet.</p>
+<?php endif; ?>
+<?php else: ?>
+<a class="secondary-action" href="../dasboard/dashboard.php">Manage in Dashboard</a>
 <?php endif; ?>
 </div>
 </article>

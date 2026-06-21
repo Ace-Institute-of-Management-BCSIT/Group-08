@@ -59,7 +59,7 @@ if ($fullName === '' || $username === '' || $email === '' || $password === '' ||
             $_SESSION['user_id'] = $newUserId;
             $_SESSION['full_name'] = $fullName;
             $_SESSION['role'] = $role;
-            header('Location: ../Homepage/homepage.php');
+            header('Location: ../dasboard/dashboard.php');
             exit();
         } else {
             $message = 'Could not create account. Please try again.';

@@ -121,7 +121,7 @@ header{
 
 .hero{
     height:650px;
-    background:url('images/homepagebg.jpg');
+    background:url('../images/full%20logo.png');
     background-size:cover;
     background-position:center;
     position:relative;
@@ -511,7 +511,7 @@ header{
     color:white;
     border-radius:20px;
     min-height:300px;
-    background-image:url('../images/cleannn.jpeg');
+    background-image:url('../images/profile.jpg');
     background-size:cover;
     background-position:center;
     position:relative;

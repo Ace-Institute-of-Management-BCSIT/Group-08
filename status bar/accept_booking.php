@@ -1,11 +1,16 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
+if ($user['role'] !== 'Worker') {
+    header('Location: ../dasboard/dashboard.php?booking=worker-required');
+    exit();
+}
+
 $bookingId = (int) ($_POST['booking_id'] ?? $_GET['booking_id'] ?? 0);
 
 if ($bookingId <= 0) {
-    header('Location: dashboard.php?booking=invalid');
+    header('Location: ../dasboard/dashboard.php?booking=invalid');
     exit();
 }
 
@@ -23,7 +28,7 @@ $booking = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 
 if (!$booking) {
-    header('Location: dashboard.php?booking=not-found');
+    header('Location: ../dasboard/dashboard.php?booking=not-found');
     exit();
 }
 
@@ -35,7 +40,7 @@ $alreadyBooked = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 
 if ($alreadyBooked) {
-    header('Location: dashboard.php?booking=already-booked');
+    header('Location: ../dasboard/dashboard.php?booking=already-booked');
     exit();
 }
 
@@ -54,6 +59,6 @@ mysqli_stmt_close($stmt);
 create_notification($conn, (int) $booking['employer_id'], 'Booking accepted', 'Your service request has been accepted.');
 record_employment_status($conn, (int) $booking['worker_id'], (int) $booking['employer_id'], (int) $booking['job_id'], 'Selected/Hired', $bookingDate);
 
-header('Location: dashboard.php?booking=accepted');
+header('Location: ../dasboard/dashboard.php?booking=accepted');
 exit();
 ?>

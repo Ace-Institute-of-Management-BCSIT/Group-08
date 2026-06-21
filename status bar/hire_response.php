@@ -1,10 +1,14 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
+if ($user['role'] !== 'Worker') {
+    header('Location: ../dasboard/dashboard.php?response=worker-required');
+    exit();
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: dashboard.php');
+    header('Location: ../dasboard/dashboard.php');
     exit();
 }
 
@@ -15,7 +19,7 @@ $workerMessage = trim($_POST['worker_message'] ?? '');
 
 $allowed = ['Accepted', 'Declined', 'Negotiating'];
 if ($requestId <= 0 || !in_array($action, $allowed, true)) {
-    header('Location: dashboard.php?response=invalid');
+    header('Location: ../dasboard/dashboard.php?response=invalid');
     exit();
 }
 
@@ -34,7 +38,7 @@ $request = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 
 if (!$request) {
-    header('Location: dashboard.php?response=not-found');
+    header('Location: ../dasboard/dashboard.php?response=not-found');
     exit();
 }
 
@@ -55,6 +59,6 @@ create_notification(
     $user['full_name'] . ' responded to your ' . $request['title'] . ' request. Current price: Rs ' . number_format($salary, 0) . '.'
 );
 
-header('Location: dashboard.php?response=updated');
+header('Location: ../dasboard/dashboard.php?response=updated');
 exit();
 ?>

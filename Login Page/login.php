@@ -40,7 +40,7 @@ if ($login === '' || $password === '') {
         $_SESSION['full_name'] = $user['full_name'];
         $_SESSION['role'] = $user['role'];
 
-        header('Location: ../Homepage/homepage.php');
+        header('Location: ../dasboard/dashboard.php');
         exit();
     } else {
         $message = 'Invalid username, email, phone, or password.';
@@ -68,8 +68,8 @@ if ($login === '' || $password === '') {
 <body>
     <div class="message-box">
         <h2>Ghar Sathi</h2>
-        <p class="<?php echo $messageClass; ?>"><?php echo $message; ?></p>
-        <a href="<?php echo $backLink; ?>" class="btn"><?php echo $backText; ?></a>
+        <p class="<?php echo e($messageClass); ?>"><?php echo e($message); ?></p>
+        <a href="<?php echo e($backLink); ?>" class="btn"><?php echo e($backText); ?></a>
     </div>
 </body>
 </html>

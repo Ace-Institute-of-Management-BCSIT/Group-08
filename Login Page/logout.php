@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/../includes/app.php';
 
 $_SESSION = [];
 if (ini_get('session.use_cookies')) {
@@ -8,6 +8,6 @@ if (ini_get('session.use_cookies')) {
 }
 session_destroy();
 
-header('Location: Homepage/homepage.php');
+header('Location: ../Homepage/homepage.php');
 exit();
 ?>

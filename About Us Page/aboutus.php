@@ -112,7 +112,7 @@ Sign up quickly and build your professional profile.
 
 
 
-<a class="card js-open-resume" href="../upload_resume.php">
+<a class="card js-open-resume" href="upload_resume.php">
 
 <h3>
 Upload Resume
@@ -167,8 +167,8 @@ Reach out for service, worker, or platform support.
 <h2 id="resumeTitle">Upload Resume</h2>
 <?php if ($uploadStatus === 'success'): ?><p class="success">Resume uploaded successfully.</p><?php endif; ?>
 <?php if ($uploadStatus === 'invalid'): ?><p class="error">Invalid file type.</p><?php endif; ?>
-<form method="POST" action="../upload_resume.php" enctype="multipart/form-data">
-<input type="hidden" name="redirect" value="About Us Page/aboutus.php">
+<form method="POST" action="upload_resume.php" enctype="multipart/form-data">
+<input type="hidden" name="redirect" value="aboutus.php">
 <label>Resume File
 <input type="file" name="resume" accept=".pdf,.doc,.docx" required>
 </label>

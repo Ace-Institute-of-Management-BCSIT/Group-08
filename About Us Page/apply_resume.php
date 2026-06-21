@@ -2,6 +2,11 @@
 require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
+if ($user['role'] !== 'Worker') {
+    header('Location: ../dasboard/dashboard.php?application=worker-required');
+    exit();
+}
+
 $jobId = (int) ($_GET['job_id'] ?? $_POST['job_id'] ?? 0);
 $message = ($_GET['error'] ?? '') === 'file' ? 'Invalid file type.' : '';
 
@@ -18,38 +23,6 @@ if ($jobId > 0) {
     mysqli_stmt_execute($stmt);
     $job = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
     mysqli_stmt_close($stmt);
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $job) {
-    $resumeText = trim($_POST['resume_text'] ?? '');
-    $coverLetter = trim($_POST['cover_letter'] ?? '');
-
-    if ($resumeText === '') {
-        $message = 'Please add your resume details before applying.';
-    } else {
-        $stmt = mysqli_prepare(
-            $conn,
-            "INSERT INTO job_applications (job_id, worker_id, cover_letter, status, resume_text, admin_status)
-             VALUES (?, ?, ?, 'Applied', ?, 'Pending')"
-        );
-        mysqli_stmt_bind_param($stmt, 'iiss', $jobId, $user['user_id'], $coverLetter, $resumeText);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-
-        $categoryId = (int) $job['category_id'];
-        $stmt = mysqli_prepare($conn, 'INSERT IGNORE INTO worker_categories (worker_id, category_id) VALUES (?, ?)');
-        mysqli_stmt_bind_param($stmt, 'ii', $user['user_id'], $categoryId);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-
-        $admins = mysqli_query($conn, "SELECT user_id FROM users WHERE role = 'Admin'");
-        while ($admin = $admins ? mysqli_fetch_assoc($admins) : null) {
-            create_notification($conn, (int) $admin['user_id'], 'Resume needs verification', $user['full_name'] . ' applied for ' . $job['title'] . '.');
-        }
-
-        header('Location: ../dashboard.php?application=submitted');
-        exit();
-    }
 }
 ?>
 <!DOCTYPE html>
@@ -88,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $job) {
 <h2>Apply for <?php echo e($job['title']); ?></h2>
 <p><?php echo e($job['category_name']); ?> · <?php echo e($job['location']); ?> · Rs <?php echo e(number_format((float) $job['salary'], 0)); ?></p>
 <?php if ($message): ?><p class="error"><?php echo e($message); ?></p><?php endif; ?>
-<form class="resume-form" action="../apply_job.php" method="POST" enctype="multipart/form-data">
+<form class="resume-form" action="../Jobs page/apply_job.php" method="POST" enctype="multipart/form-data">
 <input type="hidden" name="job_id" value="<?php echo e($jobId); ?>">
 <label>Resume file
 <input type="file" name="resume" accept=".pdf,.doc,.docx">

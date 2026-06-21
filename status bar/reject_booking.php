@@ -1,11 +1,16 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
+if ($user['role'] !== 'Worker') {
+    header('Location: ../dasboard/dashboard.php?booking=worker-required');
+    exit();
+}
+
 $bookingId = (int) ($_POST['booking_id'] ?? $_GET['booking_id'] ?? 0);
 
 if ($bookingId <= 0) {
-    header('Location: dashboard.php?booking=invalid');
+    header('Location: ../dasboard/dashboard.php?booking=invalid');
     exit();
 }
 
@@ -16,7 +21,7 @@ $booking = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 
 if (!$booking) {
-    header('Location: dashboard.php?booking=not-found');
+    header('Location: ../dasboard/dashboard.php?booking=not-found');
     exit();
 }
 
@@ -29,6 +34,6 @@ mysqli_stmt_close($stmt);
 create_notification($conn, (int) $booking['employer_id'], 'Booking rejected', 'Your service request has been rejected.');
 record_employment_status($conn, (int) $booking['worker_id'], (int) $booking['employer_id'], (int) $booking['job_id'], 'Available Again');
 
-header('Location: dashboard.php?booking=rejected');
+header('Location: ../dasboard/dashboard.php?booking=rejected');
 exit();
 ?>

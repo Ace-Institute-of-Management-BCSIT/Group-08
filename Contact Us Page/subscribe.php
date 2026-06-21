@@ -1,8 +1,11 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/../includes/app.php';
 
 $email = trim($_POST['email'] ?? '');
-$redirect = $_POST['redirect'] ?? 'Homepage/homepage.php';
+$redirect = trim($_POST['redirect'] ?? '../Homepage/homepage.php');
+if ($redirect === '' || preg_match('/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i', $redirect)) {
+    $redirect = '../Homepage/homepage.php';
+}
 $status = 'Please enter a valid email address.';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -44,8 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && filter_var($email, FILTER_VALIDATE_
 <body>
     <div class="message-box">
         <h2>Ghar Sathi</h2>
-        <p><?php echo htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?></p>
-        <a href="<?php echo htmlspecialchars($redirect, ENT_QUOTES, 'UTF-8'); ?>">Back</a>
+        <p><?php echo e($status); ?></p>
+        <a href="<?php echo e($redirect); ?>">Back</a>
     </div>
 </body>
 </html>

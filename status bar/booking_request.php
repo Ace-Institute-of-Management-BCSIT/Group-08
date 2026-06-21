@@ -1,14 +1,14 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
-if (!in_array($user['role'], ['Employer', 'Admin'], true)) {
-    header('Location: dashboard.php?booking=employer-required');
+if ($user['role'] !== 'Employer') {
+    header('Location: ../dasboard/dashboard.php?booking=employer-required');
     exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: Jobs page/jobs.php');
+    header('Location: ../Jobs page/jobs.php');
     exit();
 }
 
@@ -96,7 +96,7 @@ if ($jobId <= 0 || $workerId <= 0 || $categoryId <= 0 || $requestedDate === '') 
 <div class="box">
 <h2>Ghar Sathi</h2>
 <p><?php echo e($status); ?></p>
-<a href="Jobs page/jobs.php">Back to Jobs</a>
+<a href="../Jobs page/jobs.php">Back to Jobs</a>
 </div>
 </body>
 </html>

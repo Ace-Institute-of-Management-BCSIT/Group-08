@@ -134,7 +134,7 @@ window.homepageJobs = <?php echo json_encode($jobs, JSON_HEX_TAG | JSON_HEX_APOS
 </section>
 
 <section class="service-section">
-<div class="service-image"><img src="images/nurse.jpg" alt="Home care services"></div>
+<div class="service-image"><img src="../images/profile.jpg" alt="Home care services"></div>
 <div class="service-text">
 <h2>Reliable Home Services, Right at Your Doorstep!</h2>
 <p>Ghar Sathi brings trusted household services directly to your home. Our platform helps you choose the right service provider.</p>
@@ -165,9 +165,9 @@ window.homepageJobs = <?php echo json_encode($jobs, JSON_HEX_TAG | JSON_HEX_APOS
 <div><h3>Job Categories</h3><ul><?php foreach (array_slice($categories, 0, 5) as $category): ?><li><?php echo e($category['category_name']); ?></li><?php endforeach; ?></ul></div>
 <div>
 <h3>Be Up To Date!</h3>
-<form action="../subscribe.php" method="POST">
+<form action="../Contact Us Page/subscribe.php" method="POST">
 <input type="email" name="email" placeholder="Email Address" required>
-<input type="hidden" name="redirect" value="Homepage/homepage.php">
+<input type="hidden" name="redirect" value="../Homepage/homepage.php">
 <button type="submit">Subscribe Now</button>
 </form>
 </div>

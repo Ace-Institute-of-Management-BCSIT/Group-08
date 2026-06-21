@@ -23,8 +23,13 @@ if ($id > 0) {
     $job = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
     mysqli_stmt_close($stmt);
 
-    $workers = fetch_workers_for_category($conn, (int) $job['category_id'], 8);
+    if ($job) {
+        $workers = fetch_workers_for_category($conn, (int) $job['category_id'], 8);
+    }
 }
+
+$user = current_user($conn);
+$userRole = $user['role'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -63,7 +68,15 @@ body{background:#f7f8fa}.details-container{max-width:1180px;margin:0 auto;paddin
 <span><?php echo e($job['location']); ?></span>
 </div>
 <div class="detail-actions">
+<?php if (!$user): ?>
+<a href="../Login Page/login.html">Login to Apply or Hire</a>
+<?php elseif ($userRole === 'Worker'): ?>
 <a href="../About Us Page/apply_resume.php?job_id=<?php echo e($id); ?>">Apply Job</a>
+<?php elseif ($userRole === 'Employer'): ?>
+<span class="muted">Choose a worker below to send a hire request.</span>
+<?php else: ?>
+<a href="../dasboard/dashboard.php">Admin Dashboard</a>
+<?php endif; ?>
 <a href="../Jobs page/jobs.php?category=<?php echo urlencode($job['category_name']); ?>">More <?php echo e($job['category_name']); ?></a>
 </div>
 <h2>Job Description</h2>
@@ -81,7 +94,7 @@ body{background:#f7f8fa}.details-container{max-width:1180px;margin:0 auto;paddin
 <?php foreach ($workers as $worker): ?>
 <article class="worker-card">
 <div class="worker-head">
-<img src="../<?php echo e($worker['profile_image'] ?: 'profile.jpg'); ?>" alt="<?php echo e($worker['full_name']); ?>">
+<img src="<?php echo e(profile_image_url($worker['profile_image'])); ?>" alt="<?php echo e($worker['full_name']); ?>">
 <div>
 <h3><?php echo e($worker['full_name']); ?></h3>
 <p class="rating-line"><?php echo e(number_format((float) $worker['avg_rating'], 1)); ?> ★ | <?php echo e((int) $worker['total_reviews']); ?> reviews</p>
@@ -99,8 +112,8 @@ body{background:#f7f8fa}.details-container{max-width:1180px;margin:0 auto;paddin
 <?php endforeach; ?>
 </div>
 <?php endif; ?>
-<?php if (current_user($conn) && current_user($conn)['role'] === 'Employer'): ?>
-<form class="booking-form" action="../booking_request.php" method="POST">
+<?php if ($userRole === 'Employer'): ?>
+<form class="booking-form" action="../status bar/booking_request.php" method="POST">
 <input type="hidden" name="job_id" value="<?php echo e($id); ?>">
 <input type="hidden" name="category_id" value="<?php echo e($job['category_id']); ?>">
 <input type="hidden" name="worker_id" value="<?php echo e($worker['user_id']); ?>">
@@ -110,8 +123,12 @@ body{background:#f7f8fa}.details-container{max-width:1180px;margin:0 auto;paddin
 <label>Notes <textarea name="notes" rows="3" placeholder="Add timing, address, or service notes"></textarea></label>
 <button type="submit">Hire Now</button>
 </form>
-<?php elseif (!current_user($conn)): ?>
+<?php elseif (!$user): ?>
 <p><a href="../Login Page/login.html">Login as employer to hire this worker</a></p>
+<?php elseif ($userRole === 'Worker'): ?>
+<p class="muted">Workers can apply for this job, but only employers can hire workers.</p>
+<?php else: ?>
+<p class="muted">Admin accounts can review this worker from the dashboard.</p>
 <?php endif; ?>
 </article>
 <?php endforeach; ?>

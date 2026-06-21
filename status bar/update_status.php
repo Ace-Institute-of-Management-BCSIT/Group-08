@@ -1,10 +1,10 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: dashboard.php');
+    header('Location: ../dasboard/dashboard.php');
     exit();
 }
 
@@ -20,7 +20,7 @@ $allowed = [
 ];
 
 if ($bookingId <= 0 || !in_array($status, $allowed, true)) {
-    header('Location: dashboard.php?status=invalid');
+    header('Location: ../dasboard/dashboard.php?status=invalid');
     exit();
 }
 
@@ -31,7 +31,7 @@ $booking = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 
 if (!$booking) {
-    header('Location: dashboard.php?status=missing');
+    header('Location: ../dasboard/dashboard.php?status=missing');
     exit();
 }
 
@@ -39,7 +39,7 @@ $canUpdate = $user['role'] === 'Admin'
     || ($user['role'] === 'Worker' && (int) $booking['worker_id'] === (int) $user['user_id']);
 
 if (!$canUpdate) {
-    header('Location: dashboard.php?auth=denied');
+    header('Location: ../dasboard/dashboard.php?auth=denied');
     exit();
 }
 
@@ -65,6 +65,6 @@ if (isset($messages[$status])) {
     create_notification($conn, (int) $booking['employer_id'], 'Service update', $messages[$status]);
 }
 
-header('Location: dashboard.php?status=updated');
+header('Location: ../dasboard/dashboard.php?status=updated');
 exit();
 ?>

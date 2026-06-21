@@ -1,10 +1,14 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
+if ($user['role'] !== 'Employer') {
+    header('Location: ../dasboard/dashboard.php?hire=employer-required');
+    exit();
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: Jobs page/jobs.php');
+    header('Location: ../Jobs page/jobs.php');
     exit();
 }
 
@@ -15,7 +19,7 @@ $time = $_POST['requested_time'] ?? '';
 $offeredSalary = (float) ($_POST['offered_salary'] ?? 0);
 
 if ($jobId <= 0 || $workerId <= 0 || $date === '' || $time === '') {
-    header('Location: Jobs page/jobs.php?hire=missing');
+    header('Location: ../Jobs page/jobs.php?hire=missing');
     exit();
 }
 
@@ -26,7 +30,7 @@ $job = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 
 if (!$job) {
-    header('Location: Jobs page/jobs.php?hire=job-not-found');
+    header('Location: ../Jobs page/jobs.php?hire=job-not-found');
     exit();
 }
 
@@ -54,6 +58,6 @@ create_notification(
     $user['full_name'] . ' wants to hire you for ' . $job['title'] . ' on ' . $date . ' at ' . $time . ' for Rs ' . number_format($offeredSalary, 0) . '.'
 );
 
-header('Location: dashboard.php?hire=sent');
+header('Location: ../dasboard/dashboard.php?hire=sent');
 exit();
 ?>

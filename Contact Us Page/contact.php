@@ -25,7 +25,7 @@ if ($firstName === '' || $email === '' || $subject === '' || $message === '') {
     mysqli_stmt_bind_param($stmt, 'sssss', $displayName, $displayName, $email, $subject, $message);
 
     if (mysqli_stmt_execute($stmt)) {
-        $messageText = 'Thank you, ' . htmlspecialchars($firstName, ENT_QUOTES, 'UTF-8') . '! Your message has been sent successfully.';
+        $messageText = 'Thank you, ' . $firstName . '! Your message has been sent successfully.';
         $messageClass = 'success';
     } else {
         $messageText = 'Could not send your message. Please try again.';
@@ -54,7 +54,7 @@ if ($firstName === '' || $email === '' || $subject === '' || $message === '') {
 <body>
     <div class="message-box">
         <h2>Ghar Sathi</h2>
-        <p class="<?php echo $messageClass; ?>"><?php echo $messageText; ?></p>
+        <p class="<?php echo e($messageClass); ?>"><?php echo e($messageText); ?></p>
         <a href="contactus.php">Back to Contact</a>
     </div>
 </body>

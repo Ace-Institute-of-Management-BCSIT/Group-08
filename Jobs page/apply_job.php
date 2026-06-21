@@ -1,10 +1,14 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
+if ($user['role'] !== 'Worker') {
+    header('Location: ../dasboard/dashboard.php?application=worker-required');
+    exit();
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: Jobs page/jobs.php');
+    header('Location: jobs.php');
     exit();
 }
 
@@ -14,7 +18,7 @@ $resumeText = trim($_POST['resume_text'] ?? '');
 $resumeId = null;
 
 if ($jobId <= 0 || $resumeText === '') {
-    header('Location: Jobs page/jobs.php?application=missing');
+    header('Location: jobs.php?application=missing');
     exit();
 }
 
@@ -88,6 +92,6 @@ if ($job) {
     }
 }
 
-header('Location: dashboard.php?application=submitted');
+header('Location: ../dasboard/dashboard.php?application=submitted');
 exit();
 ?>

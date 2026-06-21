@@ -14,6 +14,14 @@ function e($value) {
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 
+function project_path(string $base, string $path): string {
+    if (preg_match('/^(?:[a-z][a-z0-9+.-]*:|\/|#)/i', $path) || strpos($path, '../') === 0 || strpos($path, './') === 0) {
+        return $path;
+    }
+
+    return rtrim($base, '/') . '/' . ltrim($path, '/');
+}
+
 function table_has_column(mysqli $conn, string $table, string $column): bool {
     $stmt = mysqli_prepare($conn, 'SHOW COLUMNS FROM `' . $table . '` LIKE ?');
     if (!$stmt) {
@@ -381,7 +389,7 @@ function seed_worker(mysqli $conn, int $userId, string $name, string $category, 
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 
-    $profileImage = 'profile.jpg';
+    $profileImage = 'images/profile.jpg';
     $status = 'Available - ' . $availability . ' - ' . $location;
     $stmt = mysqli_prepare($conn, 'SELECT profile_id FROM worker_profiles WHERE worker_id = ? LIMIT 1');
     mysqli_stmt_bind_param($stmt, 'i', $userId);
@@ -429,23 +437,32 @@ function category_id_by_name(mysqli $conn, string $category): int {
 
 function service_image(string $category): string {
     $images = [
-        'House Work' => '../images/cleannn.jpeg',
-        'Culinary Aid' => '../images/dish.jpeg',
-        'Culinary Service' => '../images/dish.jpeg',
-        'Education' => '../images/teach.jpeg',
-        'Home Tuition' => '../images/teach.jpeg',
-        'Pet Care' => '../images/dogwash.jpeg',
-        'Self Care' => '../Homepage/images/nurse.jpg',
-        'Personal' => '../Homepage/images/nurse.jpg',
-        'Elderly Care' => '../Homepage/images/nurse.jpg',
-        'Babysitting' => '../Homepage/images/nurse.jpg',
-        'Gardening' => '../Homepage/images/homepagebg.jpg',
-        'Plumbing' => '../images/phone repair.jpeg',
-        'Electrical Work' => '../images/phone repair.jpeg',
-        'Repair' => '../images/phone repair.jpeg',
-        'Other Services' => '../images/phone repair.jpeg',
+        'House Work' => '../images/profile.jpg',
+        'Culinary Aid' => '../images/profile.jpg',
+        'Culinary Service' => '../images/profile.jpg',
+        'Education' => '../images/profile.jpg',
+        'Home Tuition' => '../images/profile.jpg',
+        'Pet Care' => '../images/profile.jpg',
+        'Self Care' => '../images/profile.jpg',
+        'Personal' => '../images/profile.jpg',
+        'Elderly Care' => '../images/profile.jpg',
+        'Babysitting' => '../images/profile.jpg',
+        'Gardening' => '../images/profile.jpg',
+        'Plumbing' => '../images/profile.jpg',
+        'Electrical Work' => '../images/profile.jpg',
+        'Repair' => '../images/profile.jpg',
+        'Other Services' => '../images/profile.jpg',
     ];
-    return $images[$category] ?? '../Homepage/images/nurse.jpg';
+    return $images[$category] ?? '../images/profile.jpg';
+}
+
+function profile_image_url(?string $filename, string $base = '..'): string {
+    $filename = trim($filename ?: 'profile.jpg');
+    if (strpos($filename, '/') !== false || strpos($filename, '\\') !== false) {
+        return $base . '/' . ltrim(str_replace('\\', '/', $filename), '/');
+    }
+
+    return $base . '/images/' . $filename;
 }
 
 function fetch_workers_for_category(mysqli $conn, int $categoryId, int $limit = 6): array {
@@ -517,7 +534,7 @@ function require_user(mysqli $conn, ?string $role = null): array {
         exit();
     }
     if ($role && $user['role'] !== $role && $user['role'] !== 'Admin') {
-        header('Location: /Group-08/dashboard.php?auth=denied');
+        header('Location: /Group-08/dasboard/dashboard.php?auth=denied');
         exit();
     }
     return $user;
@@ -556,14 +573,18 @@ function latest_status_for_worker(mysqli $conn, int $workerId): string {
 
 function render_navbar(mysqli $conn, string $base = '..', string $active = ''): void {
     $user = current_user($conn);
-    $home = $base . '/Homepage/homepage.php';
-    $jobs = $base . '/Jobs page/jobs.php';
-    $about = $base . '/About Us Page/aboutus.php';
-    $contact = $base . '/Contact Us Page/contactus.php';
-    $logo = $base . '/logo.png';
+    $home = project_path($base, 'Homepage/homepage.php');
+    $jobs = project_path($base, 'Jobs page/jobs.php');
+    $about = project_path($base, 'About Us Page/aboutus.php');
+    $contact = project_path($base, 'Contact Us Page/contactus.php');
+    $dashboard = project_path($base, 'dasboard/dashboard.php');
+    $logout = project_path($base, 'Login Page/logout.php');
+    $login = project_path($base, 'Login Page/login.html');
+    $signup = project_path($base, 'Signup page/signup.html');
+    $logo = project_path($base, 'images/logo.png');
     $dashboardLabel = 'Dashboard';
     if ($user) {
-        $dashboardLabel = $user['role'] === 'Admin' ? 'Admin Dashboard' : ($user['role'] === 'Worker' ? 'Worker Dashboard' : 'User Dashboard');
+        $dashboardLabel = $user['role'] === 'Admin' ? 'Admin Dashboard' : ($user['role'] === 'Worker' ? 'Worker Dashboard' : 'Employer Dashboard');
     }
     ?>
     <nav class="navbar">
@@ -579,11 +600,11 @@ function render_navbar(mysqli $conn, string $base = '..', string $active = ''): 
         </ul>
         <div class="auth-buttons nav-buttons">
             <?php if ($user): ?>
-                <a class="signup-btn dashboard-icon" href="<?php echo e($base); ?>/dashboard.php" title="<?php echo e($dashboardLabel); ?>" aria-label="<?php echo e($dashboardLabel); ?>"><i class="fa-solid fa-table-cells-large"></i></a>
-                <a class="login-btn" href="<?php echo e($base); ?>/logout.php">Logout</a>
+                <a class="signup-btn dashboard-icon" href="<?php echo e($dashboard); ?>" title="<?php echo e($dashboardLabel); ?>" aria-label="<?php echo e($dashboardLabel); ?>"><i class="fa-solid fa-table-cells-large"></i></a>
+                <a class="login-btn" href="<?php echo e($logout); ?>">Logout</a>
             <?php else: ?>
-                <a class="login-btn" href="<?php echo e($base); ?>/Login Page/login.html">Login</a>
-                <a class="signup-btn" href="<?php echo e($base); ?>/Signup page/signup.html">Sign Up</a>
+                <a class="login-btn" href="<?php echo e($login); ?>">Login</a>
+                <a class="signup-btn" href="<?php echo e($signup); ?>">Sign Up</a>
             <?php endif; ?>
         </div>
     </nav>
@@ -591,6 +612,8 @@ function render_navbar(mysqli $conn, string $base = '..', string $active = ''): 
 }
 
 function render_footer(string $base = '..', string $redirect = 'Homepage/homepage.php'): void {
+    $subscribe = project_path($base, 'Contact Us Page/subscribe.php');
+    $redirectPath = project_path($base, $redirect);
     ?>
     <footer>
     <div class="footer-container">
@@ -603,7 +626,7 @@ function render_footer(string $base = '..', string $redirect = 'Homepage/homepag
     <div class="footer-column">
     <h3>Be Up to Date!</h3>
     <p>Stay updated with trusted home services and latest job opportunities from Ghar Sathi.</p>
-    <form class="subscribe-form" action="<?php echo e($base); ?>/subscribe.php" method="POST"><input type="email" name="email" placeholder="Email Address" aria-label="Email Address" required><input type="hidden" name="redirect" value="<?php echo e($redirect); ?>"><button type="submit">Subscribe now</button></form>
+    <form class="subscribe-form" action="<?php echo e($subscribe); ?>" method="POST"><input type="email" name="email" placeholder="Email Address" aria-label="Email Address" required><input type="hidden" name="redirect" value="<?php echo e($redirectPath); ?>"><button type="submit">Subscribe now</button></form>
     </div>
     </div>
     <div class="footer-bottom">

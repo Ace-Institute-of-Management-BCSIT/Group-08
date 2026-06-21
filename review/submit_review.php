@@ -1,10 +1,14 @@
 <?php
-require_once __DIR__ . '/includes/app.php';
+require_once __DIR__ . '/../includes/app.php';
 
-$user = require_user($conn, 'Employer');
+$user = require_user($conn);
+if ($user['role'] !== 'Employer') {
+    header('Location: ../dasboard/dashboard.php?review=employer-required');
+    exit();
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: dashboard.php');
+    header('Location: ../dasboard/dashboard.php');
     exit();
 }
 
@@ -14,18 +18,29 @@ $rating = (int) ($_POST['rating'] ?? 0);
 $comment = trim($_POST['review_comment'] ?? '');
 
 if ($bookingId <= 0 || $workerId <= 0 || $rating < 1 || $rating > 5 || $comment === '') {
-    header('Location: dashboard.php?review=invalid');
+    header('Location: ../dasboard/dashboard.php?review=invalid');
     exit();
 }
 
-$stmt = mysqli_prepare($conn, 'SELECT booking_id FROM booking_requests WHERE booking_id = ? AND employer_id = ? AND worker_id = ? LIMIT 1');
+$stmt = mysqli_prepare($conn, 'SELECT booking_id, job_id FROM booking_requests WHERE booking_id = ? AND employer_id = ? AND worker_id = ? LIMIT 1');
 mysqli_stmt_bind_param($stmt, 'iii', $bookingId, $user['user_id'], $workerId);
 mysqli_stmt_execute($stmt);
 $booking = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
 
 if (!$booking) {
-    header('Location: dashboard.php?review=denied');
+    header('Location: ../dasboard/dashboard.php?review=denied');
+    exit();
+}
+
+$stmt = mysqli_prepare($conn, "SELECT id FROM employment_status WHERE worker_id = ? AND employer_id = ? AND service_id = ? AND status = 'Service Completed' LIMIT 1");
+mysqli_stmt_bind_param($stmt, 'iii', $workerId, $user['user_id'], $booking['job_id']);
+mysqli_stmt_execute($stmt);
+$completed = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+mysqli_stmt_close($stmt);
+
+if (!$completed) {
+    header('Location: ../dasboard/dashboard.php?review=not-completed');
     exit();
 }
 
@@ -44,6 +59,6 @@ if (!$exists) {
     create_notification($conn, $workerId, 'New review received', $user['full_name'] . ' left you a ' . $rating . '-star review.');
 }
 
-header('Location: dashboard.php?review=submitted');
+header('Location: ../dasboard/dashboard.php?review=submitted');
 exit();
 ?>
