@@ -106,7 +106,7 @@ window.homepageJobs = <?php echo json_encode($jobs, JSON_HEX_TAG | JSON_HEX_APOS
 <div class="hero-stats">
 <div class="stat"><div class="stat-circle"><i class="fa-solid fa-briefcase"></i><h3><?php echo e($stats['services']); ?>+</h3></div><p>Services</p></div>
 <div class="stat"><div class="stat-circle"><i class="fa-solid fa-users"></i><h3><?php echo e($stats['families']); ?>+</h3></div><p>Families</p></div>
-<div class="stat"><div class="stat-circle"><i class="fa-solid fa-list-check"></i><h3><?php echo e($stats['tasks']); ?>+</h3></div><p>Tasks</p></div>
+<div class="stat"><div class="stat-circle"><i class="fa-solid fa-list-check"></i><h3>25+</h3></div><p>Tasks</p></div>
 </div>
 </div>
 </section>
@@ -114,7 +114,7 @@ window.homepageJobs = <?php echo json_encode($jobs, JSON_HEX_TAG | JSON_HEX_APOS
 <section class="social-bar">
 <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
 <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-<a href="tel:+9779800000000" aria-label="Call us"><i class="fa-solid fa-phone"></i></a>
+<a href="https://web.whatsapp.com/" target="_blank" rel="noopener noreferrer" aria-label="Open WhatsApp"><i class="fa-solid fa-phone"></i></a>
 <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
 </section>
 
@@ -134,7 +134,7 @@ window.homepageJobs = <?php echo json_encode($jobs, JSON_HEX_TAG | JSON_HEX_APOS
 </section>
 
 <section class="service-section">
-<div class="service-image"><img src="../images/profile.jpg" alt="Home care services"></div>
+<div class="service-image"><img src="images/nurse.jpg" alt="Home care services"></div>
 <div class="service-text">
 <h2>Reliable Home Services, Right at Your Doorstep!</h2>
 <p>Ghar Sathi brings trusted household services directly to your home. Our platform helps you choose the right service provider.</p>
@@ -145,7 +145,7 @@ window.homepageJobs = <?php echo json_encode($jobs, JSON_HEX_TAG | JSON_HEX_APOS
 <section class="counter-section">
 <div><h2><?php echo e($stats['families']); ?>+</h2><h4>Households Connected</h4><p>Helping families quickly find trusted professionals.</p></div>
 <div><h2><?php echo e($stats['services']); ?>+</h2><h4>Active Services</h4><p>Growing network of household service opportunities.</p></div>
-<div><h2><?php echo e($stats['tasks']); ?>+</h2><h4>Tasks Applied</h4><p>Providing reliable solutions.</p></div>
+<div><h2>25+</h2><h4>Tasks Applied</h4><p>Providing reliable solutions.</p></div>
 </section>
 
 <section class="testimonial">
