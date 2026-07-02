@@ -33,6 +33,20 @@ function fetch_all_rows($result): array {
     return $rows;
 }
 
+function dashboard_document_href(?string $path): string {
+    $path = trim((string) $path);
+    if ($path === '') {
+        return '#';
+    }
+    if (strpos($path, 'Jobs page/') === 0 || strpos($path, 'About Us Page/') === 0) {
+        return '../' . $path;
+    }
+    if (strpos($path, 'uploads/') === 0) {
+        return '../Jobs page/' . $path;
+    }
+    return $path;
+}
+
 $notifications = [];
 $stmt = mysqli_prepare($conn, 'SELECT title, message, created_at FROM notifications WHERE user_id = ? ORDER BY notification_id DESC LIMIT 8');
 mysqli_stmt_bind_param($stmt, 'i', $userId);
@@ -103,8 +117,8 @@ $adminStats = [
     'Total Users' => count_rows($conn, "SELECT COUNT(*) total FROM users WHERE role = 'Employer'"),
     'Total Workers' => count_rows($conn, "SELECT COUNT(*) total FROM users WHERE role = 'Worker'"),
     'Active Jobs' => count_rows($conn, 'SELECT COUNT(*) total FROM jobs'),
-    'Completed Services' => count_rows($conn, "SELECT COUNT(*) total FROM employment_status WHERE status = 'Service Completed'"),
-    'Revenue' => count_rows($conn, "SELECT COALESCE(SUM(salary), 0) total FROM jobs INNER JOIN booking_requests ON booking_requests.job_id = jobs.job_id WHERE booking_requests.status = 'Accepted'"),
+    'Completed Services' => count_rows($conn, "SELECT COUNT(*) total FROM booking_requests WHERE status = 'Completed'"),
+    'Revenue' => count_rows($conn, "SELECT COALESCE(SUM(salary), 0) total FROM jobs INNER JOIN booking_requests ON booking_requests.job_id = jobs.job_id WHERE booking_requests.status IN ('Accepted','Completed')"),
 ];
 
 $allUsers = $role === 'Admin' ? fetch_all_rows(mysqli_query($conn, 'SELECT user_id, full_name, email, phone, role FROM users ORDER BY user_id DESC LIMIT 50')) : [];
@@ -121,6 +135,9 @@ function current_status_for_booking(array $booking, array $history): string {
     }
     if ($booking['status'] === 'Accepted') {
         return 'Selected/Hired';
+    }
+    if ($booking['status'] === 'Completed') {
+        return 'Service Completed';
     }
     if ($booking['status'] === 'Rejected') {
         return 'Available Again';
@@ -190,7 +207,7 @@ body{background:#f7f8fa}.dashboard{max-width:1200px;margin:0 auto;padding:30px 2
 <div class="dash-card"><span>Total Requests</span><strong><?php echo e(count($bookings)); ?></strong></div>
 <div class="dash-card"><span>Pending</span><strong><?php echo e(count(array_filter($bookings, fn($b) => $b['status'] === 'Pending'))); ?></strong></div>
 <div class="dash-card"><span>Accepted</span><strong><?php echo e(count(array_filter($bookings, fn($b) => $b['status'] === 'Accepted'))); ?></strong></div>
-<div class="dash-card"><span>Completed</span><strong><?php echo e(count_rows($conn, "SELECT COUNT(*) total FROM employment_status WHERE status = 'Service Completed' AND " . ($role === 'Worker' ? 'worker_id' : 'employer_id') . " = " . $userId)); ?></strong></div>
+<div class="dash-card"><span>Completed</span><strong><?php echo e(count_rows($conn, "SELECT COUNT(*) total FROM booking_requests WHERE status = 'Completed' AND " . ($role === 'Worker' ? 'worker_id' : 'employer_id') . " = " . $userId)); ?></strong></div>
 <div class="dash-card"><span>Notifications</span><strong><?php echo e(count($notifications)); ?></strong></div>
 </section>
 <?php endif; ?>
@@ -211,7 +228,9 @@ body{background:#f7f8fa}.dashboard{max-width:1200px;margin:0 auto;padding:30px 2
 <div class="item">
 <strong><?php echo e($booking['title']); ?></strong>
 <p><?php echo e($booking['category_name']); ?> | Date: <?php echo e($booking['booking_date'] ?: $booking['requested_date']); ?> | <span class="status"><?php echo e($booking['status']); ?></span></p>
-<p>Employer: <?php echo e($booking['employer_name']); ?> (<?php echo e($booking['employer_phone'] ?: 'No phone'); ?>) | Worker: <?php echo e($booking['worker_name']); ?> (<?php echo e($booking['worker_phone'] ?: 'No phone'); ?>)</p>
+<?php $contactsVisible = in_array($booking['status'], ['Accepted', 'Completed'], true); ?>
+<p>Employer: <?php echo e($booking['employer_name']); ?><?php echo $contactsVisible ? ' (' . e($booking['employer_phone'] ?: 'No phone') . ', ' . e($booking['employer_email'] ?: 'No email') . ')' : ''; ?> | Worker: <?php echo e($booking['worker_name']); ?><?php echo $contactsVisible ? ' (' . e($booking['worker_phone'] ?: 'No phone') . ', ' . e($booking['worker_email'] ?: 'No email') . ')' : ''; ?></p>
+<?php if (!$contactsVisible): ?><p class="muted">Contact details appear after the worker accepts the hire request.</p><?php endif; ?>
 <div class="progress">
 <?php foreach ($statusSteps as $index => $step): ?>
 <span class="<?php echo $currentIndex !== false && $index <= $currentIndex ? 'done' : ''; ?>"><?php echo e($step); ?></span>
@@ -238,7 +257,7 @@ body{background:#f7f8fa}.dashboard{max-width:1200px;margin:0 auto;padding:30px 2
 <button type="submit">Update Status</button>
 </form>
 <?php endif; ?>
-<?php if ($role === 'Employer' && $currentStatus === 'Service Completed'): ?>
+<?php if ($role === 'Employer' && ($currentStatus === 'Service Completed' || $booking['status'] === 'Completed')): ?>
 <?php if (isset($reviewedBookingIds[(int) $booking['booking_id']])): ?>
 <p class="status">Review submitted</p>
 <?php else: ?>
@@ -249,6 +268,20 @@ body{background:#f7f8fa}.dashboard{max-width:1200px;margin:0 auto;padding:30px 2
 <?php endforeach; ?>
 </section>
 
+<?php if ($role === 'Employer'): ?>
+<section class="dash-section">
+<h2>Completed Worker Services</h2>
+<?php $completedBookings = array_filter($bookings, fn($b) => $b['status'] === 'Completed' || current_status_for_booking($b, $statusHistory) === 'Service Completed'); ?>
+<?php if (!$completedBookings): ?><p class="muted">No completed services yet.</p><?php endif; ?>
+<div class="table-wrap"><table><thead><tr><th>Service</th><th>Completion Date</th><th>Employer</th><th>Status</th></tr></thead><tbody>
+<?php foreach ($completedBookings as $booking): ?>
+<?php $history = $statusHistory[(int) $booking['worker_id']] ?? []; $completedAt = $booking['updated_at']; foreach ($history as $event) { if ((int) ($event['service_id'] ?? 0) === (int) $booking['job_id'] && $event['status'] === 'Service Completed') { $completedAt = $event['completion_date'] ?: $event['updated_at']; break; } } ?>
+<tr><td><?php echo e($booking['title']); ?></td><td><?php echo e($completedAt); ?></td><td><?php echo e($booking['employer_name']); ?></td><td><?php echo e($booking['status']); ?></td></tr>
+<?php endforeach; ?>
+</tbody></table></div>
+</section>
+<?php endif; ?>
+
 <?php if ($role !== 'Employer'): ?>
 <section class="dash-section">
 <h2><?php echo $role === 'Admin' ? 'Worker Verification' : 'My Resume Applications'; ?></h2>
@@ -258,7 +291,9 @@ body{background:#f7f8fa}.dashboard{max-width:1200px;margin:0 auto;padding:30px 2
 <strong><?php echo e($application['title']); ?></strong>
 <p><?php echo e($application['full_name']); ?> | <?php echo e($application['category_name']); ?> | <span class="status"><?php echo e($application['admin_status']); ?></span></p>
 <p><?php echo e($application['resume_text']); ?></p>
-<?php if (!empty($application['resume_file'])): ?><p><a href="<?php echo e($application['resume_file']); ?>">View Resume</a></p><?php endif; ?>
+<?php if (!empty($application['resume_file'])): ?><p><a href="<?php echo e(dashboard_document_href($application['resume_file'])); ?>">View Resume</a></p><?php endif; ?>
+<?php if (!empty($application['police_report_file'])): ?><p><a href="<?php echo e(dashboard_document_href($application['police_report_file'])); ?>">View Police Report</a></p><?php endif; ?>
+<?php if (!empty($application['citizenship_file'])): ?><p><a href="<?php echo e(dashboard_document_href($application['citizenship_file'])); ?>">View Citizenship Card</a></p><?php endif; ?>
 <?php if ($role === 'Admin' && $application['admin_status'] === 'Pending'): ?>
 <form class="actions" action="admin_application.php" method="POST">
 <input type="hidden" name="application_id" value="<?php echo e($application['application_id']); ?>">

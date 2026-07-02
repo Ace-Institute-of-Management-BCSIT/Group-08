@@ -41,6 +41,10 @@ function ensure_column(mysqli $conn, string $table, string $column, string $defi
     }
 }
 
+function ensure_booking_status_values(mysqli $conn): void {
+    mysqli_query($conn, "ALTER TABLE booking_requests MODIFY status ENUM('Pending','Accepted','Rejected','Completed') NOT NULL DEFAULT 'Pending'");
+}
+
 function ensure_app_schema(mysqli $conn): void {
     mysqli_query($conn, "CREATE TABLE IF NOT EXISTS users (
         user_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -53,6 +57,10 @@ function ensure_app_schema(mysqli $conn): void {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
     ensure_column($conn, 'users', 'created_at', "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+    ensure_column($conn, 'users', 'email_verified', "email_verified TINYINT(1) NOT NULL DEFAULT 0");
+    ensure_column($conn, 'users', 'verification_token', "verification_token VARCHAR(128) NULL");
+    ensure_column($conn, 'users', 'verification_sent_at', "verification_sent_at DATETIME NULL");
+    mysqli_query($conn, "UPDATE users SET email_verified = 1, verification_token = NULL WHERE role = 'Admin' OR email LIKE '%@gharsathi.local'");
 
     mysqli_query($conn, "CREATE TABLE IF NOT EXISTS categories (
         category_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -111,6 +119,8 @@ function ensure_app_schema(mysqli $conn): void {
     )");
     ensure_column($conn, 'job_applications', 'resume_text', "resume_text TEXT");
     ensure_column($conn, 'job_applications', 'resume_file', "resume_file VARCHAR(255)");
+    ensure_column($conn, 'job_applications', 'police_report_file', "police_report_file VARCHAR(255)");
+    ensure_column($conn, 'job_applications', 'citizenship_file', "citizenship_file VARCHAR(255)");
     ensure_column($conn, 'job_applications', 'admin_status', "admin_status VARCHAR(30) NOT NULL DEFAULT 'Pending'");
     ensure_column($conn, 'job_applications', 'created_at', "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
 
@@ -120,6 +130,44 @@ function ensure_app_schema(mysqli $conn): void {
         file_name VARCHAR(255) NOT NULL,
         file_path VARCHAR(255) NOT NULL,
         upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    )");
+    ensure_column($conn, 'applications', 'resume_path', "resume_path VARCHAR(255)");
+    ensure_column($conn, 'applications', 'police_report_path', "police_report_path VARCHAR(255)");
+    ensure_column($conn, 'applications', 'citizenship_card_path', "citizenship_card_path VARCHAR(255)");
+    ensure_column($conn, 'applications', 'upload_date', "upload_date TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP");
+
+    mysqli_query($conn, "CREATE TABLE IF NOT EXISTS application_documents (
+        document_id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        job_id INT NOT NULL,
+        application_id INT NULL,
+        resume_path VARCHAR(255),
+        police_report_path VARCHAR(255),
+        citizenship_card_path VARCHAR(255) NOT NULL,
+        upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_user_job_documents (user_id, job_id),
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+        FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE,
+        FOREIGN KEY (application_id) REFERENCES applications(application_id) ON DELETE SET NULL
+    )");
+
+    mysqli_query($conn, "CREATE TABLE IF NOT EXISTS police_report_uploads (
+        report_id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        file_name VARCHAR(255) NOT NULL,
+        file_path VARCHAR(255) NOT NULL,
+        upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    )");
+
+    mysqli_query($conn, "CREATE TABLE IF NOT EXISTS citizenship_uploads (
+        citizenship_id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        file_name VARCHAR(255) NOT NULL,
+        file_path VARCHAR(255) NOT NULL,
+        upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_user_citizenship (user_id),
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
     )");
 
@@ -182,6 +230,7 @@ function ensure_app_schema(mysqli $conn): void {
     ensure_column($conn, 'booking_requests', 'booking_date', "booking_date DATE NULL");
     ensure_column($conn, 'booking_requests', 'requested_date', "requested_date DATE NULL");
     ensure_column($conn, 'booking_requests', 'service_category', "service_category VARCHAR(100)");
+    ensure_booking_status_values($conn);
     mysqli_query($conn, "UPDATE booking_requests SET request_id = booking_id WHERE request_id IS NULL");
     mysqli_query($conn, "UPDATE booking_requests SET booking_date = requested_date WHERE booking_date IS NULL AND requested_date IS NOT NULL");
     mysqli_query($conn, "UPDATE booking_requests SET requested_date = booking_date WHERE requested_date IS NULL AND booking_date IS NOT NULL");
@@ -215,6 +264,20 @@ function ensure_app_schema(mysqli $conn): void {
         FOREIGN KEY (worker_id) REFERENCES users(user_id) ON DELETE CASCADE,
         FOREIGN KEY (employer_id) REFERENCES users(user_id) ON DELETE SET NULL,
         FOREIGN KEY (service_id) REFERENCES jobs(job_id) ON DELETE SET NULL
+    )");
+
+    mysqli_query($conn, "CREATE TABLE IF NOT EXISTS contact_exchanges (
+        exchange_id INT AUTO_INCREMENT PRIMARY KEY,
+        booking_id INT NOT NULL,
+        job_id INT NOT NULL,
+        employer_id INT NOT NULL,
+        worker_id INT NOT NULL,
+        exchanged_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_booking_exchange (booking_id),
+        FOREIGN KEY (booking_id) REFERENCES booking_requests(booking_id) ON DELETE CASCADE,
+        FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE,
+        FOREIGN KEY (employer_id) REFERENCES users(user_id) ON DELETE CASCADE,
+        FOREIGN KEY (worker_id) REFERENCES users(user_id) ON DELETE CASCADE
     )");
 
     mysqli_query($conn, "CREATE TABLE IF NOT EXISTS notifications (
@@ -290,8 +353,8 @@ function ensure_app_schema(mysqli $conn): void {
         ('Education'), ('Pet Care'), ('Self Care'), ('Elderly Care'), ('Babysitting'),
         ('Gardening'), ('Plumbing'), ('Electrical Work'), ('Personal'), ('Repair'), ('Other Services')");
 
-    mysqli_query($conn, "INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role) VALUES
-        (1, 'Ghar Sathi Admin', 'admin', 'admin@gharsathi.local', '9800000000', 'admin123', 'Admin')");
+    mysqli_query($conn, "INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role, email_verified) VALUES
+        (1, 'Ghar Sathi Admin', 'admin', 'admin@gharsathi.local', '9800000000', 'admin123', 'Admin', 1)");
 
     seed_sample_content($conn);
 }
@@ -384,7 +447,7 @@ function seed_worker(mysqli $conn, int $userId, string $name, string $category, 
     $email = strtolower(preg_replace('/[^a-z0-9]+/i', '.', $name)) . '@gharsathi.local';
     $username = strtolower(preg_replace('/[^a-z0-9]+/i', '_', $name));
     $phone = '98' . str_pad((string) $userId, 8, '0', STR_PAD_LEFT);
-    $stmt = mysqli_prepare($conn, "INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role) VALUES (?, ?, ?, ?, ?, 'worker123', 'Worker')");
+    $stmt = mysqli_prepare($conn, "INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role, email_verified) VALUES (?, ?, ?, ?, ?, 'worker123', 'Worker', 1)");
     mysqli_stmt_bind_param($stmt, 'issss', $userId, $name, $username, $email, $phone);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
@@ -456,6 +519,48 @@ function service_image(string $category): string {
     return $images[$category] ?? '../images/profile.jpg';
 }
 
+function allowed_upload_extension(array $file, array $allowed): bool {
+    if (empty($file['name'])) {
+        return false;
+    }
+    $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    return in_array($extension, $allowed, true);
+}
+
+function save_uploaded_file(array $file, string $relativeDir, int $userId, array $allowed): ?string {
+    if (empty($file['name']) || $file['error'] !== UPLOAD_ERR_OK || !allowed_upload_extension($file, $allowed)) {
+        return null;
+    }
+    $uploadDir = dirname(__DIR__) . '/' . trim($relativeDir, '/');
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0775, true);
+    }
+    $safeName = preg_replace('/[^a-zA-Z0-9._-]/', '_', basename($file['name']));
+    $storedName = $userId . '_' . time() . '_' . bin2hex(random_bytes(3)) . '_' . $safeName;
+    $target = $uploadDir . '/' . $storedName;
+    if (!move_uploaded_file($file['tmp_name'], $target)) {
+        return null;
+    }
+    return trim($relativeDir, '/') . '/' . $storedName;
+}
+
+function send_verification_email(string $email, string $name, string $token): bool {
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $base = rtrim(dirname(dirname($_SERVER['SCRIPT_NAME'] ?? '/Group-08/Signup page/signup.php')), '/\\');
+    $link = $scheme . '://' . $host . $base . '/Signup page/verify_email.php?token=' . urlencode($token);
+    $subject = 'Verify your Ghar Sathi email';
+    $body = "Hello {$name},\n\nIs this you? Verify your email for Ghar Sathi:\n{$link}\n\nYou can log in after verification.";
+    $headers = 'From: Ghar Sathi <no-reply@gharsathi.local>';
+    $sent = @mail($email, $subject, $body, $headers);
+    $logDir = dirname(__DIR__) . '/tmp';
+    if (!is_dir($logDir)) {
+        mkdir($logDir, 0775, true);
+    }
+    file_put_contents($logDir . '/verification_emails.log', date('c') . " {$email} {$link}\n", FILE_APPEND);
+    return $sent;
+}
+
 function profile_image_url(?string $filename, string $base = '..'): string {
     $filename = trim($filename ?: 'profile.jpg');
     if (strpos($filename, '/') !== false || strpos($filename, '\\') !== false) {
@@ -504,6 +609,34 @@ function fetch_latest_reviews(mysqli $conn, int $workerId, int $limit = 3): arra
         return [];
     }
     mysqli_stmt_bind_param($stmt, 'iii', $workerId, $workerId, $limit);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $rows = [];
+    while ($row = $result ? mysqli_fetch_assoc($result) : null) {
+        $rows[] = $row;
+    }
+    mysqli_stmt_close($stmt);
+    return $rows;
+}
+
+function fetch_worker_completed_history(mysqli $conn, int $workerId, int $limit = 5): array {
+    $stmt = mysqli_prepare($conn, "SELECT booking_requests.booking_id, jobs.title, users.full_name AS employer_name,
+            employment_status.completion_date, employment_status.updated_at,
+            reviews.rating, COALESCE(reviews.review_comment, reviews.comment) AS review_summary
+        FROM employment_status
+        INNER JOIN jobs ON jobs.job_id = employment_status.service_id
+        LEFT JOIN booking_requests ON booking_requests.job_id = employment_status.service_id
+            AND booking_requests.worker_id = employment_status.worker_id
+            AND booking_requests.employer_id = employment_status.employer_id
+        LEFT JOIN users ON users.user_id = employment_status.employer_id
+        LEFT JOIN reviews ON reviews.booking_id = booking_requests.booking_id
+        WHERE employment_status.worker_id = ? AND employment_status.status = 'Service Completed'
+        ORDER BY employment_status.id DESC
+        LIMIT ?");
+    if (!$stmt) {
+        return [];
+    }
+    mysqli_stmt_bind_param($stmt, 'ii', $workerId, $limit);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $rows = [];

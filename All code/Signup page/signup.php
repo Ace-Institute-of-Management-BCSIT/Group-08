@@ -40,12 +40,13 @@ if ($fullName === '' || $username === '' || $email === '' || $password === '' ||
         $message = 'An account with this username or email already exists.';
     } else {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+        $verificationToken = bin2hex(random_bytes(32));
         $stmt = mysqli_prepare(
             $conn,
-            'INSERT INTO users (full_name, username, email, phone, password, role)
-             VALUES (?, ?, ?, ?, ?, ?)'
+            'INSERT INTO users (full_name, username, email, phone, password, role, email_verified, verification_token, verification_sent_at)
+             VALUES (?, ?, ?, ?, ?, ?, 0, ?, NOW())'
         );
-        mysqli_stmt_bind_param($stmt, 'ssssss', $fullName, $username, $email, $phone, $passwordHash, $role);
+        mysqli_stmt_bind_param($stmt, 'sssssss', $fullName, $username, $email, $phone, $passwordHash, $role, $verificationToken);
 
         if (mysqli_stmt_execute($stmt)) {
             $newUserId = mysqli_insert_id($conn);
@@ -56,11 +57,9 @@ if ($fullName === '' || $username === '' || $email === '' || $password === '' ||
                 mysqli_stmt_close($profile);
                 record_employment_status($conn, $newUserId, null, null, 'Available');
             }
-            $_SESSION['user_id'] = $newUserId;
-            $_SESSION['full_name'] = $fullName;
-            $_SESSION['role'] = $role;
-            header('Location: ../dasboard/dashboard.php');
-            exit();
+            send_verification_email($email, $fullName, $verificationToken);
+            $messageClass = 'success';
+            $message = 'Account created. Please check your email and verify your account before logging in.';
         } else {
             $message = 'Could not create account. Please try again.';
         }

@@ -49,11 +49,19 @@ $completionDate = $status === 'Service Completed' ? date('Y-m-d') : null;
 record_employment_status($conn, (int) $booking['worker_id'], (int) $booking['employer_id'], (int) $booking['job_id'], $status, $startDate, $completionDate);
 
 if ($status === 'Service Completed' || $status === 'Available Again') {
-    $done = $status === 'Service Completed' ? 'Accepted' : 'Accepted';
+    $done = $status === 'Service Completed' ? 'Completed' : 'Accepted';
     $stmt = mysqli_prepare($conn, 'UPDATE booking_requests SET status = ? WHERE booking_id = ?');
     mysqli_stmt_bind_param($stmt, 'si', $done, $bookingId);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
+
+    if ($status === 'Service Completed') {
+        $available = 'Available';
+        $stmt = mysqli_prepare($conn, 'UPDATE worker_profiles SET current_status = ? WHERE worker_id = ?');
+        mysqli_stmt_bind_param($stmt, 'si', $available, $booking['worker_id']);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
 }
 
 $messages = [

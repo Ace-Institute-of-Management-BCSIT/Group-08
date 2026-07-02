@@ -9,6 +9,9 @@ CREATE TABLE IF NOT EXISTS users (
     phone VARCHAR(20),
     password VARCHAR(255) NOT NULL,
     role ENUM('Employer','Worker','Admin') NOT NULL DEFAULT 'Employer',
+    email_verified TINYINT(1) NOT NULL DEFAULT 0,
+    verification_token VARCHAR(128) NULL,
+    verification_sent_at DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -58,6 +61,8 @@ CREATE TABLE IF NOT EXISTS job_applications (
     status VARCHAR(50) NOT NULL DEFAULT 'Pending',
     resume_text TEXT,
     resume_file VARCHAR(255),
+    police_report_file VARCHAR(255),
+    citizenship_file VARCHAR(255),
     admin_status VARCHAR(30) NOT NULL DEFAULT 'Pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE,
@@ -81,10 +86,48 @@ CREATE TABLE IF NOT EXISTS applications (
     cover_letter TEXT,
     status VARCHAR(50) NOT NULL DEFAULT 'Pending',
     admin_status VARCHAR(30) NOT NULL DEFAULT 'Pending',
+    resume_path VARCHAR(255),
+    police_report_path VARCHAR(255),
+    citizenship_card_path VARCHAR(255),
+    upload_date TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE,
     FOREIGN KEY (worker_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (resume_id) REFERENCES resume_uploads(resume_id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS application_documents (
+    document_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    job_id INT NOT NULL,
+    application_id INT NULL,
+    resume_path VARCHAR(255),
+    police_report_path VARCHAR(255),
+    citizenship_card_path VARCHAR(255) NOT NULL,
+    upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_user_job_documents (user_id, job_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE,
+    FOREIGN KEY (application_id) REFERENCES applications(application_id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS police_report_uploads (
+    report_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS citizenship_uploads (
+    citizenship_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_user_citizenship (user_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS hire_requests (
@@ -118,7 +161,7 @@ CREATE TABLE IF NOT EXISTS booking_requests (
     requested_date DATE NOT NULL,
     service_category VARCHAR(100),
     notes TEXT,
-    status ENUM('Pending','Accepted','Rejected') NOT NULL DEFAULT 'Pending',
+    status ENUM('Pending','Accepted','Rejected','Completed') NOT NULL DEFAULT 'Pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE,
@@ -150,6 +193,20 @@ CREATE TABLE IF NOT EXISTS employment_status (
     FOREIGN KEY (worker_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (employer_id) REFERENCES users(user_id) ON DELETE SET NULL,
     FOREIGN KEY (service_id) REFERENCES jobs(job_id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS contact_exchanges (
+    exchange_id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL,
+    job_id INT NOT NULL,
+    employer_id INT NOT NULL,
+    worker_id INT NOT NULL,
+    exchanged_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_booking_exchange (booking_id),
+    FOREIGN KEY (booking_id) REFERENCES booking_requests(booking_id) ON DELETE CASCADE,
+    FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE,
+    FOREIGN KEY (employer_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (worker_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS notifications (
@@ -228,8 +285,8 @@ INSERT IGNORE INTO categories (category_name) VALUES
 ('Repair'),
 ('Other Services');
 
-INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role) VALUES
-(1, 'Ghar Sathi Admin', 'admin', 'admin@gharsathi.local', '9800000000', 'admin123', 'Admin');
+INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role, email_verified) VALUES
+(1, 'Ghar Sathi Admin', 'admin', 'admin@gharsathi.local', '9800000000', 'admin123', 'Admin', 1);
 
 INSERT IGNORE INTO jobs (employer_id, category_id, title, description, job_type, salary, location)
 SELECT 1, category_id, 'House Cleaner', 'Daily household cleaning, laundry, and basic home help.', 'Full/Part Time', 20000, 'Kathmandu'
@@ -255,17 +312,17 @@ INSERT IGNORE INTO jobs (employer_id, category_id, title, description, job_type,
 SELECT 1, category_id, 'Tech Repair', 'Phone, laptop, and household appliance repair support.', 'Freelance', 15000, 'Kathmandu'
 FROM categories WHERE category_name = 'Other Services';
 
-INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role) VALUES
-(50, 'Sita Tamang', 'sita_tamang', 'sita.tamang@gharsathi.local', '9800000050', 'worker123', 'Worker'),
-(51, 'Maya Shrestha', 'maya_shrestha', 'maya.shrestha@gharsathi.local', '9800000051', 'worker123', 'Worker'),
-(52, 'Ramesh Karki', 'ramesh_karki', 'ramesh.karki@gharsathi.local', '9800000052', 'worker123', 'Worker'),
-(53, 'Puja Rai', 'puja_rai', 'puja.rai@gharsathi.local', '9800000053', 'worker123', 'Worker'),
-(54, 'Anita Gurung', 'anita_gurung', 'anita.gurung@gharsathi.local', '9800000054', 'worker123', 'Worker'),
-(55, 'Hari Prasad Adhikari', 'hari_prasad_adhikari', 'hari.adhikari@gharsathi.local', '9800000055', 'worker123', 'Worker'),
-(56, 'Sunita Lama', 'sunita_lama', 'sunita.lama@gharsathi.local', '9800000056', 'worker123', 'Worker'),
-(57, 'Kiran Thapa', 'kiran_thapa', 'kiran.thapa@gharsathi.local', '9800000057', 'worker123', 'Worker'),
-(58, 'Bikash Maharjan', 'bikash_maharjan', 'bikash.maharjan@gharsathi.local', '9800000058', 'worker123', 'Worker'),
-(59, 'Nabin K.C.', 'nabin_kc', 'nabin.kc@gharsathi.local', '9800000059', 'worker123', 'Worker');
+INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role, email_verified) VALUES
+(50, 'Sita Tamang', 'sita_tamang', 'sita.tamang@gharsathi.local', '9800000050', 'worker123', 'Worker', 1),
+(51, 'Maya Shrestha', 'maya_shrestha', 'maya.shrestha@gharsathi.local', '9800000051', 'worker123', 'Worker', 1),
+(52, 'Ramesh Karki', 'ramesh_karki', 'ramesh.karki@gharsathi.local', '9800000052', 'worker123', 'Worker', 1),
+(53, 'Puja Rai', 'puja_rai', 'puja.rai@gharsathi.local', '9800000053', 'worker123', 'Worker', 1),
+(54, 'Anita Gurung', 'anita_gurung', 'anita.gurung@gharsathi.local', '9800000054', 'worker123', 'Worker', 1),
+(55, 'Hari Prasad Adhikari', 'hari_prasad_adhikari', 'hari.adhikari@gharsathi.local', '9800000055', 'worker123', 'Worker', 1),
+(56, 'Sunita Lama', 'sunita_lama', 'sunita.lama@gharsathi.local', '9800000056', 'worker123', 'Worker', 1),
+(57, 'Kiran Thapa', 'kiran_thapa', 'kiran.thapa@gharsathi.local', '9800000057', 'worker123', 'Worker', 1),
+(58, 'Bikash Maharjan', 'bikash_maharjan', 'bikash.maharjan@gharsathi.local', '9800000058', 'worker123', 'Worker', 1),
+(59, 'Nabin K.C.', 'nabin_kc', 'nabin.kc@gharsathi.local', '9800000059', 'worker123', 'Worker', 1);
 
 INSERT IGNORE INTO worker_profiles (worker_id, skills, experience_years, profile_image, verification_status, current_status) VALUES
 (50, 'Cleaning, laundry, kitchen organization, and deep cleaning.', 5, 'images/profile.jpg', 'Approved', 'Available weekdays - Kathmandu'),

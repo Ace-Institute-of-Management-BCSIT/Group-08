@@ -30,6 +30,19 @@ if ($id > 0) {
 
 $user = current_user($conn);
 $userRole = $user['role'] ?? '';
+$contactExchanges = [];
+if ($job && $user) {
+    $stmt = mysqli_prepare($conn, "SELECT worker_id FROM contact_exchanges WHERE job_id = ? AND (employer_id = ? OR worker_id = ?)
+        UNION
+        SELECT worker_id FROM booking_requests WHERE job_id = ? AND status IN ('Accepted','Completed') AND (employer_id = ? OR worker_id = ?)");
+    mysqli_stmt_bind_param($stmt, 'iiiiii', $id, $user['user_id'], $user['user_id'], $id, $user['user_id'], $user['user_id']);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    while ($row = $result ? mysqli_fetch_assoc($result) : null) {
+        $contactExchanges[(int) $row['worker_id']] = true;
+    }
+    mysqli_stmt_close($stmt);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -73,7 +86,7 @@ body{background:#f7f8fa}.details-container{max-width:1180px;margin:0 auto;paddin
 <?php elseif ($userRole === 'Worker'): ?>
 <a href="../About Us Page/apply_resume.php?job_id=<?php echo e($id); ?>">Apply Job</a>
 <?php elseif ($userRole === 'Employer'): ?>
-<span class="muted">Choose a worker below to send a hire request.</span>
+<span class="muted">Choose a worker below and send a hire request.</span>
 <?php else: ?>
 <a href="../dasboard/dashboard.php">Admin Dashboard</a>
 <?php endif; ?>
@@ -81,10 +94,6 @@ body{background:#f7f8fa}.details-container{max-width:1180px;margin:0 auto;paddin
 </div>
 <h2>Job Description</h2>
 <p class="description"><?php echo e($job['description']); ?></p>
-<h2>Employer Info</h2>
-<p class="description">
-<?php echo e($job['employer_name']); ?> · <?php echo e($job['employer_email']); ?> · <?php echo e($job['employer_phone'] ?: 'Phone not provided'); ?>
-</p>
 <section class="applied-workers">
 <h2>Available Workers</h2>
 <?php if (!$workers): ?>
@@ -102,7 +111,21 @@ body{background:#f7f8fa}.details-container{max-width:1180px;margin:0 auto;paddin
 </div>
 <p><?php echo e($worker['skills']); ?></p>
 <p class="worker-meta"><?php echo e($worker['experience_years']); ?> years experience | <?php echo e($worker['current_status']); ?></p>
-<p class="worker-meta">Phone: <?php echo e($worker['phone'] ?: 'Not provided'); ?> | Email: <?php echo e($worker['email'] ?: 'Not provided'); ?></p>
+<?php $canViewContact = isset($contactExchanges[(int) $worker['user_id']]); ?>
+<?php if ($canViewContact): ?>
+<p class="worker-meta">Employer: <?php echo e($job['employer_name']); ?> | <?php echo e($job['employer_phone'] ?: 'Phone not provided'); ?> | <?php echo e($job['employer_email']); ?></p>
+<p class="worker-meta">Worker: <?php echo e($worker['phone'] ?: 'Phone not provided'); ?> | <?php echo e($worker['email'] ?: 'Email not provided'); ?></p>
+<?php else: ?>
+<p class="worker-meta">Contact details become visible after the worker accepts the hire request.</p>
+<?php endif; ?>
+<?php $workHistory = fetch_worker_completed_history($conn, (int) $worker['user_id'], 3); ?>
+<div class="latest-reviews">
+<strong>Completed Work History</strong>
+<?php if (!$workHistory): ?><p>No completed services yet.</p><?php endif; ?>
+<?php foreach ($workHistory as $history): ?>
+<p><?php echo e($history['title']); ?> | Employer: <?php echo e($canViewContact ? ($history['employer_name'] ?: 'Employer') : 'Hidden'); ?> | <?php echo e($history['completion_date'] ?: $history['updated_at']); ?><?php if ($history['rating']): ?> | <?php echo e((int) $history['rating']); ?> star<?php endif; ?><?php if ($history['review_summary']): ?> | <?php echo e($history['review_summary']); ?><?php endif; ?></p>
+<?php endforeach; ?>
+</div>
 <?php $latestReviews = fetch_latest_reviews($conn, (int) $worker['user_id'], 2); ?>
 <?php if ($latestReviews): ?>
 <div class="latest-reviews">

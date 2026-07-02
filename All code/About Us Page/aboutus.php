@@ -126,14 +126,14 @@ Showcase your skills and experience to employers.
 
 
 
-<a class="card" href="../Jobs page/jobs.php">
+<a class="card" href="police_report.php">
 
 <h3>
-Find Jobs
+Upload Police Report
 </h3>
 
 <p>
-Browse relevant job listings.
+Add your police clearance document for safer verification.
 </p>
 
 </a>
