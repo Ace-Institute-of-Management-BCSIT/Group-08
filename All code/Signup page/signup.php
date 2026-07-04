@@ -40,13 +40,12 @@ if ($fullName === '' || $username === '' || $email === '' || $password === '' ||
         $message = 'An account with this username or email already exists.';
     } else {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-        $verificationToken = bin2hex(random_bytes(32));
         $stmt = mysqli_prepare(
             $conn,
-            'INSERT INTO users (full_name, username, email, phone, password, role, email_verified, verification_token, verification_sent_at)
-             VALUES (?, ?, ?, ?, ?, ?, 0, ?, NOW())'
+            'INSERT INTO users (full_name, username, email, phone, password, role)
+             VALUES (?, ?, ?, ?, ?, ?)'
         );
-        mysqli_stmt_bind_param($stmt, 'sssssss', $fullName, $username, $email, $phone, $passwordHash, $role, $verificationToken);
+        mysqli_stmt_bind_param($stmt, 'ssssss', $fullName, $username, $email, $phone, $passwordHash, $role);
 
         if (mysqli_stmt_execute($stmt)) {
             $newUserId = mysqli_insert_id($conn);
@@ -57,9 +56,8 @@ if ($fullName === '' || $username === '' || $email === '' || $password === '' ||
                 mysqli_stmt_close($profile);
                 record_employment_status($conn, $newUserId, null, null, 'Available');
             }
-            send_verification_email($email, $fullName, $verificationToken);
             $messageClass = 'success';
-            $message = 'Account created. Please check your email and verify your account before logging in.';
+            $message = 'Account created. You can now log in with your registered credentials.';
         } else {
             $message = 'Could not create account. Please try again.';
         }

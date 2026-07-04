@@ -19,7 +19,7 @@ if ($login === '' || $password === '') {
 } else {
     $stmt = mysqli_prepare(
         $conn,
-        'SELECT user_id, full_name, username, email, password, role, email_verified
+        'SELECT user_id, full_name, username, email, password, role
          FROM users
          WHERE username = ? OR email = ? OR phone = ?
          LIMIT 1'
@@ -36,16 +36,12 @@ if ($login === '' || $password === '') {
 
     $passwordMatches = $user && (password_verify($password, $user['password']) || $password === $user['password']);
     if ($passwordMatches) {
-        if ((int) ($user['email_verified'] ?? 0) !== 1) {
-            $message = 'Please verify your email before logging in. Check your inbox for the Ghar Sathi verification link.';
-        } else {
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['full_name'] = $user['full_name'];
         $_SESSION['role'] = $user['role'];
 
         header('Location: ../dasboard/dashboard.php');
         exit();
-        }
     } else {
         $message = 'Invalid username, email, phone, or password.';
     }

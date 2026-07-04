@@ -9,9 +9,6 @@ CREATE TABLE IF NOT EXISTS users (
     phone VARCHAR(20),
     password VARCHAR(255) NOT NULL,
     role ENUM('Employer','Worker','Admin') NOT NULL DEFAULT 'Employer',
-    email_verified TINYINT(1) NOT NULL DEFAULT 0,
-    verification_token VARCHAR(128) NULL,
-    verification_sent_at DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -285,8 +282,8 @@ INSERT IGNORE INTO categories (category_name) VALUES
 ('Repair'),
 ('Other Services');
 
-INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role, email_verified) VALUES
-(1, 'Ghar Sathi Admin', 'admin', 'admin@gharsathi.local', '9800000000', 'admin123', 'Admin', 1);
+INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role) VALUES
+(1, 'Ghar Sathi Admin', 'admin', 'admin@gharsathi.local', '9800000000', 'admin123', 'Admin');
 
 INSERT IGNORE INTO jobs (employer_id, category_id, title, description, job_type, salary, location)
 SELECT 1, category_id, 'House Cleaner', 'Daily household cleaning, laundry, and basic home help.', 'Full/Part Time', 20000, 'Kathmandu'
@@ -312,17 +309,17 @@ INSERT IGNORE INTO jobs (employer_id, category_id, title, description, job_type,
 SELECT 1, category_id, 'Tech Repair', 'Phone, laptop, and household appliance repair support.', 'Freelance', 15000, 'Kathmandu'
 FROM categories WHERE category_name = 'Other Services';
 
-INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role, email_verified) VALUES
-(50, 'Sita Tamang', 'sita_tamang', 'sita.tamang@gharsathi.local', '9800000050', 'worker123', 'Worker', 1),
-(51, 'Maya Shrestha', 'maya_shrestha', 'maya.shrestha@gharsathi.local', '9800000051', 'worker123', 'Worker', 1),
-(52, 'Ramesh Karki', 'ramesh_karki', 'ramesh.karki@gharsathi.local', '9800000052', 'worker123', 'Worker', 1),
-(53, 'Puja Rai', 'puja_rai', 'puja.rai@gharsathi.local', '9800000053', 'worker123', 'Worker', 1),
-(54, 'Anita Gurung', 'anita_gurung', 'anita.gurung@gharsathi.local', '9800000054', 'worker123', 'Worker', 1),
-(55, 'Hari Prasad Adhikari', 'hari_prasad_adhikari', 'hari.adhikari@gharsathi.local', '9800000055', 'worker123', 'Worker', 1),
-(56, 'Sunita Lama', 'sunita_lama', 'sunita.lama@gharsathi.local', '9800000056', 'worker123', 'Worker', 1),
-(57, 'Kiran Thapa', 'kiran_thapa', 'kiran.thapa@gharsathi.local', '9800000057', 'worker123', 'Worker', 1),
-(58, 'Bikash Maharjan', 'bikash_maharjan', 'bikash.maharjan@gharsathi.local', '9800000058', 'worker123', 'Worker', 1),
-(59, 'Nabin K.C.', 'nabin_kc', 'nabin.kc@gharsathi.local', '9800000059', 'worker123', 'Worker', 1);
+INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role) VALUES
+(50, 'Sita Tamang', 'sita_tamang', 'sita.tamang@gharsathi.local', '9800000050', 'worker123', 'Worker'),
+(51, 'Maya Shrestha', 'maya_shrestha', 'maya.shrestha@gharsathi.local', '9800000051', 'worker123', 'Worker'),
+(52, 'Ramesh Karki', 'ramesh_karki', 'ramesh.karki@gharsathi.local', '9800000052', 'worker123', 'Worker'),
+(53, 'Puja Rai', 'puja_rai', 'puja.rai@gharsathi.local', '9800000053', 'worker123', 'Worker'),
+(54, 'Anita Gurung', 'anita_gurung', 'anita.gurung@gharsathi.local', '9800000054', 'worker123', 'Worker'),
+(55, 'Hari Prasad Adhikari', 'hari_prasad_adhikari', 'hari.adhikari@gharsathi.local', '9800000055', 'worker123', 'Worker'),
+(56, 'Sunita Lama', 'sunita_lama', 'sunita.lama@gharsathi.local', '9800000056', 'worker123', 'Worker'),
+(57, 'Kiran Thapa', 'kiran_thapa', 'kiran.thapa@gharsathi.local', '9800000057', 'worker123', 'Worker'),
+(58, 'Bikash Maharjan', 'bikash_maharjan', 'bikash.maharjan@gharsathi.local', '9800000058', 'worker123', 'Worker'),
+(59, 'Nabin K.C.', 'nabin_kc', 'nabin.kc@gharsathi.local', '9800000059', 'worker123', 'Worker');
 
 INSERT IGNORE INTO worker_profiles (worker_id, skills, experience_years, profile_image, verification_status, current_status) VALUES
 (50, 'Cleaning, laundry, kitchen organization, and deep cleaning.', 5, 'images/profile.jpg', 'Approved', 'Available weekdays - Kathmandu'),

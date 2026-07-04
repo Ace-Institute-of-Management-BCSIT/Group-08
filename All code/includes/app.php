@@ -57,10 +57,6 @@ function ensure_app_schema(mysqli $conn): void {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
     ensure_column($conn, 'users', 'created_at', "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
-    ensure_column($conn, 'users', 'email_verified', "email_verified TINYINT(1) NOT NULL DEFAULT 0");
-    ensure_column($conn, 'users', 'verification_token', "verification_token VARCHAR(128) NULL");
-    ensure_column($conn, 'users', 'verification_sent_at', "verification_sent_at DATETIME NULL");
-    mysqli_query($conn, "UPDATE users SET email_verified = 1, verification_token = NULL WHERE role = 'Admin' OR email LIKE '%@gharsathi.local'");
 
     mysqli_query($conn, "CREATE TABLE IF NOT EXISTS categories (
         category_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -353,8 +349,8 @@ function ensure_app_schema(mysqli $conn): void {
         ('Education'), ('Pet Care'), ('Self Care'), ('Elderly Care'), ('Babysitting'),
         ('Gardening'), ('Plumbing'), ('Electrical Work'), ('Personal'), ('Repair'), ('Other Services')");
 
-    mysqli_query($conn, "INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role, email_verified) VALUES
-        (1, 'Ghar Sathi Admin', 'admin', 'admin@gharsathi.local', '9800000000', 'admin123', 'Admin', 1)");
+    mysqli_query($conn, "INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role) VALUES
+        (1, 'Ghar Sathi Admin', 'admin', 'admin@gharsathi.local', '9800000000', 'admin123', 'Admin')");
 
     seed_sample_content($conn);
 }
@@ -447,7 +443,7 @@ function seed_worker(mysqli $conn, int $userId, string $name, string $category, 
     $email = strtolower(preg_replace('/[^a-z0-9]+/i', '.', $name)) . '@gharsathi.local';
     $username = strtolower(preg_replace('/[^a-z0-9]+/i', '_', $name));
     $phone = '98' . str_pad((string) $userId, 8, '0', STR_PAD_LEFT);
-    $stmt = mysqli_prepare($conn, "INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role, email_verified) VALUES (?, ?, ?, ?, ?, 'worker123', 'Worker', 1)");
+    $stmt = mysqli_prepare($conn, "INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role) VALUES (?, ?, ?, ?, ?, 'worker123', 'Worker')");
     mysqli_stmt_bind_param($stmt, 'issss', $userId, $name, $username, $email, $phone);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
@@ -542,23 +538,6 @@ function save_uploaded_file(array $file, string $relativeDir, int $userId, array
         return null;
     }
     return trim($relativeDir, '/') . '/' . $storedName;
-}
-
-function send_verification_email(string $email, string $name, string $token): bool {
-    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    $base = rtrim(dirname(dirname($_SERVER['SCRIPT_NAME'] ?? '/Group-08/Signup page/signup.php')), '/\\');
-    $link = $scheme . '://' . $host . $base . '/Signup page/verify_email.php?token=' . urlencode($token);
-    $subject = 'Verify your Ghar Sathi email';
-    $body = "Hello {$name},\n\nIs this you? Verify your email for Ghar Sathi:\n{$link}\n\nYou can log in after verification.";
-    $headers = 'From: Ghar Sathi <no-reply@gharsathi.local>';
-    $sent = @mail($email, $subject, $body, $headers);
-    $logDir = dirname(__DIR__) . '/tmp';
-    if (!is_dir($logDir)) {
-        mkdir($logDir, 0775, true);
-    }
-    file_put_contents($logDir . '/verification_emails.log', date('c') . " {$email} {$link}\n", FILE_APPEND);
-    return $sent;
 }
 
 function profile_image_url(?string $filename, string $base = '..'): string {
