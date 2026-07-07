@@ -124,7 +124,7 @@ window.homepageJobs = <?php echo json_encode($jobs, JSON_HEX_TAG | JSON_HEX_APOS
 <div class="category-grid">
 <?php foreach (array_slice($categories, 0, 8) as $category): ?>
 <?php $name = $category['category_name']; ?>
-<a class="card" href="../Jobs page/jobs.php?category=<?php echo urlencode($name); ?>" data-category="<?php echo e($name); ?>">
+<a class="card" href="../JobsPage/jobs.php?category=<?php echo urlencode($name); ?>" data-category="<?php echo e($name); ?>">
 <i class="fa-solid <?php echo e($categoryIcons[$name] ?? 'fa-briefcase'); ?>"></i>
 <h3><?php echo e($name); ?></h3>
 <span><?php echo e($category['total_jobs']); ?> Jobs</span>
@@ -158,24 +158,6 @@ window.homepageJobs = <?php echo json_encode($jobs, JSON_HEX_TAG | JSON_HEX_APOS
 </div>
 </section>
 
-<footer>
-<div class="footer-container">
-<div><h3>Job</h3><p>Ghar Sathi connects skilled people with trusted opportunities.</p></div>
-<div><h3>About Us</h3><ul><li>Our Team</li><li>For Service Providers</li><li>For Employers</li></ul></div>
-<div><h3>Job Categories</h3><ul><?php foreach (array_slice($categories, 0, 5) as $category): ?><li><?php echo e($category['category_name']); ?></li><?php endforeach; ?></ul></div>
-<div>
-<h3>Be Up To Date!</h3>
-<form action="../Contact Us Page/subscribe.php" method="POST">
-<input type="email" name="email" placeholder="Email Address" required>
-<input type="hidden" name="redirect" value="../Homepage/homepage.php">
-<button type="submit">Subscribe Now</button>
-</form>
-</div>
-</div>
-<div class="footer-bottom">
-<div class="copyright">&copy; Copyright Ghar Sathi 2026.</div>
-<div class="footer-links"><a href="#">Privacy Policy</a><a href="#">Terms &amp; Conditions</a></div>
-</div>
-</footer>
+<?php render_footer('..', 'Homepage/homepage.php'); ?>
 </body>
 </html>

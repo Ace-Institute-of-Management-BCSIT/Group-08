@@ -78,6 +78,18 @@ header{
     gap:12px;
 }
 
+.menu-toggle{
+    display:none;
+    width:42px;
+    height:42px;
+    border:1px solid rgba(255,255,255,.35);
+    border-radius:6px;
+    background:transparent;
+    color:#fff;
+    font-size:20px;
+    cursor:pointer;
+}
+
 .login-btn{
     color:white;
     text-decoration:none;
@@ -568,68 +580,90 @@ header{
 /* FOOTER */
 
 footer{
-    background:#0d2570;
+    background:#132766;
     color:white;
-    padding:70px;
 }
 
 .footer-container{
     display:grid;
     grid-template-columns:2fr 1fr 1fr 1.5fr;
-    gap:50px;
+    gap:40px;
+    padding:58px 5%;
 }
 
-.footer-container ul{
+.footer-column h3{
+    font-size:20px;
+    font-weight:600;
+    margin-bottom:18px;
+}
+
+.footer-column h3 i{
+    margin-right:8px;
+}
+
+.footer-column p,
+.footer-column li{
+    font-size:14px;
+    line-height:1.8;
+    color:#edf2ff;
+}
+
+.footer-column ul{
     list-style:none;
 }
 
-.footer-container li{
-    margin-bottom:10px;
+.subscribe-form{
+    margin-top:14px;
 }
 
-.footer-container input{
+.subscribe-form input{
     width:100%;
-    padding:12px;
-    border:none;
-    border-radius:5px;
-    margin:15px 0;
+    height:43px;
+    border:1px solid rgba(255,255,255,.75);
+    border-radius:6px;
+    background:transparent;
+    color:#fff;
+    padding:0 12px;
+    margin-bottom:12px;
 }
 
-.footer-container button{
+.subscribe-form input::placeholder{
+    color:#d7def3;
+}
+
+.subscribe-form button{
     width:100%;
-    padding:12px;
+    height:43px;
     border:none;
-    border-radius:5px;
-    background:#2cb34a;
+    border-radius:6px;
+    background:#28a745;
     color:white;
+}
+
+.subscribe-form button:hover{
+    background:#218838;
 }
 
 .footer-bottom{
-    margin-top:50px;
+    border-top:1px solid rgba(255,255,255,.2);
+    padding:20px 5%;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    flex-wrap:wrap;
-    gap:15px;
-}
-
-.copyright{
-    text-align:left;
-}
-
-.footer-links{
-    display:flex;
-    gap:30px;
-}
-
-.footer-links a{
-    color:white;
-    text-decoration:none;
+    gap:16px;
     font-size:14px;
+    color:#edf2ff;
 }
 
-.footer-links a:hover{
-    text-decoration:underline;
+.footer-bottom a{
+    color:#edf2ff;
+    margin-left:22px;
+    text-decoration:none;
+}
+
+.footer-bottom a:hover{
+    color:#fff;
+    text-decoration:none;
 }
 
 /* RESPONSIVE */
@@ -682,5 +716,184 @@ footer{
 
     .stat-circle h3{
         font-size:24px;
+    }
+}
+
+@media(max-width:768px){
+    header{
+        position:absolute;
+    }
+
+    .navbar{
+        padding:16px 20px;
+        position:relative;
+    }
+
+    .menu-toggle{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .nav-links{
+        position:absolute;
+        left:20px;
+        right:20px;
+        top:76px;
+        display:none;
+        flex-direction:column;
+        align-items:stretch;
+        gap:0;
+        background:#0f1d4a;
+        border-radius:10px;
+        padding:12px;
+        box-shadow:0 14px 30px rgba(0,0,0,.22);
+        z-index:5;
+    }
+
+    .nav-links.active{
+        display:flex;
+    }
+
+    .nav-links li a{
+        display:block;
+        padding:12px;
+    }
+
+    .auth-buttons{
+        display:none;
+    }
+
+    .hero{
+        min-height:720px;
+        height:auto;
+        padding:116px 20px 48px;
+        align-items:flex-start;
+    }
+
+    .hero-content{
+        width:100%;
+    }
+
+    .hero-content h1{
+        font-size:36px;
+        line-height:1.15;
+    }
+
+    .hero-content p{
+        margin-bottom:24px;
+    }
+
+    .search-box{
+        width:100%;
+        max-width:420px;
+    }
+
+    .search-box input,
+    .search-box button{
+        width:100%;
+    }
+
+    .search-results-list li{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .hero-stats{
+        margin-top:32px;
+        gap:18px;
+    }
+
+    .social-bar{
+        padding:16px 10px;
+        font-size:24px;
+    }
+
+    .social-bar a{
+        width:46px;
+        height:46px;
+    }
+
+    .categories,
+    .service-section,
+    .testimonial{
+        padding:56px 20px;
+    }
+
+    .categories h2,
+    .service-text h2,
+    .testimonial h2{
+        font-size:32px;
+        line-height:1.2;
+    }
+
+    .category-grid{
+        grid-template-columns:1fr;
+        gap:18px;
+        margin-top:34px;
+    }
+
+    .card{
+        padding:28px;
+        border-radius:12px;
+    }
+
+    .service-section{
+        gap:32px;
+    }
+
+    .service-image img{
+        border-radius:12px;
+    }
+
+    .counter-section{
+        padding:40px 20px;
+        gap:24px;
+    }
+
+    .counter-section h2{
+        font-size:36px;
+    }
+
+    .counter-section h4{
+        font-size:20px;
+    }
+
+    .testimonial-grid{
+        margin-top:32px;
+    }
+
+    .footer-container{
+        padding:42px 20px;
+    }
+
+    .footer-bottom{
+        padding:20px;
+        flex-direction:column;
+        text-align:center;
+        align-items:center;
+    }
+
+    .footer-bottom a{
+        margin:0 9px;
+    }
+}
+
+@media(max-width:480px){
+    .hero{
+        min-height:760px;
+    }
+
+    .hero-content h1{
+        font-size:31px;
+    }
+
+    .stat-circle{
+        width:92px;
+        height:92px;
+    }
+
+    .stat p{
+        font-size:13px;
     }
 }

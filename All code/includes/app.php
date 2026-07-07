@@ -496,23 +496,23 @@ function category_id_by_name(mysqli $conn, string $category): int {
 
 function service_image(string $category): string {
     $images = [
-        'House Work' => '../images/profile.jpg',
-        'Culinary Aid' => '../images/profile.jpg',
-        'Culinary Service' => '../images/profile.jpg',
-        'Education' => '../images/profile.jpg',
-        'Home Tuition' => '../images/profile.jpg',
-        'Pet Care' => '../images/profile.jpg',
-        'Self Care' => '../images/profile.jpg',
-        'Personal' => '../images/profile.jpg',
-        'Elderly Care' => '../images/profile.jpg',
-        'Babysitting' => '../images/profile.jpg',
-        'Gardening' => '../images/profile.jpg',
-        'Plumbing' => '../images/profile.jpg',
-        'Electrical Work' => '../images/profile.jpg',
-        'Repair' => '../images/profile.jpg',
-        'Other Services' => '../images/profile.jpg',
+        'House Work' => '../images/housework.jpg',
+        'Culinary Aid' => '../images/culinary.jpg',
+        'Culinary Service' => '../images/culinary.jpg',
+        'Education' => '../images/tutor.jpg',
+        'Home Tuition' => '../images/tutor.jpg',
+        'Pet Care' => '../images/petgroom.jpeg',
+        'Self Care' => '../images/selfcare.jpg',
+        'Personal' => '../images/selfcare.jpg',
+        'Elderly Care' => '../images/elderlycare.jpg',
+        'Babysitting' => '../images/childcare.jpg',
+        'Gardening' => '../images/gardening.jpg',
+        'Plumbing' => '../images/plumbing.jpg',
+        'Electrical Work' => '../images/techRepair.jpeg',
+        'Repair' => '../images/techRepair.jpeg',
+        'Other Services' => '../images/clean.jpg',
     ];
-    return $images[$category] ?? '../images/profile.jpg';
+    return $images[$category] ?? '../images/clean.jpg';
 }
 
 function allowed_upload_extension(array $file, array $allowed): bool {
@@ -540,8 +540,13 @@ function save_uploaded_file(array $file, string $relativeDir, int $userId, array
     return trim($relativeDir, '/') . '/' . $storedName;
 }
 
-function profile_image_url(?string $filename, string $base = '..'): string {
-    $filename = trim($filename ?: 'profile.jpg');
+function profile_image_url(?string $filename, string $base = '..', ?string $fallback = null): string {
+    $filename = trim($filename ?: '');
+    $normalized = strtolower(str_replace('\\', '/', $filename));
+    if ($filename === '' || $normalized === 'profile.jpg' || $normalized === 'images/profile.jpg') {
+        return $fallback ?: $base . '/images/clean.jpg';
+    }
+
     if (strpos($filename, '/') !== false || strpos($filename, '\\') !== false) {
         return $base . '/' . ltrim(str_replace('\\', '/', $filename), '/');
     }
@@ -642,11 +647,11 @@ function current_user(mysqli $conn): ?array {
 function require_user(mysqli $conn, ?string $role = null): array {
     $user = current_user($conn);
     if (!$user) {
-        header('Location: /Group-08/Login Page/login.html');
+        header('Location: ../LoginPage/login.html');
         exit();
     }
     if ($role && $user['role'] !== $role && $user['role'] !== 'Admin') {
-        header('Location: /Group-08/dasboard/dashboard.php?auth=denied');
+        header('Location: ../dasboard/dashboard.php?auth=denied');
         exit();
     }
     return $user;
@@ -686,13 +691,13 @@ function latest_status_for_worker(mysqli $conn, int $workerId): string {
 function render_navbar(mysqli $conn, string $base = '..', string $active = ''): void {
     $user = current_user($conn);
     $home = project_path($base, 'Homepage/homepage.php');
-    $jobs = project_path($base, 'Jobs page/jobs.php');
-    $about = project_path($base, 'About Us Page/aboutus.php');
-    $contact = project_path($base, 'Contact Us Page/contactus.php');
+    $jobs = project_path($base, 'JobsPage/jobs.php');
+    $about = project_path($base, 'AboutUsPage/aboutus.php');
+    $contact = project_path($base, 'ContactUsPage/contactus.php');
     $dashboard = project_path($base, 'dasboard/dashboard.php');
-    $logout = project_path($base, 'Login Page/logout.php');
-    $login = project_path($base, 'Login Page/login.html');
-    $signup = project_path($base, 'Signup page/signup.html');
+    $logout = project_path($base, 'LoginPage/logout.php');
+    $login = project_path($base, 'LoginPage/login.html');
+    $signup = project_path($base, 'SignupPage/signup.html');
     $logo = project_path($base, 'images/logo.png');
     $dashboardLabel = 'Dashboard';
     if ($user) {
@@ -719,12 +724,15 @@ function render_navbar(mysqli $conn, string $base = '..', string $active = ''): 
                 <a class="signup-btn" href="<?php echo e($signup); ?>">Sign Up</a>
             <?php endif; ?>
         </div>
+        <button class="menu-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+            <i class="fa-solid fa-bars"></i>
+        </button>
     </nav>
     <?php
 }
 
 function render_footer(string $base = '..', string $redirect = 'Homepage/homepage.php'): void {
-    $subscribe = project_path($base, 'Contact Us Page/subscribe.php');
+    $subscribe = project_path($base, 'ContactUsPage/subscribe.php');
     $redirectPath = project_path($base, $redirect);
     ?>
     <footer>

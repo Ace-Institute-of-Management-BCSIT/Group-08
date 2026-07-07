@@ -29,6 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeSearchResults = document.getElementById("closeSearchResults");
     const categoryCards = document.querySelectorAll(".card[data-category]");
     const scrollSearchButtons = document.querySelectorAll(".search-job-btn");
+    const menuToggle = document.querySelector(".menu-toggle");
+    const navLinks = document.querySelector(".nav-links");
 
     function normalize(value) {
         return String(value || "").trim().toLowerCase();
@@ -54,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const params = new URLSearchParams();
         params.set("search", job.title);
         if (job.category) params.set("category", job.category);
-        return `../Jobs page/jobs.php?${params.toString()}`;
+        return `../JobsPage/jobs.php?${params.toString()}`;
     }
 
     function renderResults(results, jobQuery) {
@@ -104,13 +106,25 @@ document.addEventListener("DOMContentLoaded", () => {
         const params = new URLSearchParams();
         const query = jobInput.value.trim();
         if (query) params.set("search", query);
-        window.location.href = `../Jobs page/jobs.php${params.toString() ? `?${params.toString()}` : ""}`;
+        window.location.href = `../JobsPage/jobs.php${params.toString() ? `?${params.toString()}` : ""}`;
     }
 
     function scrollToSearch() {
         document.getElementById("hero").scrollIntoView({ behavior: "smooth" });
         setTimeout(() => jobInput.focus(), 500);
     }
+
+    menuToggle?.addEventListener("click", () => {
+        const isOpen = navLinks.classList.toggle("active");
+        menuToggle.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    document.querySelectorAll(".nav-links a").forEach((link) => {
+        link.addEventListener("click", () => {
+            navLinks.classList.remove("active");
+            menuToggle?.setAttribute("aria-expanded", "false");
+        });
+    });
 
     searchForm.addEventListener("submit", (event) => {
         event.preventDefault();

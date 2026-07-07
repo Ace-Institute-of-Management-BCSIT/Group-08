@@ -12,7 +12,3 @@ if (!$conn) {
 
 mysqli_set_charset($conn, 'utf8mb4');
 ?>
-
-<?php
-require_once __DIR__ . '/includes/app.php';
-?>
