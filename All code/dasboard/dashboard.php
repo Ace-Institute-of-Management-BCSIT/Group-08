@@ -6,14 +6,12 @@ $role = $user['role'];
 $userId = (int) $user['user_id'];
 
 $statusSteps = [
-    'Available',
     'Request Received',
     'Employer Contacted',
     'Interview Scheduled',
     'Selected/Hired',
     'Currently Working',
     'Service Completed',
-    'Available Again',
 ];
 
 function count_rows(mysqli $conn, string $sql): int {
@@ -130,6 +128,9 @@ function current_status_for_booking(array $booking, array $history): string {
     $workerHistory = $history[(int) $booking['worker_id']] ?? [];
     foreach ($workerHistory as $event) {
         if ((int) ($event['service_id'] ?? 0) === (int) $booking['job_id'] && (int) ($event['employer_id'] ?? 0) === (int) $booking['employer_id']) {
+            if (in_array($event['status'], ['Available', 'Available Again'], true)) {
+                continue;
+            }
             return $event['status'];
         }
     }
@@ -140,7 +141,7 @@ function current_status_for_booking(array $booking, array $history): string {
         return 'Service Completed';
     }
     if ($booking['status'] === 'Rejected') {
-        return 'Available Again';
+        return 'Request Received';
     }
     return 'Request Received';
 }
@@ -251,8 +252,7 @@ body{background:#f7f8fa}.dashboard{max-width:1200px;margin:0 auto;padding:30px 2
 <option value="Employer Contacted">Employer Contacted</option>
 <option value="Interview Scheduled">Interview Scheduled</option>
 <option value="Currently Working">Start Service</option>
-<option value="Service Completed">Mark Service Completed</option>
-<option value="Available Again">Available Again</option>
+<option value="Service Completed">Service Completed</option>
 </select>
 <button type="submit">Update Status</button>
 </form>
