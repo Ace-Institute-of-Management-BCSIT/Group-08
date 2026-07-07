@@ -408,6 +408,7 @@ function seed_sample_content(mysqli $conn): void {
     ];
     foreach ($workers as $index => $worker) {
         seed_worker($conn, $index + 50, ...$worker);
+        seed_worker_history_data($conn, $index + 50, $worker[1], (float) $worker[5]);
     }
 }
 
@@ -480,6 +481,85 @@ function seed_worker(mysqli $conn, int $userId, string $name, string $category, 
     if (!$hasReview) {
         $stmt = mysqli_prepare($conn, 'INSERT INTO reviews (reviewer_id, reviewee_id, worker_id, employer_id, rating, comment, review_comment) VALUES (?, ?, ?, ?, ?, ?, ?)');
         mysqli_stmt_bind_param($stmt, 'iiiiiss', $adminId, $userId, $userId, $adminId, $rating, $comment, $comment);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+}
+
+function seed_worker_history_data(mysqli $conn, int $workerId, string $category, float $baseRating): void {
+    $employers = [
+        [20, 'Aarav Sharma', 'aarav_sharma', 'aarav.sharma@gharsathi.local', '9811000020'],
+        [21, 'Bina Koirala', 'bina_koirala', 'bina.koirala@gharsathi.local', '9811000021'],
+        [22, 'Nitesh Maharjan', 'nitesh_maharjan', 'nitesh.maharjan@gharsathi.local', '9811000022'],
+    ];
+    foreach ($employers as $employer) {
+        $stmt = mysqli_prepare($conn, "INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role) VALUES (?, ?, ?, ?, ?, 'employer123', 'Employer')");
+        mysqli_stmt_bind_param($stmt, 'issss', $employer[0], $employer[1], $employer[2], $employer[3], $employer[4]);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+
+    $categoryId = category_id_by_name($conn, $category);
+    if ($categoryId <= 0) {
+        return;
+    }
+
+    $stmt = mysqli_prepare($conn, 'SELECT job_id FROM jobs WHERE category_id = ? ORDER BY job_id LIMIT 3');
+    mysqli_stmt_bind_param($stmt, 'i', $categoryId);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $jobIds = [];
+    while ($row = $result ? mysqli_fetch_assoc($result) : null) {
+        $jobIds[] = (int) $row['job_id'];
+    }
+    mysqli_stmt_close($stmt);
+    if (!$jobIds) {
+        return;
+    }
+
+    $comments = [
+        'Arrived on time and completed the service carefully.',
+        'Communication was clear and the work quality was excellent.',
+        'Very dependable service and respectful inside the home.',
+    ];
+    $dates = ['2026-04-12', '2026-05-08', '2026-06-03'];
+
+    foreach ($employers as $index => $employer) {
+        $jobId = $jobIds[$index % count($jobIds)];
+        $completionDate = $dates[$index];
+        $employerId = (int) $employer[0];
+
+        $stmt = mysqli_prepare($conn, "SELECT id FROM employment_status WHERE worker_id = ? AND employer_id = ? AND service_id = ? AND status = 'Service Completed' AND completion_date = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmt, 'iiis', $workerId, $employerId, $jobId, $completionDate);
+        mysqli_stmt_execute($stmt);
+        $exists = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
+        if ($exists) {
+            continue;
+        }
+
+        $stmt = mysqli_prepare($conn, 'INSERT INTO booking_requests (job_id, employer_id, worker_id, service_id, category_id, booking_date, requested_date, service_category, notes, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $notes = 'Sample completed service history';
+        $status = 'Completed';
+        mysqli_stmt_bind_param($stmt, 'iiiiisssss', $jobId, $employerId, $workerId, $jobId, $categoryId, $completionDate, $completionDate, $category, $notes, $status);
+        mysqli_stmt_execute($stmt);
+        $bookingId = (int) mysqli_insert_id($conn);
+        mysqli_stmt_close($stmt);
+
+        $stmt = mysqli_prepare($conn, 'UPDATE booking_requests SET request_id = booking_id WHERE booking_id = ?');
+        mysqli_stmt_bind_param($stmt, 'i', $bookingId);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        $stmt = mysqli_prepare($conn, "INSERT INTO employment_status (worker_id, employer_id, service_id, status, start_date, completion_date) VALUES (?, ?, ?, 'Service Completed', ?, ?)");
+        mysqli_stmt_bind_param($stmt, 'iiiss', $workerId, $employerId, $jobId, $completionDate, $completionDate);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        $rating = max(4, min(5, (int) round($baseRating) - ($index === 1 ? 0 : 1)));
+        $comment = $comments[$index];
+        $stmt = mysqli_prepare($conn, 'INSERT INTO reviews (reviewer_id, reviewee_id, worker_id, employer_id, booking_id, rating, comment, review_comment, review_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        mysqli_stmt_bind_param($stmt, 'iiiiiisss', $employerId, $workerId, $workerId, $employerId, $bookingId, $rating, $comment, $comment, $completionDate);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
     }

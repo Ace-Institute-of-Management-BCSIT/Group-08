@@ -119,7 +119,7 @@ $workerId = (int) $worker['user_id'];
 $canViewContact = isset($contactExchanges[$workerId]);
 $requestStatus = $bookingStatusByWorker[$workerId] ?? 'No request sent';
 $workHistory = fetch_worker_completed_history($conn, $workerId, 3);
-$latestReviews = fetch_latest_reviews($conn, $workerId, 2);
+$latestReviews = fetch_latest_reviews($conn, $workerId, 3);
 ?>
 <article class="worker-card">
 <div class="worker-main">

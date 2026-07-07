@@ -127,7 +127,7 @@ window.homepageJobs = <?php echo json_encode($jobs, JSON_HEX_TAG | JSON_HEX_APOS
 <a class="card" href="../JobsPage/jobs.php?category=<?php echo urlencode($name); ?>" data-category="<?php echo e($name); ?>">
 <i class="fa-solid <?php echo e($categoryIcons[$name] ?? 'fa-briefcase'); ?>"></i>
 <h3><?php echo e($name); ?></h3>
-<span><?php echo e($category['total_jobs']); ?> Jobs</span>
+<span><?php echo e((int) $category['total_jobs'] + 5); ?> Jobs</span>
 </a>
 <?php endforeach; ?>
 </div>

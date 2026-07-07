@@ -369,3 +369,115 @@ FROM categories WHERE category_name = 'Plumbing';
 INSERT IGNORE INTO jobs (employer_id, category_id, title, description, job_type, salary, location)
 SELECT 1, category_id, 'Home Electrician', 'Repair switches, lights, wiring issues, fans, and power outlets safely.', 'Freelance', 18000, 'Kathmandu'
 FROM categories WHERE category_name = 'Electrical Work';
+
+INSERT IGNORE INTO users (user_id, full_name, username, email, phone, password, role) VALUES
+(20, 'Aarav Sharma', 'aarav_sharma', 'aarav.sharma@gharsathi.local', '9811000020', 'employer123', 'Employer'),
+(21, 'Bina Koirala', 'bina_koirala', 'bina.koirala@gharsathi.local', '9811000021', 'employer123', 'Employer'),
+(22, 'Nitesh Maharjan', 'nitesh_maharjan', 'nitesh.maharjan@gharsathi.local', '9811000022', 'employer123', 'Employer');
+
+INSERT INTO booking_requests (job_id, employer_id, worker_id, service_id, category_id, booking_date, requested_date, service_category, notes, status)
+SELECT jobs.job_id, history.employer_id, workers.worker_id, jobs.job_id, categories.category_id, history.completed_on, history.completed_on, workers.category_name, 'Seed completed service history', 'Completed'
+FROM (
+    SELECT 50 AS worker_id, 'House Work' AS category_name UNION ALL
+    SELECT 51, 'Culinary Aid' UNION ALL
+    SELECT 52, 'Home Tuition' UNION ALL
+    SELECT 53, 'Pet Care' UNION ALL
+    SELECT 54, 'Self Care' UNION ALL
+    SELECT 55, 'Elderly Care' UNION ALL
+    SELECT 56, 'Babysitting' UNION ALL
+    SELECT 57, 'Gardening' UNION ALL
+    SELECT 58, 'Plumbing' UNION ALL
+    SELECT 59, 'Electrical Work'
+) workers
+CROSS JOIN (
+    SELECT 20 AS employer_id, '2026-04-12' AS completed_on, 4 AS rating, 'Arrived on time and completed the service carefully.' AS review_text UNION ALL
+    SELECT 21, '2026-05-08', 5, 'Communication was clear and the work quality was excellent.' UNION ALL
+    SELECT 22, '2026-06-03', 4, 'Very dependable service and respectful inside the home.'
+) history
+INNER JOIN categories ON categories.category_name = workers.category_name
+INNER JOIN jobs ON jobs.job_id = (
+    SELECT MIN(category_jobs.job_id)
+    FROM jobs category_jobs
+    WHERE category_jobs.category_id = categories.category_id
+)
+WHERE NOT EXISTS (
+    SELECT 1 FROM booking_requests existing
+    WHERE existing.worker_id = workers.worker_id
+      AND existing.employer_id = history.employer_id
+      AND existing.job_id = jobs.job_id
+      AND existing.booking_date = history.completed_on
+      AND existing.status = 'Completed'
+);
+
+UPDATE booking_requests SET request_id = booking_id WHERE request_id IS NULL;
+
+INSERT INTO employment_status (worker_id, employer_id, service_id, status, start_date, completion_date)
+SELECT workers.worker_id, history.employer_id, jobs.job_id, 'Service Completed', history.completed_on, history.completed_on
+FROM (
+    SELECT 50 AS worker_id, 'House Work' AS category_name UNION ALL
+    SELECT 51, 'Culinary Aid' UNION ALL
+    SELECT 52, 'Home Tuition' UNION ALL
+    SELECT 53, 'Pet Care' UNION ALL
+    SELECT 54, 'Self Care' UNION ALL
+    SELECT 55, 'Elderly Care' UNION ALL
+    SELECT 56, 'Babysitting' UNION ALL
+    SELECT 57, 'Gardening' UNION ALL
+    SELECT 58, 'Plumbing' UNION ALL
+    SELECT 59, 'Electrical Work'
+) workers
+CROSS JOIN (
+    SELECT 20 AS employer_id, '2026-04-12' AS completed_on UNION ALL
+    SELECT 21, '2026-05-08' UNION ALL
+    SELECT 22, '2026-06-03'
+) history
+INNER JOIN categories ON categories.category_name = workers.category_name
+INNER JOIN jobs ON jobs.job_id = (
+    SELECT MIN(category_jobs.job_id)
+    FROM jobs category_jobs
+    WHERE category_jobs.category_id = categories.category_id
+)
+WHERE NOT EXISTS (
+    SELECT 1 FROM employment_status existing
+    WHERE existing.worker_id = workers.worker_id
+      AND existing.employer_id = history.employer_id
+      AND existing.service_id = jobs.job_id
+      AND existing.status = 'Service Completed'
+      AND existing.completion_date = history.completed_on
+);
+
+INSERT INTO reviews (reviewer_id, reviewee_id, worker_id, employer_id, booking_id, rating, comment, review_comment, review_date)
+SELECT history.employer_id, workers.worker_id, workers.worker_id, history.employer_id, booking_requests.booking_id, history.rating, history.review_text, history.review_text, history.completed_on
+FROM (
+    SELECT 50 AS worker_id, 'House Work' AS category_name UNION ALL
+    SELECT 51, 'Culinary Aid' UNION ALL
+    SELECT 52, 'Home Tuition' UNION ALL
+    SELECT 53, 'Pet Care' UNION ALL
+    SELECT 54, 'Self Care' UNION ALL
+    SELECT 55, 'Elderly Care' UNION ALL
+    SELECT 56, 'Babysitting' UNION ALL
+    SELECT 57, 'Gardening' UNION ALL
+    SELECT 58, 'Plumbing' UNION ALL
+    SELECT 59, 'Electrical Work'
+) workers
+CROSS JOIN (
+    SELECT 20 AS employer_id, '2026-04-12' AS completed_on, 4 AS rating, 'Arrived on time and completed the service carefully.' AS review_text UNION ALL
+    SELECT 21, '2026-05-08', 5, 'Communication was clear and the work quality was excellent.' UNION ALL
+    SELECT 22, '2026-06-03', 4, 'Very dependable service and respectful inside the home.'
+) history
+INNER JOIN categories ON categories.category_name = workers.category_name
+INNER JOIN jobs ON jobs.job_id = (
+    SELECT MIN(category_jobs.job_id)
+    FROM jobs category_jobs
+    WHERE category_jobs.category_id = categories.category_id
+)
+INNER JOIN booking_requests ON booking_requests.worker_id = workers.worker_id
+    AND booking_requests.employer_id = history.employer_id
+    AND booking_requests.job_id = jobs.job_id
+    AND booking_requests.booking_date = history.completed_on
+    AND booking_requests.status = 'Completed'
+WHERE NOT EXISTS (
+    SELECT 1 FROM reviews existing
+    WHERE existing.worker_id = workers.worker_id
+      AND existing.employer_id = history.employer_id
+      AND existing.booking_id = booking_requests.booking_id
+);
