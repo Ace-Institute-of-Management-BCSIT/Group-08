@@ -1,4 +1,8 @@
 <?php
+/**
+ * Generates and emails signup OTP codes for account verification.
+ */
+
 header('Content-Type: application/json');
 
 try {

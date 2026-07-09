@@ -1,4 +1,11 @@
 <?php
+/**
+ * Creates hire requests sent from employers to workers.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
@@ -7,6 +14,9 @@ if ($user['role'] !== 'Employer') {
     exit();
 }
 
+// ===========================
+// Request Handling
+// ===========================
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ../JobsPage/jobs.php');
     exit();

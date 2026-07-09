@@ -1,9 +1,19 @@
 <?php
+/**
+ * Creates user accounts after validating signup and OTP data.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $message = '';
 $messageClass = 'error';
 
+// ===========================
+// Request Handling
+// ===========================
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: signup.html');
     exit();
@@ -71,6 +81,9 @@ if ($fullName === '' || $username === '' || $email === '' || $password === '' ||
     mysqli_stmt_close($check);
     }
 }
+// ===========================
+// Page Rendering
+// ===========================
 ?>
 <!DOCTYPE html>
 <html lang="en">

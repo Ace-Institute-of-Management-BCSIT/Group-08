@@ -1,4 +1,11 @@
 <?php
+/**
+ * Clears the current session and redirects users to the login page.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $_SESSION = [];

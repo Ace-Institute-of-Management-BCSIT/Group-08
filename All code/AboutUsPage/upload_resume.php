@@ -1,4 +1,11 @@
 <?php
+/**
+ * Processes standalone resume uploads for authenticated users.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
@@ -11,6 +18,9 @@ $message = '';
 $messageClass = 'error';
 $redirect = trim($_POST['redirect'] ?? $_GET['redirect'] ?? '');
 
+// ===========================
+// Request Handling
+// ===========================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($_FILES['resume']['name'])) {
         $message = 'Please choose a resume file.';
@@ -54,6 +64,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 }
+// ===========================
+// Page Rendering
+// ===========================
 ?>
 <!DOCTYPE html>
 <html lang="en">

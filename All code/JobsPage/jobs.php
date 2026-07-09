@@ -1,4 +1,11 @@
 <?php
+/**
+ * Renders job listings with category, search, and application controls.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $fallbackJobs = [
@@ -54,6 +61,9 @@ $categoriesForFilter = array_values(array_unique(array_filter(array_map(fn($job)
 $user = current_user($conn);
 $userRole = $user['role'] ?? '';
 
+// ===========================
+// Shared Helper Functions
+// ===========================
 function max_salary_value($value) {
     preg_match_all('/\d[\d,]*/', (string) $value, $matches);
     $numbers = array_map(
@@ -67,6 +77,9 @@ function max_salary_value($value) {
 function job_image($category) {
     return service_image($category);
 }
+// ===========================
+// Page Rendering
+// ===========================
 ?>
 <!DOCTYPE html>
 <html lang="en">

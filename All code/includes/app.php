@@ -1,4 +1,11 @@
 <?php
+/**
+ * Provides shared application bootstrap, schema setup, helpers, navigation, and footer rendering.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 if (session_status() === PHP_SESSION_NONE) {
     $sessionPath = __DIR__ . '/../tmp/sessions';
     if (!is_dir($sessionPath)) {
@@ -10,6 +17,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/db.php';
 
+// ===========================
+// Shared Helper Functions
+// ===========================
 function e($value) {
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }

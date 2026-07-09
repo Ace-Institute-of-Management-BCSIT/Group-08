@@ -1,4 +1,11 @@
 <?php
+/**
+ * Authenticates users and redirects them to the appropriate dashboard.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $message = '';
@@ -6,6 +13,9 @@ $messageClass = 'error';
 $backLink = 'login.html';
 $backText = 'Back to Login';
 
+// ===========================
+// Request Handling
+// ===========================
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: login.html');
     exit();
@@ -47,6 +57,9 @@ if ($login === '' || $password === '') {
     }
     }
 }
+// ===========================
+// Page Rendering
+// ===========================
 ?>
 <!DOCTYPE html>
 <html lang="en">

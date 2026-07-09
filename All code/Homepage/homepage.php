@@ -1,4 +1,11 @@
 <?php
+/**
+ * Renders the dynamic homepage with service statistics, categories, and job suggestions.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $stats = [
@@ -65,6 +72,9 @@ $categoryIcons = [
     'Pet Care' => 'fa-dog',
     'Other Services' => 'fa-screwdriver-wrench',
 ];
+// ===========================
+// Page Rendering
+// ===========================
 ?>
 <!DOCTYPE html>
 <html lang="en">

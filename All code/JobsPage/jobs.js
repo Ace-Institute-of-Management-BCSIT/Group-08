@@ -1,3 +1,7 @@
+/* ===========================
+   Handles jobs page filtering, modal behavior, and form interactions.
+=========================== */
+
 const menuToggle = document.querySelector(".menu-toggle");
 const navLinks = document.querySelector(".nav-links");
 const form = document.querySelector("#jobFilterForm");
@@ -10,6 +14,10 @@ const tagButtons = Array.from(document.querySelectorAll(".tags button"));
 const pageLinks = Array.from(document.querySelectorAll("[data-page-link]"));
 let currentPage = "1";
 let shouldScrollToResults = false;
+
+    // ===========================
+    // Helper Functions
+    // ===========================
 
 function formatCurrency(value) {
 return Number(value).toLocaleString("en-IN");

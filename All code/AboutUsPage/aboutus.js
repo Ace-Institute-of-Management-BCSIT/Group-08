@@ -1,5 +1,8 @@
-const cards=document.querySelectorAll(".card");
+/* ===========================
+   Handles interactive behavior for the About Us page navigation.
+=========================== */
 
+const cards=document.querySelectorAll(".card");
 
 cards.forEach(card=>{
 
@@ -8,7 +11,6 @@ card.addEventListener("mouseenter",()=>{
 card.style.transform="translateY(-5px)";
 
 });
-
 
 card.addEventListener("mouseleave",()=>{
 
@@ -21,6 +23,10 @@ card.style.transform="translateY(0)";
 const resumeModal = document.querySelector("#resumeModal");
 const openResumeButtons = document.querySelectorAll(".js-open-resume");
 const closeResumeButton = document.querySelector(".modal-close");
+
+    // ===========================
+    // Helper Functions
+    // ===========================
 
 function setResumeModal(open) {
 if (!resumeModal) return;

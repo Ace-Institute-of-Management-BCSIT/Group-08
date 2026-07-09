@@ -1,8 +1,18 @@
 <?php
+/**
+ * Updates worker employment status records from dashboard actions.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
 
+// ===========================
+// Request Handling
+// ===========================
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ../dasboard/dashboard.php');
     exit();
@@ -12,8 +22,7 @@ $bookingId = (int) ($_POST['booking_id'] ?? 0);
 $status = trim($_POST['status'] ?? '');
 $allowed = [
     'Employer Contacted',
-    'Interview Scheduled',
-    'Selected/Hired',
+    'Time Scheduled',
     'Currently Working',
     'Service Completed',
 ];
@@ -42,7 +51,7 @@ if (!$canUpdate) {
     exit();
 }
 
-$startDate = in_array($status, ['Selected/Hired', 'Currently Working'], true) ? ($booking['booking_date'] ?: $booking['requested_date']) : null;
+$startDate = in_array($status, ['Time Scheduled', 'Currently Working'], true) ? ($booking['booking_date'] ?: $booking['requested_date']) : null;
 $completionDate = $status === 'Service Completed' ? date('Y-m-d') : null;
 
 record_employment_status($conn, (int) $booking['worker_id'], (int) $booking['employer_id'], (int) $booking['job_id'], $status, $startDate, $completionDate);
@@ -62,6 +71,7 @@ if ($status === 'Service Completed') {
 }
 
 $messages = [
+    'Time Scheduled' => 'Your service time has been scheduled.',
     'Currently Working' => 'Your service has started.',
     'Service Completed' => 'Your service has been completed.',
 ];

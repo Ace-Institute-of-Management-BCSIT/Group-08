@@ -1,4 +1,11 @@
 <?php
+/**
+ * Processes worker resume applications and persists uploaded application details.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
@@ -30,6 +37,9 @@ if ($jobId > 0) {
     $job = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
     mysqli_stmt_close($stmt);
 }
+// ===========================
+// Page Rendering
+// ===========================
 ?>
 <!DOCTYPE html>
 <html lang="en">

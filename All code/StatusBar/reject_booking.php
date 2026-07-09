@@ -1,4 +1,11 @@
 <?php
+/**
+ * Rejects booking requests and notifies the related employer.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);

@@ -1,5 +1,15 @@
 <?php
+/**
+ * Renders the dynamic Contact Us page with shared layout components.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
+// ===========================
+// Page Rendering
+// ===========================
 ?>
 <!DOCTYPE html>
 <html lang="en">

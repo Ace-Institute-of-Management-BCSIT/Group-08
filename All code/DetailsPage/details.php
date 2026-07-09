@@ -1,10 +1,20 @@
 <?php
+/**
+ * Renders worker details, booking controls, reviews, and related service history.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $id = (int) ($_GET['id'] ?? 0);
 $job = null;
 $workers = [];
 
+// ===========================
+// Shared Helper Functions
+// ===========================
 function detail_job_image($category) {
     return service_image($category);
 }
@@ -57,6 +67,9 @@ if ($job && $user) {
     }
     mysqli_stmt_close($stmt);
 }
+// ===========================
+// Page Rendering
+// ===========================
 ?>
 <!DOCTYPE html>
 <html lang="en">

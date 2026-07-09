@@ -1,4 +1,11 @@
+/* ===========================
+   Handles homepage search, category highlighting, and mobile navigation behavior.
+=========================== */
+
 document.addEventListener("DOMContentLoaded", () => {
+    // ===========================
+    // Page Initialization
+    // ===========================
     const defaultJobs = [
         { title: "House Helper", company: "Ghar Sathi Care", location: "Kathmandu", category: "House Work" },
         { title: "Garden Assistant", company: "Green Home Services", location: "Lalitpur", category: "House Work" },
@@ -31,6 +38,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const scrollSearchButtons = document.querySelectorAll(".search-job-btn");
     const menuToggle = document.querySelector(".menu-toggle");
     const navLinks = document.querySelector(".nav-links");
+
+    // ===========================
+    // Helper Functions
+    // ===========================
 
     function normalize(value) {
         return String(value || "").trim().toLowerCase();

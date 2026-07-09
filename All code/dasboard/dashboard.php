@@ -1,4 +1,11 @@
 <?php
+/**
+ * Renders the role-aware dashboard for admins, employers, and workers.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
@@ -8,12 +15,14 @@ $userId = (int) $user['user_id'];
 $statusSteps = [
     'Request Received',
     'Employer Contacted',
-    'Interview Scheduled',
-    'Selected/Hired',
+    'Time Scheduled',
     'Currently Working',
     'Service Completed',
 ];
 
+// ===========================
+// Shared Helper Functions
+// ===========================
 function count_rows(mysqli $conn, string $sql): int {
     $result = mysqli_query($conn, $sql);
     if (!$result) {
@@ -135,7 +144,7 @@ function current_status_for_booking(array $booking, array $history): string {
         }
     }
     if ($booking['status'] === 'Accepted') {
-        return 'Selected/Hired';
+        return 'Employer Contacted';
     }
     if ($booking['status'] === 'Completed') {
         return 'Service Completed';
@@ -166,6 +175,9 @@ if ($role === 'Employer') {
         }
     }
 }
+// ===========================
+// Page Rendering
+// ===========================
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -250,7 +262,7 @@ body{background:#f7f8fa}.dashboard{max-width:1200px;margin:0 auto;padding:30px 2
 <input type="hidden" name="booking_id" value="<?php echo e($booking['booking_id']); ?>">
 <select name="status" required>
 <option value="Employer Contacted">Employer Contacted</option>
-<option value="Interview Scheduled">Interview Scheduled</option>
+<option value="Time Scheduled">Time Scheduled</option>
 <option value="Currently Working">Start Service</option>
 <option value="Service Completed">Service Completed</option>
 </select>

@@ -1,4 +1,8 @@
 <?php
+/**
+ * Validates submitted OTP codes during the signup workflow.
+ */
+
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/../includes/app.php';

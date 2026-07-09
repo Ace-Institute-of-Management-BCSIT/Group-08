@@ -1,4 +1,11 @@
 <?php
+/**
+ * Creates the database connection used by legacy database includes.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 $db_host = 'localhost';
 $db_user = 'root';
 $db_pass = '';

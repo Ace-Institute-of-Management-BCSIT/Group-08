@@ -1,4 +1,11 @@
 <?php
+/**
+ * Processes newsletter subscription requests and redirects users back to the site.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $email = trim($_POST['email'] ?? '');
@@ -8,6 +15,9 @@ if ($redirect === '' || preg_match('/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i', $redirect)
 }
 $status = 'Please enter a valid email address.';
 
+// ===========================
+// Request Handling
+// ===========================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $stmt = mysqli_prepare($conn, 'INSERT IGNORE INTO subscribers (email) VALUES (?)');
     mysqli_stmt_bind_param($stmt, 's', $email);
@@ -29,6 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && filter_var($email, FILTER_VALIDATE_
         mysqli_stmt_close($legacy);
     }
 }
+// ===========================
+// Page Rendering
+// ===========================
 ?>
 <!DOCTYPE html>
 <html lang="en">

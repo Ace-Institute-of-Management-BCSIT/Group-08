@@ -1,4 +1,11 @@
 <?php
+/**
+ * Creates the shared MySQL database connection for application modules.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 $db_host = 'localhost';
 $db_user = 'root';
 $db_pass = '';

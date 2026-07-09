@@ -1,4 +1,11 @@
 <?php
+/**
+ * Displays and updates administrative application review decisions.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
@@ -7,6 +14,9 @@ if ($user['role'] !== 'Admin') {
     exit();
 }
 
+// ===========================
+// Request Handling
+// ===========================
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: dashboard.php');
     exit();

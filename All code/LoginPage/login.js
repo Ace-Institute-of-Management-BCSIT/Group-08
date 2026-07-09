@@ -1,3 +1,7 @@
+/* ===========================
+   Handles login page navigation and UI interactions.
+=========================== */
+
 // Mobile Navigation Toggle
 const menuToggle = document.querySelector(".menu-toggle");
 const navLinks = document.querySelector(".nav-links");
@@ -12,7 +16,6 @@ document.querySelectorAll(".nav-links a").forEach(link => {
         navLinks.classList.remove("active");
     });
 });
-
 
 // Login Form Validation
 const loginForm = document.getElementById("loginForm");

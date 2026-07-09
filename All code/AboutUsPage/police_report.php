@@ -1,4 +1,11 @@
 <?php
+/**
+ * Handles police report upload requests for worker verification.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
@@ -6,6 +13,9 @@ $message = '';
 $messageClass = 'error';
 $allowed = ['pdf', 'jpg', 'jpeg', 'png'];
 
+// ===========================
+// Request Handling
+// ===========================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($_FILES['police_report']['name']) || !allowed_upload_extension($_FILES['police_report'], $allowed)) {
         $message = 'Please upload a PDF, JPG, JPEG, or PNG police report.';
@@ -34,6 +44,9 @@ while ($row = $result ? mysqli_fetch_assoc($result) : null) {
     $reports[] = $row;
 }
 mysqli_stmt_close($stmt);
+// ===========================
+// Page Rendering
+// ===========================
 ?>
 <!DOCTYPE html>
 <html lang="en">

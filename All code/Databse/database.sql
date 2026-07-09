@@ -1,3 +1,10 @@
+-- ===========================
+-- Defines the project database schema and seed data for the Ghar Sathi application.
+-- ===========================
+
+-- ===========================
+-- Database Definition
+-- ===========================
 CREATE DATABASE IF NOT EXISTS ghar_sathi;
 USE ghar_sathi;
 
@@ -273,6 +280,9 @@ CREATE TABLE IF NOT EXISTS complaints (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
+-- ===========================
+-- Seed Data
+-- ===========================
 INSERT IGNORE INTO categories (category_name) VALUES
 ('House Work'),
 ('Culinary Aid'),

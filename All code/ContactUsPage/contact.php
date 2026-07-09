@@ -1,9 +1,19 @@
 <?php
+/**
+ * Processes contact form submissions and stores customer messages.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $messageText = '';
 $messageClass = 'error';
 
+// ===========================
+// Request Handling
+// ===========================
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: contactus.php');
     exit();
@@ -33,6 +43,9 @@ if ($firstName === '' || $email === '' || $subject === '' || $message === '') {
 
     mysqli_stmt_close($stmt);
 }
+// ===========================
+// Page Rendering
+// ===========================
 ?>
 <!DOCTYPE html>
 <html lang="en">

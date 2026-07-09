@@ -1,4 +1,11 @@
 <?php
+/**
+ * Creates booking requests between employers and workers.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
@@ -7,6 +14,9 @@ if ($user['role'] !== 'Employer') {
     exit();
 }
 
+// ===========================
+// Request Handling
+// ===========================
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ../JobsPage/jobs.php');
     exit();
@@ -81,6 +91,9 @@ if ($jobId <= 0 || $workerId <= 0 || $categoryId <= 0 || $requestedDate === '') 
         }
     }
 }
+// ===========================
+// Page Rendering
+// ===========================
 ?>
 <!DOCTYPE html>
 <html lang="en">

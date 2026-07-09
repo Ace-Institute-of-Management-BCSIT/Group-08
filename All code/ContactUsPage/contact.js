@@ -1,3 +1,7 @@
+/* ===========================
+   Handles Contact Us page navigation interactions.
+=========================== */
+
 // ===== Contact Form Handling =====
 const contactForm = document.getElementById('contactForm');
 
@@ -33,6 +37,11 @@ subscribeForm?.addEventListener('submit', function (e) {
 });
 
 // ===== Email Validation Helper =====
+
+    // ===========================
+    // Helper Functions
+    // ===========================
+
 function validateEmail(email) {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return re.test(email);

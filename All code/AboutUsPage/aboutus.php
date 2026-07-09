@@ -1,4 +1,11 @@
 <?php
+/**
+ * Renders the dynamic About Us page with shared navigation, footer, and application content.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 $uploadStatus = $_GET['resume'] ?? '';
 ?>
@@ -20,7 +27,6 @@ $uploadStatus = $_GET['resume'] ?? '';
 
 </head>
 
-
 <body>
 
 <header class="site-header">
@@ -31,9 +37,7 @@ $uploadStatus = $_GET['resume'] ?? '';
 
 <section class="about-section">
 
-
 <div class="about-text">
-
 
 <h2>
 
@@ -45,13 +49,11 @@ Come Together!
 
 </h2>
 
-
 <p>
 
 Welcome to Ghar Sathi — your friendly partner for finding trusted household help without the stress.
 
 </p>
-
 
 <p>
 
@@ -59,26 +61,19 @@ We connect you with skilled workers for cleaning, plumbing, caretaking, electric
 
 </p>
 
-
 <p>
 
 Our goal is to make your daily life easier by helping you quickly find reliable and verified helpers in one place.
 
 </p>
 
-
 </div>
 
-
-
-
 <div class="worker-box">
-
 
 <h2>
 Become a Worker
 </h2>
-
 
 <p>
 
@@ -94,9 +89,7 @@ Choose a job from the jobs page and use Apply Job to submit your resume for admi
 <a href="../JobsPage/jobs.php" style="display:inline-block;background:#28a745;color:#fff;padding:12px 18px;border-radius:6px;text-decoration:none;font-weight:600;">Find Jobs to Apply</a>
 </p>
 
-
 <div class="cards">
-
 
 <a class="card" href="../SignupPage/signup.html">
 
@@ -110,8 +103,6 @@ Sign up quickly and build your professional profile.
 
 </a>
 
-
-
 <a class="card js-open-resume" href="upload_resume.php">
 
 <h3>
@@ -123,8 +114,6 @@ Showcase your skills and experience to employers.
 </p>
 
 </a>
-
-
 
 <a class="card" href="police_report.php">
 
@@ -138,8 +127,6 @@ Add your police clearance document for safer verification.
 
 </a>
 
-
-
 <a class="card" href="../ContactUsPage/contactus.php">
 
 <h3>
@@ -152,12 +139,9 @@ Reach out for service, worker, or platform support.
 
 </a>
 
-
 </div>
 
-
 </div>
-
 
 </section>
 
@@ -181,7 +165,6 @@ Reach out for service, worker, or platform support.
 
 <script src="../JobsPage/jobs.js"></script>
 <script src="aboutus.js"></script>
-
 
 </body>
 

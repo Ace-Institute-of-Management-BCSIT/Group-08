@@ -1,200 +1,204 @@
+<!-- Provides the login page markup and authentication form. -->
+
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ghar Sathi - Login</title>
+    <head>
+        <!-- ===========================
+        Document Metadata
+        =========================== -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Ghar Sathi - Login</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="login.css">
+        <!-- CSS -->
+        <link rel="stylesheet" href="login.css">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
-</head>
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    </head>
 
-<body>
+    <body>
+        <!-- ===========================
+        Page Content
+        =========================== -->
 
-    <!-- Navbar -->
-    <header>
-        <nav class="navbar">
-            <div class="logo">
-                <img src="../images/logo.png" alt="Ghar Sathi logo">
-                <span>Ghar Sathi</span>
+        <!-- Navbar -->
+        <header>
+            <nav class="navbar">
+                <div class="logo">
+                    <img src="../images/logo.png" alt="Ghar Sathi logo">
+                    <span>Ghar Sathi</span>
+                </div>
+
+                <ul class="nav-links">
+                    <li><a href="../Homepage/homepage.php">Home</a></li>
+                    <li><a href="../JobsPage/jobs.php">Jobs</a></li>
+                    <li><a href="../AboutUsPage/aboutus.php">About Us</a></li>
+                    <li><a href="../ContactUsPage/contactus.php">Contact Us</a></li>
+                </ul>
+
+                <a href="../SignupPage/signup.html">
+                    <button class="signup-btn">Sign Up</button>
+                </a>
+
+                <div class="menu-toggle">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+            </nav>
+
+            <div class="hero">
+                <h1>Log in and continue your journey.</h1>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <section class="main-container">
+
+            <!-- Left Side -->
+            <div class="join-us">
+
+                <h2>Join Us:</h2>
+                <p>Be a part of Ghar Sathi!</p>
+
+                <div class="info-grid">
+
+                    <div class="info-box">
+                        <i class="fa-solid fa-phone"></i>
+
+                        <div>
+                            <h3>Call for inquiry</h3>
+                            <p>+977 9762429433</p>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <i class="fa-regular fa-envelope"></i>
+
+                        <div>
+                            <h3>Send us email</h3>
+                            <p>customercare.gharsathi@gmail.com</p>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <i class="fa-regular fa-clock"></i>
+
+                        <div>
+                            <h3>Opening hours</h3>
+                            <p>Always open</p>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <i class="fa-solid fa-location-dot"></i>
+
+                        <div>
+                            <h3>Office</h3>
+                            <p>Kathmandu-06, Nepal</p>
+                        </div>
+                    </div>
+
+                </div>
             </div>
 
-            <ul class="nav-links">
-                <li><a href="../Homepage/homepage.php">Home</a></li>
-                <li><a href="../JobsPage/jobs.php">Jobs</a></li>
-                <li><a href="../AboutUsPage/aboutus.php">About Us</a></li>
-                <li><a href="../ContactUsPage/contactus.php">Contact Us</a></li>
-            </ul>
+            <!-- Login Box -->
+            <div class="login-box">
 
-            <a href="../SignupPage/signup.html">
-                <button class="signup-btn">Sign Up</button>
-            </a>
+                <h2>Log In</h2>
 
-            <div class="menu-toggle">
-                <i class="fa-solid fa-bars"></i>
-            </div>
-        </nav>
+                <form action="login.php" method="POST" id="loginForm">
 
-        <div class="hero">
-            <h1>Log in and continue your journey.</h1>
-        </div>
-    </header>
+                    <label>Username:</label>
 
-    <!-- Main Content -->
-    <section class="main-container">
-
-        <!-- Left Side -->
-        <div class="join-us">
-
-            <h2>Join Us:</h2>
-            <p>Be a part of Ghar Sathi!</p>
-
-            <div class="info-grid">
-
-                <div class="info-box">
-                    <i class="fa-solid fa-phone"></i>
-
-                    <div>
-                        <h3>Call for inquiry</h3>
-                        <p>+977 9762429433</p>
-                    </div>
-                </div>
-
-                <div class="info-box">
-                    <i class="fa-regular fa-envelope"></i>
-
-                    <div>
-                        <h3>Send us email</h3>
-                        <p>customercare.gharsathi@gmail.com</p>
-                    </div>
-                </div>
-
-                <div class="info-box">
-                    <i class="fa-regular fa-clock"></i>
-
-                    <div>
-                        <h3>Opening hours</h3>
-                        <p>Always open</p>
-                    </div>
-                </div>
-
-                <div class="info-box">
-                    <i class="fa-solid fa-location-dot"></i>
-
-                    <div>
-                        <h3>Office</h3>
-                        <p>Kathmandu-06, Nepal</p>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-
-        <!-- Login Box -->
-        <div class="login-box">
-
-            <h2>Log In</h2>
-
-            <form action="login.php" method="POST" id="loginForm">
-
-                <label>Username:</label>
-
-                <input type="text" name="username" id="username" placeholder="Your E-mail address Or Phone Number:"
+                    <input type="text" name="username" id="username" placeholder="Your E-mail address Or Phone Number:"
                     required>
 
+                    <label>Password:</label>
 
-                <label>Password:</label>
+                    <input type="password" name="password" id="password" placeholder="Your Password." required>
 
-                <input type="password" name="password" id="password" placeholder="Your Password." required>
+                    <button type="submit">
+                        Log In
+                    </button>
 
-
-                <button type="submit">
-                    Log In
-                </button>
-
-            </form>
-
-        </div>
-
-    </section>
-
-
-    <!-- Footer -->
-    <footer>
-
-        <div class="footer-container">
-
-            <div class="footer-column">
-                <h3><i class="fa-solid fa-briefcase"></i> Job</h3>
-
-                <p>
-                    Ghar Sathi connects skilled people with trusted
-                    opportunities, making everyday services easier,
-                    faster, and more reliable for every home.
-                </p>
-            </div>
-
-            <div class="footer-column">
-                <h3>About Us</h3>
-
-                <ul>
-                    <li>Our Team</li>
-                    <li>For Service Providers</li>
-                    <li>For Employers</li>
-                </ul>
-            </div>
-
-            <div class="footer-column">
-                <h3>Job Categories</h3>
-
-                <ul>
-                    <li>House Work</li>
-                    <li>Culinary Aid</li>
-                    <li>Home Tuition</li>
-                    <li>Pet Care</li>
-                    <li>Self Care</li>
-                </ul>
-            </div>
-
-            <div class="footer-column">
-                <h3>Be Up to Date!</h3>
-
-                <p>
-                    Stay updated with trusted home services
-                    and latest job opportunities from Ghar Sathi.
-                </p>
-
-                <form action="../ContactUsPage/subscribe.php" method="POST">
-                <input type="email" name="email" placeholder="Email Address" required>
-                <input type="hidden" name="redirect" value="../LoginPage/login.html">
-                <button type="submit">
-                    Subscribe now
-                </button>
                 </form>
+
             </div>
 
-        </div>
+        </section>
 
-        <div class="footer-bottom">
+        <!-- Footer -->
+        <footer>
 
-            <p>© Copyright Ghar Sathi 2026.</p>
+            <div class="footer-container">
 
-            <div>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms & Conditions</a>
+                <div class="footer-column">
+                    <h3><i class="fa-solid fa-briefcase"></i> Job</h3>
+
+                    <p>
+                        Ghar Sathi connects skilled people with trusted
+                        opportunities, making everyday services easier,
+                        faster, and more reliable for every home.
+                    </p>
+                </div>
+
+                <div class="footer-column">
+                    <h3>About Us</h3>
+
+                    <ul>
+                        <li>Our Team</li>
+                        <li>For Service Providers</li>
+                        <li>For Employers</li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Job Categories</h3>
+
+                    <ul>
+                        <li>House Work</li>
+                        <li>Culinary Aid</li>
+                        <li>Home Tuition</li>
+                        <li>Pet Care</li>
+                        <li>Self Care</li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Be Up to Date!</h3>
+
+                    <p>
+                        Stay updated with trusted home services
+                        and latest job opportunities from Ghar Sathi.
+                    </p>
+
+                    <form action="../ContactUsPage/subscribe.php" method="POST">
+                        <input type="email" name="email" placeholder="Email Address" required>
+                        <input type="hidden" name="redirect" value="../LoginPage/login.html">
+                        <button type="submit">
+                            Subscribe now
+                        </button>
+                    </form>
+                </div>
+
             </div>
 
-        </div>
+            <div class="footer-bottom">
 
-    </footer>
+                <p>© Copyright Ghar Sathi 2026.</p>
 
-    <script src="login.js"></script>
+                <div>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms & Conditions</a>
+                </div>
 
-</body>
+            </div>
+
+        </footer>
+
+        <script src="login.js"></script>
+
+    </body>
 
 </html>

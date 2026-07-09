@@ -1,3 +1,7 @@
+/* ===========================
+   Handles signup form submission, OTP verification, and UI state transitions.
+=========================== */
+
 // Mobile Navigation Toggle
 const menuToggle = document.querySelector(".menu-toggle");
 const navLinks = document.querySelector(".nav-links");
@@ -24,6 +28,10 @@ const emailVerifiedInput = document.getElementById("emailVerified");
 
 let verifiedEmail = "";
 let isEmailVerified = false;
+
+    // ===========================
+    // Helper Functions
+    // ===========================
 
 function setOtpStatus(message, type) {
     otpStatus.textContent = message;

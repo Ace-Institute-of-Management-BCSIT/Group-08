@@ -1,4 +1,11 @@
 <?php
+/**
+ * Accepts booking requests and records the resulting employment status.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
@@ -57,7 +64,7 @@ mysqli_stmt_execute($stmt);
 mysqli_stmt_close($stmt);
 
 create_notification($conn, (int) $booking['employer_id'], 'Booking accepted', 'Your service request has been accepted.');
-record_employment_status($conn, (int) $booking['worker_id'], (int) $booking['employer_id'], (int) $booking['job_id'], 'Selected/Hired', $bookingDate);
+record_employment_status($conn, (int) $booking['worker_id'], (int) $booking['employer_id'], (int) $booking['job_id'], 'Employer Contacted', $bookingDate);
 
 $exchange = mysqli_prepare($conn, 'INSERT IGNORE INTO contact_exchanges (booking_id, job_id, employer_id, worker_id) VALUES (?, ?, ?, ?)');
 mysqli_stmt_bind_param($exchange, 'iiii', $bookingId, $booking['job_id'], $booking['employer_id'], $booking['worker_id']);

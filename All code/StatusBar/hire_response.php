@@ -1,4 +1,11 @@
 <?php
+/**
+ * Processes worker responses to hire requests.
+ */
+
+// ===========================
+// Bootstrap and Dependencies
+// ===========================
 require_once __DIR__ . '/../includes/app.php';
 
 $user = require_user($conn);
@@ -7,6 +14,9 @@ if ($user['role'] !== 'Worker') {
     exit();
 }
 
+// ===========================
+// Request Handling
+// ===========================
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ../dasboard/dashboard.php');
     exit();
