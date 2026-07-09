@@ -198,6 +198,69 @@ header {
     background-color: #24863f;
 }
 
+.email-otp-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.email-otp-row input {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.otp-action-btn {
+    background-color: #132766;
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 0;
+    white-space: nowrap;
+}
+
+.otp-action-btn:hover {
+    background-color: #0f1f52;
+}
+
+.otp-action-btn:disabled {
+    background-color: #9aa3b8;
+    cursor: not-allowed;
+}
+
+.otp-section {
+    display: none;
+}
+
+.otp-section.visible {
+    display: block;
+}
+
+.otp-status {
+    font-size: 13px;
+    margin-top: -10px;
+    margin-bottom: 18px;
+}
+
+.otp-status.success {
+    color: #28a745;
+}
+
+.otp-status.error {
+    color: #dc3545;
+}
+
+.otp-status.info {
+    color: #132766;
+}
+
+#email.verified {
+    border-color: #28a745;
+    background-color: #f6fff8;
+}
+
 /* Footer */
 footer {
     background-color: #132766;

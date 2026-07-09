@@ -21,6 +21,8 @@ if ($fullName === '' || $username === '' || $email === '' || $password === '' ||
     $message = 'Please fill in all required fields.';
 } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $message = 'Please enter a valid email address.';
+} elseif (empty($_SESSION['email_verified'][$email])) {
+    $message = 'Please verify your email address with the OTP before signing up.';
 } elseif (!in_array($role, ['Employer', 'Worker'], true)) {
     $message = 'Please choose a valid role.';
 } elseif (strlen($password) < 6) {
@@ -58,6 +60,7 @@ if ($fullName === '' || $username === '' || $email === '' || $password === '' ||
             }
             $messageClass = 'success';
             $message = 'Account created. You can now log in with your registered credentials.';
+            unset($_SESSION['email_verified'][$email]);
         } else {
             $message = 'Could not create account. Please try again.';
         }
