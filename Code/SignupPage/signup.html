@@ -1,0 +1,300 @@
+<!-- Provides the signup page markup and registration form. -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <!-- ===========================
+        Document Metadata
+        =========================== -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Ghar Sathi - Sign Up</title>
+        <link rel="icon" type="image/svg+xml" href="../images/logo-favicon.svg">
+
+        <link rel="stylesheet" href="signup.css">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    </head>
+
+    <body>
+        <!-- ===========================
+        Page Content
+        =========================== -->
+
+        <!-- Header -->
+        <header>
+
+            <!-- Navbar -->
+            <nav class="navbar">
+
+                <div class="logo">
+                    <img src="../images/logo.png" alt="Ghar Sathi logo">
+                    <span>Ghar Sathi</span>
+                </div>
+
+                <ul class="nav-links">
+
+                    <li><a href="../Homepage/homepage.php">Home</a></li>
+
+                    <li><a href="../JobsPage/jobs.php">Jobs</a></li>
+
+                    <li><a href="../AboutUsPage/aboutus.php">About Us</a></li>
+
+                    <li><a href="../ContactUsPage/contactus.php">Contact Us</a></li>
+
+                    <li class="mobile-auth"><a href="../LoginPage/login.html">Login</a><a href="signup.html">Sign Up</a></li>
+
+                </ul>
+
+                <a href="../LoginPage/login.html" class="login-btn">
+                    Log In
+                </a>
+
+                <div class="menu-toggle">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+
+            </nav>
+
+            <!-- Hero Section -->
+            <div class="hero">
+
+                <h1>
+                    Start your journey with us today.
+                </h1>
+
+            </div>
+
+        </header>
+
+        <!-- Main Section -->
+        <section class="main-container">
+
+            <!-- Left Side -->
+            <div class="join-us">
+
+                <h2>Join Us:</h2>
+
+                <p>Be a part of Ghar Sathi!</p>
+
+                <div class="info-grid">
+
+                    <div class="info-box">
+
+                        <i class="fa-solid fa-phone"></i>
+
+                        <div>
+
+                            <h3>Call for inquiry</h3>
+
+                            <p>+977 9762429433</p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="info-box">
+
+                        <i class="fa-regular fa-envelope"></i>
+
+                        <div>
+
+                            <h3>Send us email</h3>
+
+                            <p>customercare.gharsathi@gmail.com</p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="info-box">
+
+                        <i class="fa-regular fa-clock"></i>
+
+                        <div>
+
+                            <h3>Opening hours</h3>
+
+                            <p>Always open</p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="info-box">
+
+                        <i class="fa-solid fa-location-dot"></i>
+
+                        <div>
+
+                            <h3>Office</h3>
+
+                            <p>Kathmandu-06, Nepal</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Right Side -->
+            <div class="signup-box">
+
+                <h2>Sign Up</h2>
+
+                <form action="signup.php" method="POST" id="signupForm">
+
+                    <label>Full Name:</label>
+
+                    <input type="text" name="full_name" id="fullName" placeholder="Your full name" required>
+
+                    <label>Username:</label>
+
+                    <input type="text" name="username" id="username" placeholder="Choose a username" required>
+
+                    <label>Email:</label>
+
+                    <div class="email-otp-row">
+                        <input type="email" name="email" id="email" placeholder="Your email address" required>
+                        <button type="button" id="sendOtpBtn" class="otp-action-btn">Send OTP</button>
+                    </div>
+
+                    <div class="otp-section" id="otpSection">
+                        <label for="otpInput">Verification OTP:</label>
+                        <div class="email-otp-row">
+                            <input type="text" id="otpInput" placeholder="Enter 6-digit OTP" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+                            <button type="button" id="verifyOtpBtn" class="otp-action-btn">Verify</button>
+                        </div>
+                        <p class="otp-status" id="otpStatus"></p>
+                    </div>
+
+                    <input type="hidden" name="email_verified" id="emailVerified" value="0">
+
+                    <label>Phone Number:</label>
+
+                    <input type="tel" name="phone" id="phone" placeholder="Your phone number">
+
+                    <label>Role:</label>
+
+                    <select name="role" id="role" required>
+                        <option value="Worker">Worker</option>
+                        <option value="Employer">Employer</option>
+                    </select>
+
+                    <label>Password:</label>
+
+                    <input type="password" name="password" id="password" placeholder="Your Password" required>
+
+                    <label>Confirm Password:</label>
+
+                    <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password"
+                    required>
+
+                    <button type="submit">
+
+                        Sign Up
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+        <!-- Footer -->
+        <footer>
+
+            <div class="footer-container">
+
+                <div class="footer-column">
+
+                    <h3>
+                        Job
+                    </h3>
+
+                    <p>
+                        Ghar Sathi connects skilled people with trusted
+                        opportunities, making everyday services easier,
+                        faster, and more reliable for every home.
+                    </p>
+
+                </div>
+
+                <div class="footer-column">
+
+                    <h3>Company</h3>
+
+                    <p>About Us<br>Our Team<br>For Service Providers<br>For Employers</p>
+
+                </div>
+
+                <div class="footer-column">
+
+                    <h3>Job Categories</h3>
+
+                    <p>House Work<br>Culinary Aid<br>Home Tuition<br>Pet Care<br>Self Care</p>
+
+                </div>
+
+                <div class="footer-column">
+
+                    <h3>Be Up to Date!</h3>
+
+                    <p>
+                        Stay updated with trusted home services
+                        and latest job opportunities from Ghar Sathi.
+                    </p>
+
+                    <form action="../ContactUsPage/subscribe.php" method="POST">
+                        <input type="email" name="email" placeholder="Email Address" required>
+                        <input type="hidden" name="redirect" value="../SignupPage/signup.html">
+
+                        <button type="submit">
+
+                            Subscribe now
+
+                        </button>
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+
+                <p>
+
+                    © Copyright Ghar Sathi 2026.
+
+                </p>
+
+                <div>
+
+                    <a href="#">
+
+                        Privacy Policy
+
+                    </a>
+
+                    <a href="#">
+
+                        Terms & Conditions
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </footer>
+
+        <script src="signup.js"></script>
+
+    </body>
+
+</html>

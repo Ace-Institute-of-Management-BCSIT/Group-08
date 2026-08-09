@@ -1,0 +1,363 @@
+/* ===========================
+   Styles the Contact Us page, contact form, newsletter area, and responsive layout.
+=========================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+    background-color: #ffffff;
+    color: #1a1a1a;
+}
+
+/* ===== Header ===== */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0f1d4a;
+    padding: 18px 60px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.logo-img {
+    width: 32px;
+    height: 32px;
+    display: block;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #ffffff;
+    object-fit: cover;
+    object-position: center;
+}
+
+.nav-links {
+    display: flex;
+    gap: 40px;
+}
+
+.nav-links a {
+    color: #d8dae6;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.nav-links a.active {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.nav-links a:hover {
+    color: #ffffff;
+}
+
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.login-btn {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.signup-btn {
+    background-color: #1db97f;
+    color: #ffffff;
+    padding: 8px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.signup-btn:hover {
+    background-color: #169c6b;
+}
+
+/* ===== Title Banner ===== */
+.title-banner {
+    background-color: #0f1d4a;
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.title-banner h1 {
+    color: #ffffff;
+    font-size: 42px;
+    font-weight: 700;
+}
+
+/* ===== Contact Section ===== */
+.contact-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 60px;
+    padding: 60px 80px;
+    justify-content: space-between;
+}
+
+.contact-left {
+    flex: 1 1 450px;
+}
+
+.contact-left h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #0f1d4a;
+}
+
+.contact-left p {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    max-width: 480px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px 60px;
+}
+
+.info-item .icon {
+    font-size: 22px;
+    margin-bottom: 8px;
+    color: #1db97f;
+}
+
+.info-item h4 {
+    margin-bottom: 5px;
+    font-size: 16px;
+    color: #0f1d4a;
+}
+
+.info-item p {
+    color: #555;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* ===== Contact Form (Right) ===== */
+.contact-right {
+    flex: 1 1 400px;
+    background-color: #eaf0ef;
+    padding: 35px;
+    border-radius: 10px;
+    max-width: 480px;
+}
+
+.contact-right h3 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #0f1d4a;
+    font-size: 22px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-group {
+    flex: 1;
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #ffffff;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #1db97f;
+}
+
+.send-btn {
+    background-color: #1db97f;
+    color: #ffffff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.send-btn:hover {
+    background-color: #169c6b;
+}
+
+/* ===== Footer ===== */
+.footer {
+    background-color: #0f1d4a;
+    color: #d8dae6;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 50px 80px 30px;
+}
+
+.footer-col {
+    flex: 1 1 220px;
+}
+
+.footer-col h3,
+.footer-col h4 {
+    color: #ffffff;
+    margin-bottom: 15px;
+}
+
+.footer-col p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #b9bcd1;
+}
+
+.footer-col ul {
+    list-style: none;
+}
+
+.footer-col ul li {
+    margin-bottom: 8px;
+}
+
+.footer-col ul li a {
+    color: #d8dae6;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.footer-col ul li a:hover {
+    color: #ffffff;
+}
+
+.subscribe-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.subscribe-form input {
+    padding: 10px 12px;
+    border-radius: 5px;
+    border: none;
+    font-size: 14px;
+}
+
+.subscribe-form button {
+    background-color: #1db97f;
+    color: #ffffff;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.subscribe-form button:hover {
+    background-color: #169c6b;
+}
+
+/* ===== Bottom Bar ===== */
+.bottom-bar {
+    background-color: #0f1d4a;
+    border-top: 1px solid #2a3a6a;
+    color: #b9bcd1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 80px;
+    font-size: 13px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.bottom-links {
+    display: flex;
+    gap: 25px;
+}
+
+.bottom-links a {
+    color: #b9bcd1;
+    text-decoration: none;
+}
+
+.bottom-links a:hover {
+    color: #ffffff;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px 20px;
+}
+
+/* Shared site footer */
+footer { background: #132766; color: white; }
+.footer-container { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; padding: 60px 5%; }
+.footer-column h3 { margin-bottom: 20px; }
+.footer-column p { line-height: 1.8; }
+.footer-column input { width: 100%; padding: 12px; border-radius: 6px; border: none; margin: 15px 0; }
+.footer-column button { width: 100%; padding: 12px; background: #28a745; border: none; color: white; border-radius: 6px; }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,.2); padding: 20px 5%; display: flex; justify-content: space-between; }
+.footer-bottom a, .footer-column a { color: inherit; }
+@media (max-width:900px) { .footer-container { grid-template-columns: 1fr; } }
+
+.nav-links {
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.contact-section {
+    padding: 40px 20px;
+}
+
+.footer {
+    padding: 40px 20px;
+}
+
+.bottom-bar {
+    flex-direction: column;
+    text-align: center;
+    padding: 18px 20px;
+}
+
+}

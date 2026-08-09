@@ -1,0 +1,196 @@
+<!-- Provides the login page markup and authentication form. -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <!-- ===========================
+        Document Metadata
+        =========================== -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Ghar Sathi - Login</title>
+        <link rel="icon" type="image/svg+xml" href="../images/logo-favicon.svg">
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="login.css">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    </head>
+
+    <body>
+        <!-- ===========================
+        Page Content
+        =========================== -->
+
+        <!-- Navbar -->
+        <header>
+            <nav class="navbar">
+                <div class="logo">
+                    <img src="../images/logo.png" alt="Ghar Sathi logo">
+                    <span>Ghar Sathi</span>
+                </div>
+
+                <ul class="nav-links">
+                    <li><a href="../Homepage/homepage.php">Home</a></li>
+                    <li><a href="../JobsPage/jobs.php">Jobs</a></li>
+                    <li><a href="../AboutUsPage/aboutus.php">About Us</a></li>
+                    <li><a href="../ContactUsPage/contactus.php">Contact Us</a></li>
+                    <li class="mobile-auth"><a href="login.html">Login</a><a href="../SignupPage/signup.html">Sign Up</a></li>
+                </ul>
+
+                <a href="../SignupPage/signup.html">
+                    <button class="signup-btn">Sign Up</button>
+                </a>
+
+                <div class="menu-toggle">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+            </nav>
+
+            <div class="hero">
+                <h1>Log in and continue your journey.</h1>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <section class="main-container">
+
+            <!-- Left Side -->
+            <div class="join-us">
+
+                <h2>Join Us:</h2>
+                <p>Be a part of Ghar Sathi!</p>
+
+                <div class="info-grid">
+
+                    <div class="info-box">
+                        <i class="fa-solid fa-phone"></i>
+
+                        <div>
+                            <h3>Call for inquiry</h3>
+                            <p>+977 9762429433</p>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <i class="fa-regular fa-envelope"></i>
+
+                        <div>
+                            <h3>Send us email</h3>
+                            <p>customercare.gharsathi@gmail.com</p>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <i class="fa-regular fa-clock"></i>
+
+                        <div>
+                            <h3>Opening hours</h3>
+                            <p>Always open</p>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <i class="fa-solid fa-location-dot"></i>
+
+                        <div>
+                            <h3>Office</h3>
+                            <p>Kathmandu-06, Nepal</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Login Box -->
+            <div class="login-box">
+
+                <h2>Log In</h2>
+
+                <form action="login.php" method="POST" id="loginForm">
+
+                    <label>Username:</label>
+
+                    <input type="text" name="username" id="username" placeholder="Your E-mail address Or Phone Number:"
+                    required>
+
+                    <label>Password:</label>
+
+                    <input type="password" name="password" id="password" placeholder="Your Password." required>
+
+                    <button type="submit">
+                        Log In
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+        <!-- Footer -->
+        <footer>
+
+            <div class="footer-container">
+
+                <div class="footer-column">
+                    <h3>Job</h3>
+
+                    <p>
+                        Ghar Sathi connects skilled people with trusted
+                        opportunities, making everyday services easier,
+                        faster, and more reliable for every home.
+                    </p>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Company</h3>
+
+                    <p>About Us<br>Our Team<br>For Service Providers<br>For Employers</p>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Job Categories</h3>
+
+                    <p>House Work<br>Culinary Aid<br>Home Tuition<br>Pet Care<br>Self Care</p>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Be Up to Date!</h3>
+
+                    <p>
+                        Stay updated with trusted home services
+                        and latest job opportunities from Ghar Sathi.
+                    </p>
+
+                    <form action="../ContactUsPage/subscribe.php" method="POST">
+                        <input type="email" name="email" placeholder="Email Address" required>
+                        <input type="hidden" name="redirect" value="../LoginPage/login.html">
+                        <button type="submit">
+                            Subscribe now
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+
+                <p>© Copyright Ghar Sathi 2026.</p>
+
+                <div>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms & Conditions</a>
+                </div>
+
+            </div>
+
+        </footer>
+
+        <script src="login.js"></script>
+
+    </body>
+
+</html>
