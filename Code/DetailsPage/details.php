@@ -50,6 +50,12 @@ $user = current_user($conn);
 $userRole = $user['role'] ?? '';
 $contactExchanges = [];
 $bookingStatusByWorker = [];
+$activeBookingByWorker = [];
+$bookingTimeColumnsReady = false;
+
+$startTimeColumn = mysqli_query($conn, "SHOW COLUMNS FROM booking_requests LIKE 'start_time'");
+$finishTimeColumn = mysqli_query($conn, "SHOW COLUMNS FROM booking_requests LIKE 'finish_time'");
+$bookingTimeColumnsReady = (bool) ($startTimeColumn && mysqli_fetch_assoc($startTimeColumn) && $finishTimeColumn && mysqli_fetch_assoc($finishTimeColumn));
 
 if ($job && $user) {
     $stmt = mysqli_prepare($conn, "SELECT worker_id FROM contact_exchanges WHERE job_id = ? AND (employer_id = ? OR worker_id = ?)
@@ -75,6 +81,18 @@ if ($job && $user) {
     }
     mysqli_stmt_close($stmt);
 }
+
+if ($bookingTimeColumnsReady && $job && $workers) {
+    $workerIds = array_values(array_unique(array_map(static fn($worker) => (int) $worker['user_id'], $workers)));
+    $workerIdList = implode(',', $workerIds);
+    $result = mysqli_query($conn, "SELECT worker_id, booking_date, start_time, finish_time FROM booking_requests WHERE status = 'Accepted' AND worker_id IN ($workerIdList) ORDER BY booking_date ASC, booking_id DESC");
+    while ($row = $result ? mysqli_fetch_assoc($result) : null) {
+        $workerId = (int) $row['worker_id'];
+        if (!isset($activeBookingByWorker[$workerId])) {
+            $activeBookingByWorker[$workerId] = $row;
+        }
+    }
+}
 // ===========================
 // Page Rendering
 // ===========================
@@ -85,12 +103,13 @@ if ($job && $user) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Job Details</title>
-<link rel="icon" type="image/svg+xml" href="../images/logo-favicon.svg">
+<link rel="icon" type="image/png" href="../images/logo.png">
 <link rel="stylesheet" href="details.css">
 <link rel="stylesheet" href="../JobsPage/jobs.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
 <style>
-body{background:#f7f8fa}.details-container{max-width:1180px;margin:0 auto;padding:42px 20px}.job-details{background:#fff;border:1px solid #dfe7e3;border-radius:8px;padding:28px;box-shadow:0 12px 28px rgba(16,35,74,.1)}.detail-image{width:100%;max-height:340px;object-fit:cover;border-radius:8px;margin-bottom:20px}.applied-workers{margin-top:28px}.worker-grid{display:grid;grid-template-columns:1fr;gap:18px}.worker-card{border:1px solid #dfe7e3;border-radius:8px;padding:18px;background:#fff;box-shadow:0 8px 20px rgba(16,35,74,.06);display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:20px;align-items:start}.worker-main{min-width:0}.worker-history-panel{border-left:1px solid #edf1ef;padding-left:20px;min-width:0}.worker-history-panel h3{color:#132766;font-size:18px;margin:0 0 10px}.worker-history-panel h3+div{margin-bottom:16px}.worker-head{display:flex;gap:14px;align-items:center;margin-bottom:12px}.worker-head img{width:64px;height:64px;border-radius:50%;object-fit:cover}.worker-card h3{color:#132766;margin-bottom:2px}.rating-line{color:#7a4f00;font-weight:700}.detail-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.detail-actions a,.booking-form button{background:#28a745;color:#fff;border:0;border-radius:6px;padding:12px 18px;text-decoration:none;font-weight:600;cursor:pointer}.booking-form{border:1px solid #dfe7e3;border-radius:8px;padding:18px;background:#fbfdfc;margin-top:18px}.booking-form label{display:block;margin:12px 0;color:#132766;font-weight:600}.booking-form input,.booking-form select,.booking-form textarea{width:100%;border:1px solid #dfe7e3;border-radius:6px;padding:10px;margin-top:6px}.muted{color:#687383}.worker-meta{color:#687383;font-size:14px}.status-pill{display:inline-flex;border-radius:999px;background:#edf5f2;color:#255747;padding:5px 10px;font-size:12px;font-weight:700;margin:8px 0}.history-list p,.review-list p{font-size:13px;margin:8px 0;color:#4b5563;line-height:1.5}@media(max-width:860px){.worker-card{grid-template-columns:1fr}.worker-history-panel{border-left:0;border-top:1px solid #edf1ef;padding-left:0;padding-top:16px}.job-details{padding:20px}}
+body{background:#f7f8fa}.details-container{max-width:1180px;margin:0 auto;padding:42px 20px}.job-details{background:#fff;border:1px solid #dfe7e3;border-radius:8px;padding:28px;box-shadow:0 12px 28px rgba(16,35,74,.1)}.detail-image{width:100%;max-height:340px;object-fit:cover;border-radius:8px;margin-bottom:20px}.applied-workers{margin-top:28px}.worker-grid{display:grid;grid-template-columns:1fr;gap:18px}.worker-card{border:1px solid #dfe7e3;border-radius:8px;padding:18px;background:#fff;box-shadow:0 8px 20px rgba(16,35,74,.06);display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:20px;align-items:start}.worker-main{min-width:0}.worker-history-panel{border-left:1px solid #edf1ef;padding-left:20px;min-width:0}.worker-history-panel h3{color:#132766;font-size:18px;margin:0 0 10px}.worker-history-panel h3+div{margin-bottom:16px}.worker-head{display:flex;gap:14px;align-items:center;margin-bottom:12px}.worker-profile-button{display:flex;align-items:center;gap:14px;background:transparent;border:0;padding:6px;border-radius:8px;text-align:left;cursor:pointer;color:inherit;transition:box-shadow .2s ease,transform .2s ease}.worker-avatar{position:relative;display:block;flex:0 0 64px}.worker-profile-button img{width:64px;height:64px;border-radius:50%;object-fit:cover}.busy-badge{position:absolute;top:-7px;right:-16px;z-index:1;border-radius:999px;background:#28a745;color:#fff;padding:3px 7px;font-size:11px;font-weight:700;line-height:1;cursor:help}.busy-tooltip{position:absolute;top:calc(100% + 8px);right:0;z-index:5;width:max-content;max-width:220px;border-radius:6px;background:#173b2b;color:#fff;padding:9px 10px;font-size:12px;font-weight:400;line-height:1.45;opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .18s ease,transform .18s ease}.busy-badge:hover .busy-tooltip{opacity:1;transform:translateY(0)}.worker-name{display:block;color:#132766;font-size:1.17em;font-weight:700;margin-bottom:2px}.worker-profile-button:hover{box-shadow:0 6px 16px rgba(19,39,102,.22);transform:translateY(-1px)}.worker-profile-button:focus-visible{outline:3px solid #80bdff;outline-offset:4px;border-radius:6px}.worker-card h3{color:#132766;margin-bottom:2px}.rating-line{color:#7a4f00;font-weight:700}.worker-profile-button .rating-line{display:block}.detail-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.detail-actions a,.booking-form button{background:#28a745;color:#fff;border:0;border-radius:6px;padding:12px 18px;text-decoration:none;font-weight:600;cursor:pointer}.booking-form{border:1px solid #dfe7e3;border-radius:8px;padding:18px;background:#fbfdfc;margin-top:18px}.booking-form label{display:block;margin:12px 0;color:#132766;font-weight:600}.booking-form input,.booking-form select,.booking-form textarea{width:100%;border:1px solid #dfe7e3;border-radius:6px;padding:10px;margin-top:6px}.muted{color:#687383}.worker-meta{color:#687383;font-size:14px}.status-pill{display:inline-flex;border-radius:999px;background:#edf5f2;color:#255747;padding:5px 10px;font-size:12px;font-weight:700;margin:8px 0}.history-list p,.review-list p{font-size:13px;margin:8px 0;color:#4b5563;line-height:1.5}.reviews-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(10,22,50,.58)}.reviews-modal.is-open{display:flex}.reviews-modal-dialog{position:relative;width:min(620px,100%);max-height:80vh;overflow:auto;background:#fff;border-radius:12px;padding:28px;box-shadow:0 20px 50px rgba(0,0,0,.28)}.reviews-modal-dialog h2{color:#132766;margin:0 36px 6px 0}.reviews-modal-summary{color:#7a4f00;font-weight:700;margin:0 0 18px}.modal-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border:0;border-radius:50%;background:#eef2f7;color:#132766;font-size:24px;line-height:1;cursor:pointer}.modal-review{padding:14px 0;border-top:1px solid #e4e9e7;color:#4b5563;line-height:1.5}.modal-review:first-of-type{border-top:0}.modal-review p{margin:5px 0}.modal-review strong{color:#132766}@media(max-width:860px){.worker-card{grid-template-columns:1fr}.worker-history-panel{border-left:0;border-top:1px solid #edf1ef;padding-left:0;padding-top:16px}.job-details{padding:20px}}@media(max-width:480px){.reviews-modal-dialog{padding:24px 18px}.worker-profile-button{gap:10px}}
+.worker-main{position:relative}.worker-name-line{position:relative;display:flex;align-items:center;gap:8px}.worker-busy-pill{position:absolute;top:4px;right:0;z-index:2;border-radius:999px;background:#28a745;color:#fff;padding:5px 10px;font-size:12px;font-weight:700;line-height:1;cursor:help}.worker-busy-pill .busy-tooltip{position:absolute;top:calc(100% + 8px);right:0;z-index:5;width:max-content;max-width:220px;border-radius:6px;background:#173b2b;color:#fff;padding:9px 10px;font-size:12px;font-weight:400;line-height:1.45;opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .18s ease,transform .18s ease}.worker-busy-pill:hover .busy-tooltip{opacity:1;transform:translateY(0)}@media(max-width:860px){.worker-busy-pill{right:0}}
 </style>
 </head>
 <body>
@@ -125,7 +144,6 @@ body{background:#f7f8fa}.details-container{max-width:1180px;margin:0 auto;paddin
 <?php else: ?>
 <a href="../dasboard/dashboard.php">Admin Dashboard</a>
 <?php endif; ?>
-<a href="../JobsPage/jobs.php?category=<?php echo urlencode($job['category_name']); ?>">More <?php echo e($job['category_name']); ?></a>
 </div>
 <h2>Job Description</h2>
 <p class="description"><?php echo e($job['description']); ?></p>
@@ -142,17 +160,22 @@ $canViewContact = isset($contactExchanges[$workerId]);
 $requestStatus = $bookingStatusByWorker[$workerId] ?? 'No request sent';
 $workHistory = fetch_worker_completed_history($conn, $workerId, 3);
 $latestReviews = fetch_latest_reviews($conn, $workerId, 3);
+$allReviews = fetch_latest_reviews($conn, $workerId, 100);
 $busyDatesByWorker = booked_dates_by_worker($conn, [$workerId]);
+$activeBooking = $activeBookingByWorker[$workerId] ?? null;
 ?>
-<article class="worker-card">
+<article class="worker-card" id="worker-<?php echo e($workerId); ?>">
 <div class="worker-main">
 <div class="worker-head">
-<img src="../images/profile.jpg" alt="<?php echo e($worker['full_name']); ?>">
-<div>
-<h3><?php echo e($worker['full_name']); ?></h3>
-<p class="rating-line"><?php echo e(number_format((float) $worker['avg_rating'], 1)); ?> star | <?php echo e((int) $worker['total_reviews']); ?> reviews</p>
+<button class="worker-profile-button" type="button" data-reviews-modal="reviews-modal-<?php echo e($workerId); ?>" aria-haspopup="dialog" aria-controls="reviews-modal-<?php echo e($workerId); ?>" aria-label="View reviews for <?php echo e($worker['full_name']); ?>">
+<span class="worker-avatar"><img src="<?php echo e(profile_image_url($worker['profile_image'], '..', '../images/profile.jpg')); ?>" alt=""></span>
+<span>
+<span class="worker-name-line"><span class="worker-name"><?php echo e($worker['full_name']); ?></span></span>
+<span class="rating-line"><?php echo e(number_format((float) $worker['avg_rating'], 1)); ?> star | <?php echo e((int) $worker['total_reviews']); ?> reviews</span>
+</span>
+</button>
 </div>
-</div>
+<?php if ($activeBooking): ?><span class="worker-busy-pill">Busy<span class="busy-tooltip">Hired date: <?php echo e($activeBooking['booking_date']); ?><br>Start: <?php echo e(substr($activeBooking['start_time'], 0, 5)); ?><br>Finish: <?php echo e(substr($activeBooking['finish_time'], 0, 5)); ?></span></span><?php endif; ?>
 <p><?php echo e($worker['skills']); ?></p>
 <p class="worker-meta"><?php echo e($worker['experience_years']); ?> years experience | <?php echo e($worker['current_status']); ?></p>
 <p><span class="status-pill">Request Status: <?php echo e($requestStatus); ?></span></p>
@@ -168,10 +191,11 @@ $busyDatesByWorker = booked_dates_by_worker($conn, [$workerId]);
 <input type="hidden" name="category_id" value="<?php echo e($job['category_id']); ?>">
 <input type="hidden" name="worker_id" value="<?php echo e($workerId); ?>">
 <label>Service Date
-<input type="date" name="booking_date" class="availability-date-input" data-busy-dates="<?php echo e(json_encode($busyDatesByWorker)); ?>" required>
+<input type="date" name="booking_date" class="availability-date-input" min="<?php echo e(date('Y-m-d')); ?>" data-busy-dates="<?php echo e(json_encode($busyDatesByWorker)); ?>" required>
 </label>
-<label>Time <input type="time" name="requested_time" required></label>
-<label>Offer salary <input type="number" name="offered_salary" min="0" step="1" value="<?php echo e(max(0, (float) $job['salary'] - 20)); ?>" required></label>
+<label>Start Time <input type="time" name="start_time" required></label>
+<label>Finish Time <input type="time" name="finish_time" required></label>
+<label>Offer Hourly Salary <input type="number" name="offered_salary" min="0" step="1" value="<?php echo e(max(0, (float) $worker['hourly_rate'])); ?>" required></label>
 <label>Service Category <input type="text" name="service_category" value="<?php echo e($job['category_name']); ?>" readonly></label>
 <label>Notes <textarea name="notes" rows="3" placeholder="Add timing, address, or service notes"></textarea></label>
 <button type="submit">Hire Now</button>
@@ -201,6 +225,17 @@ $busyDatesByWorker = booked_dates_by_worker($conn, [$workerId]);
 </div>
 </aside>
 </article>
+<div class="reviews-modal" id="reviews-modal-<?php echo e($workerId); ?>" role="dialog" aria-modal="true" aria-labelledby="reviews-title-<?php echo e($workerId); ?>" hidden>
+<div class="reviews-modal-dialog">
+<button class="modal-close" type="button" aria-label="Close reviews">&times;</button>
+<h2 id="reviews-title-<?php echo e($workerId); ?>"><?php echo e($worker['full_name']); ?>'s Reviews</h2>
+<p class="reviews-modal-summary"><?php echo e(number_format((float) $worker['avg_rating'], 1)); ?> star average from <?php echo e((int) $worker['total_reviews']); ?> reviews</p>
+<?php if (!$allReviews): ?><p class="muted">No reviews yet.</p><?php endif; ?>
+<?php foreach ($allReviews as $review): ?>
+<article class="modal-review"><strong><?php echo e(mask_reviewer_name($review['employer_name'])); ?></strong><p class="rating-line"><?php echo e((int) $review['rating']); ?> star</p><?php if ($review['review_comment']): ?><p><?php echo e($review['review_comment']); ?></p><?php endif; ?><?php if ($review['review_date']): ?><p class="worker-meta"><?php echo e($review['review_date']); ?></p><?php endif; ?></article>
+<?php endforeach; ?>
+</div>
+</div>
 <?php endforeach; ?>
 </div>
 </section>
@@ -209,5 +244,27 @@ $busyDatesByWorker = booked_dates_by_worker($conn, [$workerId]);
 </section>
 <?php render_footer('..'); ?>
 <script src="../JobsPage/jobs.js"></script>
+<script>
+document.querySelectorAll('.worker-profile-button').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var modal = document.getElementById(button.dataset.reviewsModal);
+        if (!modal) return;
+        modal.hidden = false;
+        modal.classList.add('is-open');
+        modal.querySelector('.modal-close').focus();
+    });
+});
+document.querySelectorAll('.reviews-modal').forEach(function (modal) {
+    function closeModal() {
+        modal.classList.remove('is-open');
+        modal.hidden = true;
+        var button = document.querySelector('[data-reviews-modal="' + modal.id + '"]');
+        if (button) button.focus();
+    }
+    modal.querySelector('.modal-close').addEventListener('click', closeModal);
+    modal.addEventListener('click', function (event) { if (event.target === modal) closeModal(); });
+    modal.addEventListener('keydown', function (event) { if (event.key === 'Escape') closeModal(); });
+});
+</script>
 </body>
 </html>

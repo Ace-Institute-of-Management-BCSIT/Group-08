@@ -47,7 +47,7 @@ if ($jobId > 0) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Apply Resume - Ghar Sathi</title>
-<link rel="icon" type="image/svg+xml" href="../images/logo-favicon.svg">
+<link rel="icon" type="image/png" href="../images/logo.png">
 <link rel="stylesheet" href="aboutus.css">
 <style>
 .apply-wrap{max-width:980px;margin:40px auto;padding:0 20px;display:grid;grid-template-columns:1fr 1fr;gap:28px}

@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Upload Resume - Ghar Sathi</title>
-<link rel="icon" type="image/svg+xml" href="../images/logo-favicon.svg">
+<link rel="icon" type="image/png" href="../images/logo.png">
 <link rel="stylesheet" href="../JobsPage/jobs.css">
 <style>
 .upload-page{max-width:640px;margin:40px auto;padding:0 20px}.upload-box{background:#fff;border:1px solid #dfe7e3;border-radius:8px;padding:28px;box-shadow:0 10px 24px rgba(16,35,74,.08)}.upload-box h1{color:#132766;margin-bottom:14px}.upload-box input{width:100%;border:1px solid #dfe7e3;border-radius:6px;padding:12px;margin:14px 0}.upload-box button,.upload-box a{display:inline-flex;border:0;border-radius:6px;background:#28a745;color:#fff;padding:12px 18px;text-decoration:none;font-weight:600}.success{color:#28a745}.error{color:#b42318}

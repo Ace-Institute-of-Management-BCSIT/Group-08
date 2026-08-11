@@ -70,9 +70,26 @@ function service_image(string $category): string {
     return $images[$category] ?? '../images/clean.jpg';
 }
 
+function worker_hourly_rate_available(mysqli $conn): bool {
+    static $available = null;
+    if ($available !== null) return $available;
+    $result = mysqli_query($conn, "SHOW COLUMNS FROM worker_profiles LIKE 'hourly_rate'");
+    return $available = (bool) ($result && mysqli_fetch_assoc($result));
+}
+
 function fetch_workers_for_category(mysqli $conn, int $categoryId, int $limit = 6): array {
-    $stmt = mysqli_prepare($conn, 'SELECT u.user_id,u.full_name,u.email,u.phone,wp.skills,wp.experience_years,wp.profile_image,wp.current_status,COALESCE(AVG(r.rating),0) AS avg_rating,COUNT(r.review_id) AS total_reviews FROM users u INNER JOIN (SELECT worker_id, MAX(profile_id) AS profile_id FROM worker_profiles GROUP BY worker_id) latest_profile ON latest_profile.worker_id=u.user_id INNER JOIN worker_profiles wp ON wp.profile_id=latest_profile.profile_id INNER JOIN worker_categories wc ON wc.worker_id=u.user_id LEFT JOIN reviews r ON r.worker_id=u.user_id WHERE u.role=\'Worker\' AND wp.verification_status=\'Approved\' AND wc.category_id=? GROUP BY u.user_id,u.full_name,u.email,u.phone,wp.skills,wp.experience_years,wp.profile_image,wp.current_status ORDER BY avg_rating DESC,wp.experience_years DESC,u.full_name LIMIT ?');
-    mysqli_stmt_bind_param($stmt, 'ii', $categoryId, $limit); mysqli_stmt_execute($stmt); $result = mysqli_stmt_get_result($stmt); $rows = $result ? mysqli_fetch_all($result, MYSQLI_ASSOC) : []; mysqli_stmt_close($stmt); return $rows;
+    $hasHourlyRate = worker_hourly_rate_available($conn);
+    $hourlyRateSelect = $hasHourlyRate ? 'COALESCE(wp.hourly_rate, 2000) AS hourly_rate,' : '2000 AS hourly_rate,';
+    $hourlyRateGroup = $hasHourlyRate ? ',wp.hourly_rate' : '';
+    $sql = "SELECT u.user_id,u.full_name,u.email,u.phone,wp.skills,wp.experience_years,$hourlyRateSelect wp.profile_image,wp.current_status,COALESCE(AVG(r.rating),0) AS avg_rating,COUNT(r.review_id) AS total_reviews FROM users u INNER JOIN (SELECT worker_id, MAX(profile_id) AS profile_id FROM worker_profiles GROUP BY worker_id) latest_profile ON latest_profile.worker_id=u.user_id INNER JOIN worker_profiles wp ON wp.profile_id=latest_profile.profile_id INNER JOIN worker_categories wc ON wc.worker_id=u.user_id LEFT JOIN reviews r ON r.worker_id=u.user_id WHERE u.role='Worker' AND wp.verification_status='Approved' AND wc.category_id=? GROUP BY u.user_id,u.full_name,u.email,u.phone,wp.skills,wp.experience_years,wp.profile_image,wp.current_status$hourlyRateGroup ORDER BY avg_rating DESC,wp.experience_years DESC,u.full_name LIMIT ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) return [];
+    mysqli_stmt_bind_param($stmt, 'ii', $categoryId, $limit);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $rows = $result ? mysqli_fetch_all($result, MYSQLI_ASSOC) : [];
+    mysqli_stmt_close($stmt);
+    return $rows;
 }
 
 function booked_dates_by_worker(mysqli $conn, array $workerIds): array {

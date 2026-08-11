@@ -77,6 +77,64 @@ function max_salary_value($value) {
 function job_image($category) {
     return service_image($category);
 }
+
+function hourly_price_range_for_category(mysqli $conn, int $categoryId): string {
+    static $ranges = [];
+
+    if ($categoryId <= 0) {
+        return '';
+    }
+
+    if (array_key_exists($categoryId, $ranges)) {
+        return $ranges[$categoryId];
+    }
+
+    if (!worker_hourly_rate_available($conn)) {
+        $ranges[$categoryId] = '';
+        return '';
+    }
+
+    $stmt = mysqli_prepare(
+        $conn,
+        "SELECT MIN(COALESCE(wp.hourly_rate, 2000)) AS min_rate,
+                MAX(COALESCE(wp.hourly_rate, 2000)) AS max_rate
+         FROM users u
+         INNER JOIN (
+             SELECT worker_id, MAX(profile_id) AS profile_id
+             FROM worker_profiles
+             GROUP BY worker_id
+         ) latest_profile ON latest_profile.worker_id = u.user_id
+         INNER JOIN worker_profiles wp ON wp.profile_id = latest_profile.profile_id
+         INNER JOIN worker_categories wc ON wc.worker_id = u.user_id
+         WHERE u.role = 'Worker'
+           AND wp.verification_status = 'Approved'
+           AND wc.category_id = ?"
+    );
+
+    if (!$stmt) {
+        $ranges[$categoryId] = '';
+        return '';
+    }
+
+    mysqli_stmt_bind_param($stmt, 'i', $categoryId);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $row = $result ? mysqli_fetch_assoc($result) : null;
+    mysqli_stmt_close($stmt);
+
+    $minRate = (float) ($row['min_rate'] ?? 0);
+    $maxRate = (float) ($row['max_rate'] ?? 0);
+
+    if ($minRate <= 0 && $maxRate <= 0) {
+        $ranges[$categoryId] = '';
+    } elseif ($minRate === $maxRate) {
+        $ranges[$categoryId] = 'Hourly Price: Rs ' . number_format($minRate, 0);
+    } else {
+        $ranges[$categoryId] = 'Hourly Price: Rs ' . number_format($minRate, 0) . ' - Rs ' . number_format($maxRate, 0);
+    }
+
+    return $ranges[$categoryId];
+}
 // ===========================
 // Page Rendering
 // ===========================
@@ -87,7 +145,7 @@ function job_image($category) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ghar Sathi - Jobs</title>
-<link rel="icon" type="image/svg+xml" href="../images/logo-favicon.svg">
+<link rel="icon" type="image/png" href="../images/logo.png">
 <link rel="stylesheet" href="jobs.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
 </head>
@@ -152,26 +210,32 @@ function job_image($category) {
 <?php foreach ($jobs as $index => $job): ?>
 <?php
 $jobId = (int) ($job['job_id'] ?? 0);
+$categoryId = (int) ($job['category_id'] ?? 0);
+$hourlyPriceRange = hourly_price_range_for_category($conn, $categoryId);
 $verifiedWorkers = fetch_workers_for_category($conn, (int) ($job['category_id'] ?? 0), 3);
 $busyDatesByWorker = booked_dates_by_worker($conn, array_column($verifiedWorkers, 'user_id'));
 
 ?>
 <article class="job-card" data-page="<?php echo $index < 6 ? '1' : '2'; ?>" data-title="<?php echo e($job['title']); ?>" data-category="<?php echo e($job['category']); ?>" data-type="<?php echo e($job['type']); ?>" data-location="<?php echo e($job['location']); ?>" data-salary="<?php echo e($job['salary_max']); ?>" data-minutes="<?php echo e($job['minutes']); ?>" <?php echo $index < 6 ? '' : 'hidden'; ?>>
-<div class="job-card-head"><span class="category-badge"><?php echo e($job['category']); ?></span><span class="salary-badge"><?php echo e($job['salary']); ?></span></div>
+<div class="job-card-head">
+<span class="category-badge"><?php echo e($job['category']); ?></span>
+<?php if ($hourlyPriceRange !== ''): ?>
+<span class="salary-badge"><?php echo e($hourlyPriceRange); ?></span>
+<?php endif; ?>
+</div>
 <h2><?php echo e($job['title']); ?></h2>
 <p><?php echo e($job['description']); ?></p>
 <p class="job-employer">Employer: <?php echo e($job['employer'] ?? 'Ghar Sathi'); ?></p>
 <div class="job-info">
 <span><?php echo e($job['type']); ?></span>
 <span><?php echo e($job['location']); ?></span>
-<a href="../DetailsPage/details.php?id=<?php echo $jobId; ?>">details</a>
 </div>
 <?php if ($verifiedWorkers): ?>
 <div class="worker-strip" aria-label="Available workers">
 <?php foreach ($verifiedWorkers as $worker): ?>
-<div class="mini-worker">
+<a class="mini-worker" href="../DetailsPage/details.php?id=<?php echo e($jobId); ?>#worker-<?php echo e($worker['user_id']); ?>" aria-label="View <?php echo e($worker['full_name']); ?> on this job's details page">
 <div><strong><?php echo e($worker['full_name']); ?></strong><span><?php echo e($worker['experience_years']); ?> yrs | <?php echo e(number_format((float) $worker['avg_rating'], 1)); ?> ★</span></div>
-</div>
+</a>
 <?php endforeach; ?>
 </div>
 <?php endif; ?>
@@ -181,10 +245,11 @@ $busyDatesByWorker = booked_dates_by_worker($conn, array_column($verifiedWorkers
 <?php elseif ($userRole === 'Worker'): ?>
 <a class="secondary-action" href="../AboutUsPage/apply_resume.php?job_id=<?php echo $jobId; ?>">Apply Job</a>
 <?php elseif ($userRole === 'Employer'): ?>
-<?php if ($jobId > 0 && $verifiedWorkers): ?>
+<?php if (false): ?>
 <form class="hire-form" action="../StatusBar/booking_request.php" method="POST">
 <input type="hidden" name="job_id" value="<?php echo $jobId; ?>">
 <input type="hidden" name="category_id" value="<?php echo e($job['category_id'] ?? 0); ?>">
+<div class="hire-form-row hire-form-top-row">
 <label>Worker
 <select name="worker_id" required>
 <?php foreach ($verifiedWorkers as $worker): ?>
@@ -195,13 +260,17 @@ $busyDatesByWorker = booked_dates_by_worker($conn, array_column($verifiedWorkers
 <label>Date
 <input type="date" name="requested_date" class="availability-date-input" data-busy-dates="<?php echo e(json_encode($busyDatesByWorker)); ?>" required>
 </label>
-<label>Time <input type="time" name="requested_time" required></label>
-<label>Offer salary <input type="number" name="offered_salary" min="0" step="1" value="<?php echo e(max(0, (float) $job['salary_max'] - 20)); ?>" required></label>
-<label>Notes <input type="text" name="notes" placeholder="Service notes"></label><br>
+<label>Offer Hourly Salary <input type="number" name="offered_salary" min="0" step="1" value="<?php echo e(max(0, (float) $job['salary_max'] - 20)); ?>" required></label>
+</div>
+<div class="hire-form-row hire-form-bottom-row">
+<label>Start Time <input type="time" name="start_time" required></label>
+<label>Finish Time <input type="time" name="finish_time" required></label>
+<label>Notes <input type="text" name="notes" placeholder="Service notes"></label>
+</div>
 <button type="submit">Hire Now</button>
 </form>
 <?php else: ?>
-<p class="worker-note">No verified workers are available for this category yet.</p>
+<a class="secondary-action" href="../DetailsPage/details.php?id=<?php echo $jobId; ?>">View workers and hire</a>
 <?php endif; ?>
 <?php else: ?>
 <a class="secondary-action" href="../dasboard/dashboard.php">Manage in Dashboard</a>

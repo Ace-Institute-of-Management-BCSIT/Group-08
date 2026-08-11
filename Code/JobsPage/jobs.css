@@ -319,6 +319,7 @@ button {
     border: 1px solid rgba(19,39,102,.04);
     transition: transform .2s ease,box-shadow .2s ease,border-color .2s ease;
     overflow: hidden;
+    position: relative;
 }
 
 .job-card:hover {
@@ -448,6 +449,19 @@ button {
     border-radius: 8px;
     padding: 12px;
     min-width: 0;
+    color: inherit;
+    text-decoration: none;
+    transition: box-shadow .2s ease, transform .2s ease;
+}
+
+.mini-worker:hover {
+    box-shadow: 0 6px 16px rgba(19,39,102,.16);
+    transform: translateY(-1px);
+}
+
+.mini-worker:focus-visible {
+    outline: 3px solid #80bdff;
+    outline-offset: 3px;
 }
 
 .mini-worker strong,
@@ -470,14 +484,33 @@ button {
 
 .hire-form {
     display: grid;
-    grid-template-columns: repeat(5,minmax(120px,1fr)) auto;
     gap: 12px;
-    align-items: end;
     padding: 16px;
     border: 1px solid var(--line);
     border-radius: 8px;
     background: #fbfdfc;
 }
+
+.hire-form-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.hire-form-top-row {
+    grid-template-areas: "worker date salary";
+}
+
+.hire-form-bottom-row {
+    grid-template-areas: "start finish notes";
+}
+
+.hire-form-top-row label:nth-child(1) { grid-area: worker; }
+.hire-form-top-row label:nth-child(2) { grid-area: date; }
+.hire-form-top-row label:nth-child(3) { grid-area: salary; }
+.hire-form-bottom-row label:nth-child(1) { grid-area: start; }
+.hire-form-bottom-row label:nth-child(2) { grid-area: finish; }
+.hire-form-bottom-row label:nth-child(3) { grid-area: notes; }
 
 .hire-form label {
     font-size: 12px;
@@ -502,7 +535,9 @@ button {
 }
 
 .hire-form button {
-    height: 40px;
+    grid-column: 1 / -1;
+    height: 48px;
+    width: 100%;
     border: 0;
     border-radius: 6px;
     background: var(--green);
@@ -774,8 +809,28 @@ footer {
     grid-template-columns: 1fr;
 }
 
+.hire-form-row {
+    grid-template-columns: 1fr;
+    grid-template-areas: none;
+}
+
 .worker-strip {
     grid-template-columns: 1fr;
+}
+
+/* Keep the two three-column booking rows on tablet and desktop widths. */
+@media (min-width:561px) and (max-width:780px) {
+    .hire-form-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .hire-form-top-row {
+        grid-template-areas: "worker date salary";
+    }
+
+    .hire-form-bottom-row {
+        grid-template-areas: "start finish notes";
+    }
 }
 
 .priority-panel p {

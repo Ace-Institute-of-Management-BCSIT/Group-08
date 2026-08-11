@@ -25,10 +25,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $jobId = (int) ($_POST['job_id'] ?? 0);
 $workerId = (int) ($_POST['worker_id'] ?? 0);
 $date = trim($_POST['requested_date'] ?? '');
-$time = trim($_POST['requested_time'] ?? '');
+$startTime = trim($_POST['start_time'] ?? $_POST['requested_time'] ?? '');
+$finishTime = trim($_POST['finish_time'] ?? '');
 $offeredSalary = (float) ($_POST['offered_salary'] ?? 0);
+$timeColumn = mysqli_query($conn, "SHOW COLUMNS FROM hire_requests LIKE 'requested_finish_time'");
+$hireTimeColumnReady = (bool) ($timeColumn && mysqli_fetch_assoc($timeColumn));
 
-if ($jobId <= 0 || $workerId <= 0 || !valid_date($date) || !valid_time($time) || $time === '' || $offeredSalary < 0) {
+if ($jobId <= 0 || $workerId <= 0 || !valid_date($date) || !valid_time($startTime) || !valid_time($finishTime) || $startTime === '' || $finishTime === '' || $finishTime <= $startTime || $offeredSalary < 0 || !$hireTimeColumnReady) {
     header('Location: ../JobsPage/jobs.php?hire=missing');
     exit();
 }
@@ -52,12 +55,12 @@ if ($offeredSalary < $minimumOffer) {
 
 $stmt = mysqli_prepare(
     $conn,
-    'INSERT INTO hire_requests (job_id, employer_id, worker_id, requested_date, requested_time, worker_salary, offered_salary, status, employer_message)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    'INSERT INTO hire_requests (job_id, employer_id, worker_id, requested_date, requested_time, requested_finish_time, worker_salary, offered_salary, status, employer_message)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 );
 $status = 'Pending';
 $message = 'Employer requested this service booking.';
-mysqli_stmt_bind_param($stmt, 'iiissddss', $jobId, $user['user_id'], $workerId, $date, $time, $workerSalary, $offeredSalary, $status, $message);
+mysqli_stmt_bind_param($stmt, 'iiisssddss', $jobId, $user['user_id'], $workerId, $date, $startTime, $finishTime, $workerSalary, $offeredSalary, $status, $message);
 mysqli_stmt_execute($stmt);
 mysqli_stmt_close($stmt);
 
@@ -65,7 +68,7 @@ create_notification(
     $conn,
     $workerId,
     'New hire request',
-    $user['full_name'] . ' wants to hire you for ' . $job['title'] . ' on ' . $date . ' at ' . $time . ' for Rs ' . number_format($offeredSalary, 0) . '.'
+    $user['full_name'] . ' wants to hire you for ' . $job['title'] . ' on ' . $date . ' from ' . $startTime . ' to ' . $finishTime . ' for Rs ' . number_format($offeredSalary, 0) . '.'
 );
 
 header('Location: ../dasboard/dashboard.php?hire=sent');

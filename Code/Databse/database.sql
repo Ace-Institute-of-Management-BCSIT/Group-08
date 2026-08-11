@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS worker_profiles (
     worker_id INT NOT NULL,
     skills TEXT,
     experience_years INT DEFAULT 0,
+    hourly_rate DECIMAL(10,2) NOT NULL DEFAULT 2000.00,
     profile_image VARCHAR(255),
     verification_status VARCHAR(30) NOT NULL DEFAULT 'Pending',
     current_status VARCHAR(60) NOT NULL DEFAULT 'Available',
@@ -148,6 +149,7 @@ CREATE TABLE IF NOT EXISTS hire_requests (
     worker_id INT NOT NULL,
     requested_date DATE NOT NULL,
     requested_time TIME NOT NULL DEFAULT '00:00:00',
+    requested_finish_time TIME NOT NULL DEFAULT '00:00:00',
     worker_salary DECIMAL(10,2) NOT NULL DEFAULT 0,
     offered_salary DECIMAL(10,2) NOT NULL DEFAULT 0,
     status VARCHAR(30) NOT NULL DEFAULT 'Pending',
@@ -170,6 +172,8 @@ CREATE TABLE IF NOT EXISTS booking_requests (
     category_id INT NOT NULL,
     booking_date DATE NOT NULL,
     requested_date DATE NOT NULL,
+    start_time TIME NOT NULL DEFAULT '00:00:00',
+    finish_time TIME NOT NULL DEFAULT '00:00:00',
     service_category VARCHAR(100),
     notes TEXT,
     status ENUM('Pending','Accepted','Rejected','Completed') NOT NULL DEFAULT 'Pending',
@@ -626,6 +630,61 @@ WHERE workers.role = 'Worker'
   );
 
 -- Default development accounts: admin/admin123, workers/worker123, employers/employer123.
+-- Suggested hourly offers vary slightly between workers in the same service category.
+UPDATE worker_profiles wp
+INNER JOIN worker_categories wc ON wc.worker_id = wp.worker_id
+INNER JOIN categories c ON c.category_id = wc.category_id
+SET wp.hourly_rate = CASE wp.worker_id
+    WHEN 100 THEN 2150.00
+    WHEN 101 THEN 2350.00
+    WHEN 102 THEN 2550.00
+    WHEN 103 THEN 2750.00
+    WHEN 104 THEN 2900.00
+    WHEN 105 THEN 3200.00
+    WHEN 106 THEN 3800.00
+    WHEN 107 THEN 4200.00
+    WHEN 108 THEN 3900.00
+    WHEN 109 THEN 4300.00
+    WHEN 110 THEN 2400.00
+    WHEN 111 THEN 2650.00
+    WHEN 112 THEN 3300.00
+    WHEN 113 THEN 3700.00
+    WHEN 114 THEN 3600.00
+    WHEN 115 THEN 4000.00
+    WHEN 116 THEN 2700.00
+    WHEN 117 THEN 2950.00
+    WHEN 118 THEN 2200.00
+    WHEN 119 THEN 2450.00
+    WHEN 120 THEN 4300.00
+    WHEN 121 THEN 4700.00
+    WHEN 122 THEN 4800.00
+    WHEN 123 THEN 5300.00
+    WHEN 124 THEN 3300.00
+    WHEN 125 THEN 3700.00
+    WHEN 126 THEN 4600.00
+    WHEN 127 THEN 5100.00
+    WHEN 128 THEN 2450.00
+    WHEN 129 THEN 2750.00
+    ELSE CASE c.category_name
+    WHEN 'House Work' THEN 2200.00
+    WHEN 'Culinary Aid' THEN 2600.00
+    WHEN 'Culinary Service' THEN 3000.00
+    WHEN 'Home Tuition' THEN 4000.00
+    WHEN 'Education' THEN 4000.00
+    WHEN 'Pet Care' THEN 2500.00
+    WHEN 'Self Care' THEN 3500.00
+    WHEN 'Elderly Care' THEN 3800.00
+    WHEN 'Babysitting' THEN 2800.00
+    WHEN 'Gardening' THEN 2300.00
+    WHEN 'Plumbing' THEN 4500.00
+    WHEN 'Electrical Work' THEN 5000.00
+    WHEN 'Personal' THEN 3500.00
+    WHEN 'Repair' THEN 4800.00
+    WHEN 'Other Services' THEN 2600.00
+    ELSE 2000.00
+    END
+END;
+
 UPDATE users SET password = '$2y$10$78fMc8I8ZjM5z/nGLNDjP.8BmkSWdAfubjg.HaubfZpoE.IN.EXzy' WHERE password = 'admin123';
 UPDATE users SET password = '$2y$10$vX71K8iCvqzlCMAQtwxTIOEx8WdO.JRp0Qk8p35DRL9x9A4C0SeF2' WHERE password = 'worker123';
 UPDATE users SET password = '$2y$10$jpampZPegE2w385WWSYSlOPVJ26Wq3pn8Uv0mqt9JmyACsuH6JfRO' WHERE password = 'employer123';

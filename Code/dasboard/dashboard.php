@@ -198,7 +198,7 @@ if ($role === 'Employer') {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <?php if (!$pendingReview): ?><meta http-equiv="refresh" content="30"><?php endif; ?>
 <title><?php echo e($role); ?> Dashboard - Ghar Sathi</title>
-<link rel="icon" type="image/svg+xml" href="../images/logo-favicon.svg">
+<link rel="icon" type="image/png" href="../images/logo.png">
 <link rel="stylesheet" href="../JobsPage/jobs.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
 <style>
@@ -256,7 +256,7 @@ body{background:#f7f8fa}.dashboard{max-width:1200px;margin:0 auto;padding:30px 2
 <?php $currentStatus = current_status_for_booking($booking, $statusHistory); $currentIndex = array_search($currentStatus, $statusSteps, true); ?>
 <div class="item">
 <strong><?php echo e($booking['title']); ?></strong>
-<p><?php echo e($booking['category_name']); ?> | Date: <?php echo e($booking['booking_date'] ?: $booking['requested_date']); ?> | <span class="status"><?php echo e($booking['status']); ?></span></p>
+<p><?php echo e($booking['category_name']); ?> | Date: <?php echo e($booking['booking_date'] ?: $booking['requested_date']); ?><?php if (!empty($booking['start_time']) && !empty($booking['finish_time'])): ?> | Time: <?php echo e(substr($booking['start_time'], 0, 5)); ?> - <?php echo e(substr($booking['finish_time'], 0, 5)); ?><?php endif; ?> | <span class="status"><?php echo e($booking['status']); ?></span></p>
 <?php $contactsVisible = in_array($booking['status'], ['Accepted', 'Completed'], true); ?>
 <p>Employer: <?php echo e($booking['employer_name']); ?><?php echo $contactsVisible ? ' (' . e($booking['employer_phone'] ?: 'No phone') . ', ' . e($booking['employer_email'] ?: 'No email') . ')' : ''; ?> | Worker: <?php echo e($booking['worker_name']); ?><?php echo $contactsVisible ? ' (' . e($booking['worker_phone'] ?: 'No phone') . ', ' . e($booking['worker_email'] ?: 'No email') . ')' : ''; ?></p>
 <?php if (!$contactsVisible): ?><p class="muted">Contact details appear after the worker accepts the hire request.</p><?php endif; ?>

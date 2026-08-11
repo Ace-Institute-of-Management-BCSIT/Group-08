@@ -20,7 +20,7 @@ $uploadStatus = $_GET['resume'] ?? '';
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Ghar Sathi About Us</title>
-<link rel="icon" type="image/svg+xml" href="../images/logo-favicon.svg">
+<link rel="icon" type="image/png" href="../images/logo.png">
 
 <link rel="stylesheet" href="aboutus.css">
 <link rel="stylesheet" href="../JobsPage/jobs.css">

@@ -26,13 +26,29 @@ $jobId = (int) ($_POST['job_id'] ?? 0);
 $workerId = (int) ($_POST['worker_id'] ?? 0);
 $categoryId = (int) ($_POST['category_id'] ?? 0);
 $requestedDate = trim($_POST['booking_date'] ?? $_POST['requested_date'] ?? '');
-$requestedTime = trim($_POST['requested_time'] ?? '');
+$startTime = trim($_POST['start_time'] ?? $_POST['requested_time'] ?? '');
+$finishTime = trim($_POST['finish_time'] ?? '');
 $offeredSalary = (float) ($_POST['offered_salary'] ?? 0);
 $notes = trim($_POST['notes'] ?? '');
 $serviceCategory = trim($_POST['service_category'] ?? '');
+$requiredTimeColumns = [
+    ['booking_requests', 'start_time'],
+    ['booking_requests', 'finish_time'],
+    ['hire_requests', 'requested_finish_time'],
+];
+$bookingTimeColumnsReady = true;
+foreach ($requiredTimeColumns as [$table, $column]) {
+    $columnResult = mysqli_query($conn, "SHOW COLUMNS FROM `$table` LIKE '$column'");
+    if (!$columnResult || !mysqli_fetch_assoc($columnResult)) {
+        $bookingTimeColumnsReady = false;
+        break;
+    }
+}
 
-if ($jobId <= 0 || $workerId <= 0 || $categoryId <= 0 || !valid_date($requestedDate) || !valid_time($requestedTime) || $offeredSalary < 0 || strlen($notes) > 2000) {
-    $status = 'Please choose a worker, date, and service category.';
+if ($jobId <= 0 || $workerId <= 0 || $categoryId <= 0 || !valid_date($requestedDate) || $requestedDate < date('Y-m-d') || !valid_time($startTime) || !valid_time($finishTime) || $startTime === '' || $finishTime === '' || $finishTime <= $startTime || $offeredSalary < 0 || strlen($notes) > 2000) {
+    $status = 'Please choose a worker, today or a future service date, start time, finish time, and service category. The finish time must be after the start time.';
+} elseif (!$bookingTimeColumnsReady) {
+    $status = 'Booking times are not ready yet. Please run the booking time-range database migration and try again.';
 } else {
     $validRequest = mysqli_prepare($conn, "SELECT j.job_id FROM jobs j INNER JOIN worker_categories wc ON wc.category_id=j.category_id WHERE j.job_id=? AND j.category_id=? AND wc.worker_id=? LIMIT 1");
     mysqli_stmt_bind_param($validRequest, 'iii', $jobId, $categoryId, $workerId);
@@ -49,14 +65,26 @@ if ($jobId <= 0 || $workerId <= 0 || $categoryId <= 0 || !valid_date($requestedD
     mysqli_stmt_close($stmt);
 
     if ($alreadyBooked) {
-        $status = 'This service provider is already booked for the selected date.';
+        $clashedCategory = $serviceCategory;
+        if ($clashedCategory === '') {
+            $categoryStmt = mysqli_prepare($conn, 'SELECT category_name FROM categories WHERE category_id = ? LIMIT 1');
+            mysqli_stmt_bind_param($categoryStmt, 'i', $categoryId);
+            mysqli_stmt_execute($categoryStmt);
+            $categoryRow = mysqli_fetch_assoc(mysqli_stmt_get_result($categoryStmt));
+            mysqli_stmt_close($categoryStmt);
+            $clashedCategory = $categoryRow['category_name'] ?? 'selected service category';
+        }
+
+        $status = 'The selected worker is already hired for ' . $clashedCategory . ' on the chosen date.' . "\n"
+            . 'Please choose the ' . $clashedCategory . ' category again and enter suitable booking details.' . "\n"
+            . 'You may review the existing hire details by hovering over the Busy pill, then try again with an available date and time.';
     } else {
         $stmt = mysqli_prepare(
             $conn,
-            "INSERT INTO booking_requests (job_id, employer_id, worker_id, service_id, category_id, booking_date, requested_date, service_category, notes, status)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')"
+            "INSERT INTO booking_requests (job_id, employer_id, worker_id, service_id, category_id, booking_date, requested_date, start_time, finish_time, service_category, notes, status)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')"
         );
-        mysqli_stmt_bind_param($stmt, 'iiiiissss', $jobId, $user['user_id'], $workerId, $jobId, $categoryId, $requestedDate, $requestedDate, $serviceCategory, $notes);
+        mysqli_stmt_bind_param($stmt, 'iiiiissssss', $jobId, $user['user_id'], $workerId, $jobId, $categoryId, $requestedDate, $requestedDate, $startTime, $finishTime, $serviceCategory, $notes);
         $saved = mysqli_stmt_execute($stmt);
         $bookingId = mysqli_insert_id($conn);
         mysqli_stmt_close($stmt);
@@ -84,14 +112,14 @@ if ($jobId <= 0 || $workerId <= 0 || $categoryId <= 0 || !valid_date($requestedD
             $hireMessage = $notes ?: 'Employer requested this service booking.';
             $hireStmt = mysqli_prepare(
                 $conn,
-                'INSERT INTO hire_requests (job_id, employer_id, worker_id, requested_date, requested_time, worker_salary, offered_salary, status, employer_message)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                'INSERT INTO hire_requests (job_id, employer_id, worker_id, requested_date, requested_time, requested_finish_time, worker_salary, offered_salary, status, employer_message)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
             );
-            mysqli_stmt_bind_param($hireStmt, 'iiissddss', $jobId, $user['user_id'], $workerId, $requestedDate, $requestedTime, $workerSalary, $offeredSalary, $hireStatus, $hireMessage);
+            mysqli_stmt_bind_param($hireStmt, 'iiisssddss', $jobId, $user['user_id'], $workerId, $requestedDate, $startTime, $finishTime, $workerSalary, $offeredSalary, $hireStatus, $hireMessage);
             mysqli_stmt_execute($hireStmt);
             mysqli_stmt_close($hireStmt);
 
-            create_notification($conn, $workerId, 'New booking request', $user['full_name'] . ' requested ' . ($job['title'] ?? 'a service') . ' for ' . $requestedDate . '.');
+            create_notification($conn, $workerId, 'New booking request', $user['full_name'] . ' requested ' . ($job['title'] ?? 'a service') . ' for ' . $requestedDate . ' from ' . $startTime . ' to ' . $finishTime . '.');
             record_employment_status($conn, $workerId, (int) $user['user_id'], $jobId, 'Request Received', $requestedDate);
             $status = 'Your request has been sent to the service provider.';
         } else {
@@ -110,7 +138,7 @@ if ($jobId <= 0 || $workerId <= 0 || $categoryId <= 0 || !valid_date($requestedD
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Booking Request - Ghar Sathi</title>
-<link rel="icon" type="image/svg+xml" href="../images/logo-favicon.svg">
+<link rel="icon" type="image/png" href="../images/logo.png">
 <style>
 *{box-sizing:border-box;font-family:Arial,sans-serif}body{margin:0;background:#f4f6f9;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}.box{background:#fff;max-width:480px;width:100%;padding:36px;border-radius:12px;text-align:center;box-shadow:0 5px 20px rgba(0,0,0,.1)}h2{color:#132766}a{display:inline-block;margin-top:18px;background:#28a745;color:#fff;text-decoration:none;padding:12px 22px;border-radius:5px}
 </style>
@@ -118,7 +146,7 @@ if ($jobId <= 0 || $workerId <= 0 || $categoryId <= 0 || !valid_date($requestedD
 <body>
 <div class="box">
 <h2>Ghar Sathi</h2>
-<p><?php echo e($status); ?></p>
+<p><?php echo nl2br(e($status)); ?></p>
 <a href="../JobsPage/jobs.php">Back to Jobs</a>
 </div>
 </body>
